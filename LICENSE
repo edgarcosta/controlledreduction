@@ -1,0 +1,27 @@
+===============================================================================
+
+controlled-reduction (version 1.0):
+   A program for computing the matrix of Frobenius on Monsky-Washnizter
+   cohomology of a projective hypersurface over GF(p), using the method
+   described in 
+   "Computing zeta functions of nondegenerate projective hypersurfaces over finite fields",
+   (under preparation) by Edgar Costa and David Harvey.
+
+
+Copyright (C) 2013-2017, Edgar Costa
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) version 3 of the License. See, GPLv2 or GPLv3, respectively.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License,
+along with this program (see gpl-2.0.txt and gpl-3.0.txt). If not,
+see <http://www.gnu.org/licenses/>.
+
+===============================================================================
