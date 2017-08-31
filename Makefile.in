@@ -1,0 +1,60 @@
+#  Copyright (C)  2016-2017 Edgar Costa
+#  See the file LICENSE for license details.
+
+MAKEFLAGS+=-j$(JOBS)
+
+SOURCE_DIRS = dr dr_nd hypersurface hypersurface_nd matrix solve_system tools vec_int64
+BUILD_DIRS = $(patsubst %, build/%, $(SOURCE_DIRS)) build/test build/examples
+AT=@
+define NEWLINE
+
+endef
+
+export
+
+HEADERS = $(patsubst %, %.h, $(SOURCE_DIRS))
+SOURCES = $(wildcard $(patsubst %, %/*.cc, $(SOURCE_DIRS)))  
+OBJS = $(patsubst %.cc, build/%.o, $(SOURCES))
+
+
+EXAMPLE_SOURCES = $(wildcard examples/*.cc)
+EXAMPLES = $(patsubst %.cc, build/%, $(EXAMPLE_SOURCES))
+
+TEST_SOURCES = $(wildcard test/*.cc)
+TESTS = $(patsubst %.cc, build/%, $(TEST_SOURCES))
+
+BINARIES = 
+
+all: $(OBJS) test examples
+
+clean:
+	rm -rf build
+
+
+examples: $(EXAMPLES)
+
+test: $(TESTS)
+
+build/%.o: %.cc $(HEADERS) | build_dirs
+	$(CXX) $(CXXFLAGS) $(INCS) -c $< -o $@;
+
+$(TESTS) : %.exe : %.o $(OBJS) 
+	$(CXX) $(CXXFLAGS) $(INCS) $^ -o $@ $(LIBS)
+
+build/%.valgrind : %.cc $(SOURCES) 
+	$(CXX) $(CXXFLAGS) $(INCS) $^ -o $@ $(LIBS)
+
+$(EXAMPLES) : % : %.o $(OBJS) 
+	$(CXX) $(CXXFLAGS) $(INCS) $^ -o $@ $(LIBS)
+
+build_dirs: $(BUILD_DIRS)
+#	$(foreach dir, $(BUILD_DIRS), mkdir -p $(dir) || exit $$?;)
+
+$(BUILD_DIRS): % :
+	mkdir -p $@
+
+
+print-%:
+	@echo '$*=$($*)'
+
+.PHONY: clean 

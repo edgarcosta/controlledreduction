@@ -1,0 +1,364 @@
+#!/bin/sh
+
+
+#  Copyright (C)  2016-2017  Edgar Costa
+#  See the file LICENSE for license details.
+
+
+PREFIX="" # "/usr/local"
+FLINT_DIR="" # "/usr/local"
+GMP_DIR="" # "/usr/local"
+MPFR_DIR="" # "/usr/local"
+MPIR_DIR="" # "/usr/local"
+NTL_DIR="" # "/usr/local"
+
+
+#set CC to gcc if CC is not set
+if [  -z ${CC+word} ]; then
+    CC="gcc"
+fi;
+#set CXX to g++ if CXX is not set
+if [  -z ${CXX+word} ]; then
+    CXX="g++"
+fi;
+
+
+LIBS="m"
+ASSERT=1
+GDB=1
+
+
+# disable unnecessary libs and options
+#unset PREFIX
+#GMP_DIR=""
+#unset MPIR_DIR
+#unset MPFR_DIR
+#unset NTL_DIR
+#CC=""
+#CXX=""
+
+
+usage()
+{
+    echo "Usage: ./configure <options> <args>"
+    echo "   where <options> may be"
+    echo "     -h or --help display usage information"
+    echo "     --enable-assert or --disable-assert"
+    echo "     --enable-gdb or --disable-gdb" 
+    echo "   where <args> may be:"
+
+    if [ ! -z ${PREFIX+word} ]; then
+        echo "     --prefix=<path>      Specify path to installation location (default: $PREFIX"
+    fi
+
+    if [ ! -z ${FLINT_DIR+word} ]; then
+        echo "     --with-flint=<path>   Specify location of FLINT (default: $FLINT_DIR)"
+    fi
+
+    if [ ! -z ${GMP_DIR+word} ]; then
+        echo "     --with-gmp=<path>    Specify location of GMP (default: $GMP_DIR)"
+    fi
+
+    if [ ! -z ${MPIR_DIR+word} ]; then
+        echo "     --with-mpir=<path>   Specify location of MPIR (default: $MPIR_DIR)"
+    fi
+
+    if [ ! -z ${MPFR_DIR+word} ]; then
+        echo "     --with-mpfr=<path>   Specify location of MPFR (default: $MPFR_DIR)"
+    fi
+
+    if [ ! -z ${NTL_DIR+word} ]; then
+        echo "     --with-ntl=<path>    Specify location of NTL (default: $NTL_DIR)"
+    fi;
+
+    if [ -n "$CC" ]; then
+        echo "     CC=<name>            Use the C compiler with the given name (default: $CC)"
+        echo "     CFLAGS=<flags>       Pass the extra given flags to the compiler"
+    fi
+
+    if [ -n "$CXX" ]; then
+        echo "     CXX=<name>           Use the C++ compiler with the given name (default: $CXX)"
+        echo "     CXXFLAGS=<flags>     Pass the extra given flags to the C++ compiler"
+
+    fi;
+    
+    
+    }
+
+
+absolute_path(){
+   dirlist="$1"
+   retval=""
+   for dir in $dirlist; do
+      case $dir in
+        /*) dir=$dir;;
+        *) dir=$PWD/$dir;;
+      esac
+      retval=$retval" "$dir
+   done
+   echo $retval
+}
+
+
+while [ "$1" != "" ]; do
+    PARAM=`echo $1 | sed 's/=.*//'`
+    VALUE=`echo $1 | sed 's/[^=]*//; s/=//'`
+    case "$PARAM" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --with-flint)
+            if [ ! -z ${FLINT_DIR+word} ]; then
+                FLINT_DIR=$(absolute_path "$VALUE")
+            fi
+            ;;
+        --with-gmp)
+            if [ ! -z ${GMP_DIR+word} ]; then
+                GMP_DIR=$(absolute_path "$VALUE")
+            fi
+            ;;
+        --with-mpir)
+            if [ ! -z ${MPIR_DIR+word} ]; then
+                MPIR_DIR=$(absolute_path "$VALUE")
+            fi
+            ;;
+        --with-mpfr)
+            if [ ! -z ${MPFR_DIR+word} ]; then
+                MPFR_DIR=$(absolute_path "$VALUE")
+            fi
+            ;;
+        --with-ntl)
+            if [ ! -z ${NTL_DIR+word} ]; then
+                NTL_DIR=$(absolute_path "$VALUE")
+            fi
+            ;;
+        --prefix)
+            if [ ! -z ${PREFIX + word} ]; then
+                PREFIX=$VALUE
+            fi
+            ;;
+        --enable-assert)
+            ASSERT=1
+            ;;
+        --disable-assert)
+            ASSERT=0
+            ;;
+        --enable-gdb)
+            GDB=1
+            ;;
+        --disable-gdb)
+            GDB=0
+            ;;
+        CC)
+            CC="$VALUE"
+            ;;
+        CXX)
+            CXX="$VALUE"
+            ;;
+        CFLAGS)
+            CFLAGS="$VALUE"
+            ;;
+        CXXFLAGS)
+            CXXFLAGS="$VALUE"
+            ;;
+        *)
+            usage
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+
+if [ -n "${FLINT_DIR}" ]; then
+    if [ -d "${FLINT_DIR}/lib" ]; then
+       GMP_LIB_DIR="${FLINT_DIR}/lib"
+       GMP_INC_DIR="${FLINT_DIR}/include"
+    elif [ -d "${FLINT_DIR}/lib64" ]; then
+       GMP_LIB_DIR="${FLINT_DIR}/lib64"
+       GMP_INC_DIR="${FLINT_DIR}/include"
+    elif [ -d "${FLINT_DIR}/.libs" ]; then
+       GMP_LIB_DIR="${FLINT_DIR}/.libs"
+       GMP_INC_DIR="${FLINT_DIR}"
+    else
+       echo "Invalid FLINT directory"
+       exit 1
+    fi
+    LIB_DIRS="${LIB_DIRS} ${FLINT_LIB_DIR}"
+    INC_DIRS="${INC_DIRS} ${FLINT_INC_DIR}"
+fi;
+if [ ! -z ${FLINT_DIR+word} ]; then
+    LIBS="${LIBS} flint"
+fi;
+
+
+if [ -n "${GMP_DIR}" ]; then
+    if [ -d "${GMP_DIR}/lib" ]; then
+       GMP_LIB_DIR="${GMP_DIR}/lib"
+       GMP_INC_DIR="${GMP_DIR}/include"
+    elif [ -d "${GMP_DIR}/lib64" ]; then
+       GMP_LIB_DIR="${GMP_DIR}/lib64"
+       GMP_INC_DIR="${GMP_DIR}/include"
+    elif [ -d "${GMP_DIR}/.libs" ]; then
+       GMP_LIB_DIR="${GMP_DIR}/.libs"
+       GMP_INC_DIR="${GMP_DIR}"
+    else
+       echo "Invalid GMP directory"
+       exit 1
+    fi
+    LIB_DIRS="${LIB_DIRS} ${GMP_LIB_DIR}"
+    INC_DIRS="${INC_DIRS} ${GMP_INC_DIR}"
+fi;
+if [ ! -z ${GMP_DIR+word} ]; then
+    LIBS="${LIBS} gmp gmpxx"
+fi;
+
+
+if [ -n "${MPFR_DIR}" ]; then
+    if [ -d "${MPFR_DIR}/lib" ]; then
+       MPFR_LIB_DIR="${MPFR_DIR}/lib"
+       MPFR_INC_DIR="${MPFR_DIR}/include"
+    elif [ -d "${MPFR_DIR}/lib64" ]; then
+       MPFR_LIB_DIR="${MPFR_DIR}/lib64"
+       MPFR_INC_DIR="${MPFR_DIR}/include"
+    elif [ -d "${MPFR_DIR}/.libs" ]; then
+       MPFR_LIB_DIR="${MPFR_DIR}/.libs"
+       MPFR_INC_DIR="${MPFR_DIR}"
+    elif [ -d "${MPFR_DIR}/src/.libs" ]; then
+       MPFR_LIB_DIR="${MPFR_DIR}/src/.libs"
+       MPFR_INC_DIR="${MPFR_DIR}/src"
+    else
+       echo "Invalid MPFR directory"
+       exit 1
+    fi
+    LIB_DIRS="${LIB_DIRS} ${MPFR_LIB_DIR}"
+    INC_DIRS="${INC_DIRS} ${MPFR_INC_DIR}"
+fi;
+if [ ! -z ${MPFR_DIR+word} ]; then
+    LIBS="${LIBS} mpfr"
+fi;
+
+
+if [ -n "${MPIR_DIR}" ]; then
+    if [ -d "${MPIR_DIR}/lib" ]; then
+       MPIR_LIB_DIR="${MPIR_DIR}/lib"
+       MPIR_INC_DIR="${MPIR_DIR}/include"
+    elif [ -d "${MPIR_DIR}/lib64" ]; then
+       MPIR_LIB_DIR="${MPIR_DIR}/lib64"
+       MPIR_INC_DIR="${MPIR_DIR}/include"
+    elif [ -d "${MPIR_DIR}/.libs" ]; then
+       MPIR_LIB_DIR="${MPIR_DIR}/.libs"
+       MPIR_INC_DIR="${MPIR_DIR}"
+    elif [ -d "${MPIR_DIR}/src/.libs" ]; then
+       MPIR_LIB_DIR="${MPIR_DIR}/src/.libs"
+       MPIR_INC_DIR="${MPIR_DIR}/src"
+    else
+       echo "Invalid MPIR directory"
+       exit 1
+    fi
+    LIB_DIRS="${LIB_DIRS} ${MPIR_LIB_DIR}"
+    INC_DIRS="${INC_DIRS} ${MPIR_INC_DIR}"
+fi;
+if [ ! -z ${MPIR_DIR+word} ]; then
+    LIBS="${LIBS} mpir"
+fi;
+
+
+if [ -n "${NTL_DIR}" ]; then
+    if [ -d "${NTL_DIR}/lib" ]; then
+       NTL_LIB_DIR="${NTL_DIR}/lib"
+       NTL_INC_DIR="${NTL_DIR}/include"
+    elif [ -d "${NTL_DIR}/lib64" ]; then
+       NTL_LIB_DIR="${NTL_DIR}/lib64"
+       NTL_INC_DIR="${NTL_DIR}/include"
+    elif [ -d "${NTL_DIR}/.libs" ]; then
+       NTL_LIB_DIR="${NTL_DIR}/.libs"
+       NTL_INC_DIR="${NTL_DIR}"
+    elif [ -d "${NTL_DIR}/src/.libs" ]; then
+       NTL_LIB_DIR="${NTL_DIR}/src/.libs"
+       NTL_INC_DIR="${NTL_DIR}/src"
+    else
+       echo "Invalid NTL directory"
+       exit 1
+    fi
+    LIB_DIRS="${LIB_DIRS} ${NTL_LIB_DIR}"
+    INC_DIRS="${INC_DIRS} ${NTL_INC_DIR}"
+fi;
+if [ ! -z ${NTL_DIR+word} ]; then
+    LIBS="${LIBS} ntl"
+fi;
+
+
+
+# include paths
+
+INCS="-I\$(CURDIR)"
+for INC_DIR in ${INC_DIRS}; do
+   INCS="${INCS} -isystem${INC_DIR}"
+done
+
+# library paths
+
+LLIBS="-L\$(CURDIR)"
+for LIB_DIR in ${LIB_DIRS} ${EXTRA_LIB_DIRS}; do
+   LLIBS="${LLIBS} -L${LIB_DIR}"
+done
+
+lLIBS="";
+# library params
+for LIB in ${LIBS}; do
+   lLIBS="-l${LIB} ${lLIBS}"
+done
+LIBS="$LLIBS $lLIBS"
+
+
+
+KERNEL=`uname`
+ARCH=`uname -m`
+OS=`uname -s`
+
+if [ $OS = "Linux" ]; then
+    LIBS="${LIBS} -lrt"
+fi
+
+#defaults for CFLAGS
+FLAGS="-pedantic -Wall -Wextra -O2 -funroll-loops -fopenmp"
+if [ "$GDB" = "1" ]; then
+    FLAGS="${FLAGS} -g";
+fi
+
+if [ -z "$CFLAGS" ]; then
+    CFLAGS="${FLAGS} -std=c99"
+fi
+if [ -z "$CXXFLAGS" ]; then
+    CXXFLAGS="${FLAGS} -std=c++11"
+fi
+
+
+
+JOBS=`python -c 'import multiprocessing as mp; print(mp.cpu_count() + 1)'`
+
+
+echo "# This file is generated by ./configure -- do not edit!" > Makefile
+echo "" >> Makefile
+echo "SHELL=/bin/sh" >> Makefile
+echo "" >> Makefile
+echo "" >> Makefile
+echo "INCS=$INCS" >> Makefile
+echo "LIBS=$LIBS" >> Makefile
+echo "" >> Makefile
+echo "CC=$CC" >> Makefile
+echo "CXX=$CXX" >> Makefile
+echo "" >> Makefile
+echo "CFLAGS=$CFLAGS" >> Makefile
+echo "CXXFLAGS=$CXXFLAGS" >> Makefile
+echo "" >> Makefile
+echo "" >> Makefile
+echo "JOBS=$JOBS" >> Makefile
+echo "" >> Makefile
+echo "" >> Makefile
+
+cat Makefile.in >> Makefile
+
+echo "CONTROLLED-REDUCTION was successfully configured."
