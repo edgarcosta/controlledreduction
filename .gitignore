@@ -1,6 +1,11 @@
 # Generated Makefile
 Makefile
 
+# OSX stuff
+.DS_Store
+
+# vim swap files
+*.swp
 
 # YouCompleteMe conf
 .ycm_extra_conf.py
@@ -37,3 +42,4 @@ Makefile
 *.exe
 *.out
 *.app
+build/*
