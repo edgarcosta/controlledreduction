@@ -3,7 +3,7 @@
 
 MAKEFLAGS+=-j$(JOBS)
 
-SOURCE_DIRS = dr dr_nd hypersurface hypersurface_nd matrix solve_system tools vec_int64
+SOURCE_DIRS = conv dr dr_nd hypersurface hypersurface_nd matrix solve_system tools vec_int64
 BUILD_DIRS = $(patsubst %, build/%, $(SOURCE_DIRS)) build/test build/examples
 AT=@
 define NEWLINE
