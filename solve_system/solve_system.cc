@@ -5,7 +5,10 @@
 
 
 #include "solve_system.h"
+#include "conv.h"
 #include "NTL/mat_ZZ.h"
+
+using namespace NTL;
 
 void solve_system_zz_p_flint(Vec<int64_t> &B, nmod_mat_t U, const nmod_mat_t T)
 {
