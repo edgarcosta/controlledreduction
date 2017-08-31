@@ -3,17 +3,15 @@
 // solve_system.h: header file for the routines to solve systems
    
 
-#ifndef SOLVE_SYSTEM_H
-#define SOLVE_SYSTEM_H
+#ifndef SOLVE_SYSTEM_H_
+#define SOLVE_SYSTEM_H_
 
+#include <assert.h>
 #include <NTL/mat_ZZ_p.h>
 #include <NTL/mat_lzz_p.h>
-#include "tools.h"
+#include <flint/nmod_mat.h>
 #include <stdint.h>
-#include <assert.h>
 
-using namespace std;
-using namespace NTL;
 /*
 * input T: m * n matrix over Fp, representing a Fp-linear map from Fp^n to Fp^m
 *
@@ -35,17 +33,17 @@ using namespace NTL;
 * Here B is a vector containing the indices corresponding to the basis elements, in increasing order.
 * 
 */
-void solve_system_zz_p_NTL(Vec<int64_t> &B, Mat<zz_p> &U, const Mat<zz_p> &T);
-void solve_system_zz_p_flint(Vec<int64_t> &B, nmod_mat_t U, const nmod_mat_t T);
-void solve_system_zz_p(Vec<int64_t> &B,  Mat<zz_p> &U, const Mat<zz_p> &T, bool flint = true);
+void solve_system_zz_p_NTL(NTL::Vec<int64_t> &B, NTL::Mat<NTL::zz_p> &U, const NTL::Mat<NTL::zz_p> &T);
+void solve_system_zz_p_flint(NTL::Vec<int64_t> &B, nmod_mat_t U, const nmod_mat_t T);
+void solve_system_zz_p(NTL::Vec<int64_t> &B,  NTL::Mat<NTL::zz_p> &U, const NTL::Mat<NTL::zz_p> &T, bool flint = true);
 
 
 /* 
 * Same as above but over the Z/p^precision
 */
 
-void solve_system_padic(Vec<int64_t> &B, Mat<ZZ_p> &U, const Mat<ZZ_p> &T, int64_t precision, bool flint = true);
-void solve_system_padic_flint(Vec<int64_t> &B, Mat<ZZ_p> &U, const Mat<ZZ_p> &T, int64_t precision);
-void solve_system_padic_NTL(Vec<int64_t> &B, Mat<ZZ_p> &U, const Mat<ZZ_p> &T, int64_t precision);
+void solve_system_padic(NTL::Vec<int64_t> &B, NTL::Mat<NTL::ZZ_p> &U, const NTL::Mat<NTL::ZZ_p> &T, int64_t precision, bool flint = true);
+void solve_system_padic_flint(NTL::Vec<int64_t> &B, NTL::Mat<NTL::ZZ_p> &U, const NTL::Mat<NTL::ZZ_p> &T, int64_t precision);
+void solve_system_padic_NTL(NTL::Vec<int64_t> &B, NTL::Mat<NTL::ZZ_p> &U, const NTL::Mat<NTL::ZZ_p> &T, int64_t precision);
 
-#endif
+#endif  //SOLVE_SYSTEM_H_
