@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+# Copyright 2013-2017 Edgar Costa
+# See LICENSE file for license details.
+# build_dependencies: a simple script to build dependencies of controlled reduction
+
+set -e
+
+GMP_VERSION=6.1.2
+MPIR_VERSION=2.7.2 # 3.0.0?
+MPFR_VERSION=3.1.5
+NTL_VERSION=10.5.0
+FLINT_VERSION=2.5.2
+PREFIX=${HOME}/local
+
+mkdir -p ${PREFIX}
+mkdir -p ${HOME}/tmp
+cd ${HOME}/tmp
+
+#Build GMP
+wget https://gmplib.org/download/gmp/gmp-${GMP_VERSION}.tar.bz2
+tar -xf gmp-${GMP_VERSION}.tar.bz2
+rm gmp-${GMP_VERSION}.tar.bz2
+cd gmp-${GMP_VERSION}/
+./configure ABI=$ABI  --prefix=${PREFIX}
+make -j4
+make install
+cd ..
+rm -rf gmp-${GMP_VERSION}/
+
+
+
+#Build mpir
+wget http://mpir.org/mpir-${MPIR_VERSION}.tar.bz2
+tar -xf mpir-${MPIR_VERSION}.tar.bz2
+rm mpir-${MPIR_VERSION}.tar.bz2
+cd mpir-${MPIR_VERSION}/
+./configure ABI=$ABI --enable-gmpcompat --prefix=${PREFIX}
+make -j4
+make install
+cd ..
+
+#Build mpfr
+wget http://www.mpfr.org/mpfr-current/mpfr-${MPFR_VERSION}.tar.bz2
+tar -xf mpfr-${MPFR_VERSION}.tar.bz2
+rm mpfr-${MPFR_VERSION}.tar.bz2
+cd mpfr-${MPFR_VERSION}/
+./configure ABI=$ABI --with-gmp-build=${HOME}/tmp/mpir-${MPIR_VERSION}/ --prefix=${PREFIX}
+make -j4
+make install
+cd ..
+rm -rf mpir-${MPIR_VERSION}/
+rm -rf mpfr-${MPFR_VERSION}/
+
+export LD_LIBRARY_PATH=${PREFIX}/lib:${LD_LIBRARY_PATH}
+#Build NTL
+wget http://www.shoup.net/ntl/ntl-${NTL_VERSION}.tar.gz
+tar xf ntl-${NTL_VERSION}.tar.gz
+rm ntl-${NTL_VERSION}.tar.gz
+cd ntl-${NTL_VERSION}/src/
+./configure NTL_THREADS=on NTL_THREAD_BOOST=on  GMP_PREFIX=${PREFIX} PREFIX=${PREFIX}
+make
+make install
+cd ../../
+rm -rf ntl-${NTL_VERSION}/
+
+#Build flint
+wget http://flintlib.org/flint-${FLINT_VERSION}.tar.gz
+tar -xf flint-${FLINT_VERSION}.tar.gz
+rm flint-${FLINT_VERSION}.tar.gz
+cd flint-${FLINT_VERSION}/
+./configure ABI=$ABI --with-mpir=${PREFIX} --with-mpfr=${PREFIX} --with-gmp=${PREFIX} --prefix=${PREFIX}
+make -j4
+make install
+cd ..
+rm -rf flint-${FLINT_VERSION}/
+
+
+export LIBRARY_PATH=${PREFIX}/lib:${LIBRARY_PATH}
+
+echo "Don't forget to add to your .bashrc"
+echo "export LD_LIBRARY_PATH=$\={PREFIX}/lib:\${LD_LIBRARY_PATH}"
+set +e
