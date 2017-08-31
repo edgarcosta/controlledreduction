@@ -6,6 +6,7 @@
 #ifndef DR_H
 #define DR_H
 
+#include "conv.h"
 #include "solve_system.h"
 #include "tools.h"
 #include "matrix.h"
