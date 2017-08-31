@@ -2,11 +2,12 @@
 // See LICENSE file for license details.
 // hypersurface_nd.h: header file for the class hypersurface_non_degenerate, which contains the routines to compute the Frobenius matrix
 
-#ifndef HYPERSRUFACE_ND_H
-#define HYPERSURFACE_ND_H
+#ifndef HYPERSRUFACE_ND_H_
+#define HYPERSURFACE_ND_H_
 
 #include "hypersurface.h"
 #include "dr_nd.h"
+#include <omp.h>
 #include <iostream>
 
 using namespace std;
@@ -36,5 +37,5 @@ class hypersurface_non_degenerate : public hypersurface{
         Mat<ZZ_p> frob_matrix_ND(Vec<int64_t> N);
 };
 
-#endif
+#endif  // HYPERSRUFACE_ND_H_
 
