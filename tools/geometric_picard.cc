@@ -1,6 +1,7 @@
 // Copyright 2013-2017 Edgar Costa
 // See LICENSE file for license details.
 
+#include "conv.h"
 #include "tools.h"
 
 #include <assert.h>
@@ -12,6 +13,7 @@
 #include <NTL/ZZ.h>
 
 #include <cstdint>
+
 
 using namespace NTL;
 
