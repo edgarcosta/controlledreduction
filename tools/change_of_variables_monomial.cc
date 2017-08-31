@@ -5,9 +5,14 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <NTL/ZZ.h>  // power_long
+#include <map>
 
 #include "vec_int64.h"
 
+
+using namespace std;
+using namespace NTL;
 
 map< Vec<int64_t>, int64_t, vi64less> change_of_variables_monomial(const Vec<int64_t> u,const Vec<int64_t> v)
 {
