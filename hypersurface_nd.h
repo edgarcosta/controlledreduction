@@ -3,7 +3,7 @@
 // hypersurface_nd.h: header file for the class hypersurface_non_degenerate, which contains the routines to compute the Frobenius matrix
 
 #ifndef HYPERSRUFACE_ND_H_
-#define HYPERSURFACE_ND_H_
+#define HYPERSRUFACE_ND_H_
 
 #include "hypersurface.h"
 #include "dr_nd.h"
