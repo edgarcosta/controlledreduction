@@ -4,7 +4,7 @@
 MAKEFLAGS+=-j$(JOBS)
 
 SOURCE_DIRS = conv dr dr_nd hypersurface hypersurface_nd matrix solve_system tools vec_int64
-BUILD_DIRS = $(patsubst %, build/%, $(SOURCE_DIRS)) build/test build/examples
+BUILD_DIRS = $(patsubst %, build/%, $(SOURCE_DIRS)) build/test build/examples $(patsubst %, build/%/test, $(SOURCE_DIRS))
 AT=@
 define NEWLINE
 
@@ -12,7 +12,7 @@ endef
 
 export
 
-HEADERS = $(patsubst %, %.h, $(SOURCE_DIRS))
+HEADERS = $(patsubst %, %.h, $(SOURCE_DIRS)) timing.h
 SOURCES = $(wildcard $(patsubst %, %/*.cc, $(SOURCE_DIRS)))  
 OBJS = $(patsubst %.cc, build/%.o, $(SOURCES))
 
@@ -20,7 +20,7 @@ OBJS = $(patsubst %.cc, build/%.o, $(SOURCES))
 EXAMPLE_SOURCES = $(wildcard examples/*.cc)
 EXAMPLES = $(patsubst %.cc, build/%, $(EXAMPLE_SOURCES))
 
-TEST_SOURCES = $(wildcard test/*.cc)
+TEST_SOURCES = $(wildcard $(patsubst %, %/test/*.cc, $(SOURCE_DIRS)))  $(wildcard test/*.cc)
 TESTS = $(patsubst %.cc, build/%, $(TEST_SOURCES))
 
 BINARIES = 
@@ -38,7 +38,7 @@ test: $(TESTS)
 build/%.o: %.cc $(HEADERS) | build_dirs
 	$(CXX) $(CXXFLAGS) $(INCS) -c $< -o $@;
 
-$(TESTS) : %.exe : %.o $(OBJS) 
+$(TESTS) : % : %.o $(OBJS) 
 	$(CXX) $(CXXFLAGS) $(INCS) $^ -o $@ $(LIBS)
 
 build/%.valgrind : %.cc $(SOURCES) 
@@ -53,6 +53,8 @@ build_dirs: $(BUILD_DIRS)
 $(BUILD_DIRS): % :
 	mkdir -p $@
 
+check: test
+	$(AT)$(foreach test_executable, $(TESTS), $(call test_executable) || exit $$?;)
 
 print-%:
 	@echo '$*=$($*)'
