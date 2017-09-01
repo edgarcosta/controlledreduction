@@ -9,10 +9,12 @@ osx_image: xcode7.3
 
 compiler:
     - gcc
-      #- clang # need to fix openmp
+    - clang
 
 script:
     - ./build_dependencies 
-    - ./configure --with-mpir=${HOME}/local --with-mpfr=${HOME}/local --with-gmp=${HOME}/local --with-flint=${HOME}/local
+    # only enable openmp for Linux and GCC
+    - if [ $TRAVIS_OS_NAME = linux && $CC=GCC ]; then export OPENMP_CONFIG='--enable-openmp'; else export OPENMP_CONFIG='--disable-openmp'; fi
+    - ./configure --with-mpir=${HOME}/local --with-mpfr=${HOME}/local --with-gmp=${HOME}/local --with-flint=${HOME}/local ${OPENMP_CONFIG}
     - make
 

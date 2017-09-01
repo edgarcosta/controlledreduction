@@ -34,7 +34,9 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 int main(int argc, char* argv[])
 {
@@ -55,7 +57,9 @@ int main(int argc, char* argv[])
         return 0;
     }
     SetSeed(to_ZZ(42));
+#ifdef _OPENMP
     omp_set_num_threads(atoi(argv[1]));
+#endif
     int64_t p, precision, n , d;
     int64_t i, numberoflines;
     timestamp_type wtime1, wtime2;

@@ -26,6 +26,7 @@ fi;
 LIBS="m"
 ASSERT=1
 GDB=1
+OPENMP=1
 
 
 # disable unnecessary libs and options
@@ -45,6 +46,7 @@ usage()
     echo "     -h or --help display usage information"
     echo "     --enable-assert or --disable-assert"
     echo "     --enable-gdb or --disable-gdb" 
+    echo "     --enable-openmp or --disable-openmp" 
     echo "   where <args> may be:"
 
     if [ ! -z ${PREFIX+word} ]; then
@@ -149,6 +151,12 @@ while [ "$1" != "" ]; do
             ;;
         --disable-gdb)
             GDB=0
+            ;;
+        --enable-openmp)
+            OPENMP=1
+            ;;
+        --disable-openmp)
+            OPENMP=0
             ;;
         CC)
             CC="$VALUE"
@@ -323,9 +331,17 @@ if [ $OS = "Linux" ]; then
 fi
 
 #defaults for CFLAGS
-FLAGS="-pedantic -Wall -Wextra -O2 -funroll-loops -fopenmp"
+FLAGS="-pedantic -Wall -Wextra -O2 -funroll-loops"
 if [ "$GDB" = "1" ]; then
     FLAGS="${FLAGS} -g";
+fi
+
+if [ "$OPENMP" = "1" ]; then
+    FLAGS="${FLAGS} -fopenmp";
+fi
+
+if [ "$ASSERT" = "0" ]; then
+    FLAGS="${FLAGS} -DNDEBUG";
 fi
 
 if [ -z "$CFLAGS" ]; then

@@ -5,6 +5,11 @@
 
 #include "hypersurface_nd.h"
 #include "timing.h"
+
+#ifdef _OPENMP
+# include <omp.h>
+#endif
+
 // non degenerate
 //
 hypersurface_non_degenerate::hypersurface_non_degenerate(int64_t p, int64_t precision, int64_t n, int64_t d, bool verbose)
@@ -601,6 +606,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_flint(const int64_t coordinate, c
         fmpz_t modulus;
         fmpz_init(modulus);
         conv(modulus, ZZ_p::modulus());
+#ifdef _OPENMP
         if(omp_get_max_threads() > 1)
         {
             u_list = (int64_t *)flint_malloc(sizeof(int64_t)*Hlen*(n+1));
@@ -696,6 +702,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_flint(const int64_t coordinate, c
             H.swap(Hnew);
         }
         else
+#endif
         {
             //Hlen = H.size()
             Hlen = 1;
