@@ -124,6 +124,11 @@ std::map< NTL::Vec<int64_t>, int64_t, vi64less>
 change_of_variables_monomial(const NTL::Vec<int64_t> u, const NTL::Vec<int64_t> v);
 
 
+// a look up table for the triple (precision, N, charpoly_prec)
+// for n =  2 or 3 and n < d <= 5
+void default_args(int64_t &precision, NTL::Vec<int64_t> &N, NTL::Vec<int64_t> &charpoly_prec, const int64_t &p, const int64_t &n, const int64_t &d);
+
+
 // returns factorial(n)/factorial(start-1)
 template<class T>
 T  factorial (int64_t n, int64_t start = 1) {
