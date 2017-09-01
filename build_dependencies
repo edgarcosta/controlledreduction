@@ -28,10 +28,11 @@ if [ -z ${PREFIX+word} ]; then
     PREFIX=${HOME}/local
 fi
 
-PREFIX=$(absolute_path "${PREFIX}") 
+PREFIX=$(absolute_path ${PREFIX}) 
 mkdir -p ${PREFIX}
+TMP=tmp-controlled-reduction
 mkdir -p ${TMP} 
-TMP=$(absolute_path "tmp-controlled-reduction")
+TMP=$(absolute_path ${TMP})
 cd ${TMP} 
 
 #Build GMP
