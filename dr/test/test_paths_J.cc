@@ -36,7 +36,7 @@ int main() {
                 D = de_Rham_local(p, precision, n, d, false);
                 bool test_success = D.test_paths_J(N, N);;
                 if (not test_success ) {
-                    cout << "\n\tFAIL test_monomial_to_basis_J(2)" <<endl;
+                    cout << "\n\tFAIL test_paths_J" <<endl;
                     cout << "\tp = " << p << " n = " << n << " d = " << d << " N = " << N << endl;
                     abort();
                 }
