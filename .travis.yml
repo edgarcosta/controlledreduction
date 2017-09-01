@@ -13,5 +13,6 @@ compiler:
 
 script:
     - ./build_dependencies
-    - ./configure && make
+    - ./configure --with-mpir=${HOME}/local --with-mpfr=${HOME}/local --with-gmp=${HOME}/local --with-flint=${HOME}/local
+    - make
 

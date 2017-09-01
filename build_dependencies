@@ -10,11 +10,16 @@ MPIR_VERSION=2.7.2 # 3.0.0?
 MPFR_VERSION=3.1.5
 NTL_VERSION=10.5.0
 FLINT_VERSION=2.5.2
-PREFIX=${HOME}/local
+
+if [ -z ${PREFIX+word} ]; then
+    PREFIX=${HOME}/local
+fi
+
 
 mkdir -p ${PREFIX}
-mkdir -p ${HOME}/tmp
-cd ${HOME}/tmp
+TMP=tmp-controlled-reduction
+mkdir -p ${TMP} 
+cd ${TMP} 
 
 #Build GMP
 wget https://gmplib.org/download/gmp/gmp-${GMP_VERSION}.tar.bz2
@@ -44,7 +49,7 @@ wget http://www.mpfr.org/mpfr-current/mpfr-${MPFR_VERSION}.tar.bz2
 tar -xf mpfr-${MPFR_VERSION}.tar.bz2
 rm mpfr-${MPFR_VERSION}.tar.bz2
 cd mpfr-${MPFR_VERSION}/
-./configure ABI=$ABI --with-gmp-build=${HOME}/tmp/mpir-${MPIR_VERSION}/ --prefix=${PREFIX}
+./configure ABI=$ABI --with-gmp-build= ${TMP}/mpir-${MPIR_VERSION}/ --prefix=${PREFIX}
 make -j4
 make install
 cd ..
