@@ -5,6 +5,19 @@
 
 set -e
 
+absolute_path(){
+   dirlist="$1"
+   retval=""
+   for dir in $dirlist; do
+      case $dir in
+        /*) dir=$dir;;
+        *) dir=$PWD/$dir;;
+      esac
+      retval=$retval" "$dir
+   done
+   echo $retval
+}
+
 GMP_VERSION=6.1.2
 MPIR_VERSION=2.7.2 # 3.0.0?
 MPFR_VERSION=3.1.5
@@ -15,9 +28,9 @@ if [ -z ${PREFIX+word} ]; then
     PREFIX=${HOME}/local
 fi
 
-
+PREFIX=$(absolute_path "${PREFIX}") 
 mkdir -p ${PREFIX}
-TMP=tmp-controlled-reduction
+TMP=$(absolute_path "./tmp-controlled-reduction")
 mkdir -p ${TMP} 
 cd ${TMP} 
 

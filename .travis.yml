@@ -12,7 +12,7 @@ compiler:
     - clang
 
 script:
-    - ./build_dependencies
+    - ./build_dependencies 
     - ./configure --with-mpir=${HOME}/local --with-mpfr=${HOME}/local --with-gmp=${HOME}/local --with-flint=${HOME}/local
     - make
 
