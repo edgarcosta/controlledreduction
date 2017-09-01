@@ -976,7 +976,7 @@ Vec<ZZ_p> de_Rham_local::monomial_to_basis_J(const Vec<int64_t> u)
     }
 }
 
-void de_Rham_local::test_monomial_to_basis_J(int64_t N)
+bool de_Rham_local::test_monomial_to_basis_J(int64_t N)
 {
     if(verbose)
         cout <<"de_Rham_local::test_monomial_to_basis_J("<<N<<")"<<endl;
@@ -1037,21 +1037,22 @@ void de_Rham_local::test_monomial_to_basis_J(int64_t N)
             }
             for( k = 0 ; k < (int64_t) coKernels_J_basis.length() ; k++ )
             {
-                if( k == j )
-                    assert( v[k] == to_ZZ_p( fact ) );
-                else
-                    assert( IsZero( v[k] ) );
+                if ( k == j and v[k] != to_ZZ_p( fact ) )
+                    return false;
+                if ( k !=j and not IsZero(v[k]) )
+                    return false;
             }
         }
     }
+    return true;
 }
 
-void de_Rham_local::test_paths_J(int64_t trials, int64_t paths)
+bool de_Rham_local::test_paths_J(int64_t trials, int64_t paths)
 {
     if(verbose)
         cout << "de_Rham_local::test_paths_J("<<trials<<", "<<paths<<")\n";
-    assert(trials != 0);
-    assert(paths != 0);
+    assert(trials > 0);
+    assert(paths > 0);
 
     int64_t attempt, pathi, i, k, sum, sum_u;
     Vec<int64_t> u_orig, u, v;
@@ -1131,10 +1132,11 @@ void de_Rham_local::test_paths_J(int64_t trials, int64_t paths)
             mul(M, *Mfinalred, M);
             M_saved[pathi] = M;
             if(pathi > 0)
-                assert(M_saved[pathi-1] == M_saved[pathi]);
+                if (M_saved[pathi-1] != M_saved[pathi])
+                    return false;
         }
     }
-
+    return true;
 }
 
 
