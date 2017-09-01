@@ -5,19 +5,11 @@
 #ifndef TIMING_H
 #define TIMING_H
 
-#ifdef __APPLE__
+#include <cstdio>
+#include <sys/resource.h>
 
-#include <sys/time.h>
-
-typedef struct timeval timestamp_type;
-
-static void get_timestamp(timestamp_type *t)
-{
-  gettimeofday(t, NULL);
-}
-
-static double timestamp_diff_in_seconds(timestamp_type start,
-timestamp_type end)
+static double timevaldiff_in_seconds(timeval start,
+timeval end)
 {
   /* Perform the carry for the later subtraction by updating start. */
   if (end.tv_usec < start.tv_usec) {
@@ -32,6 +24,24 @@ timestamp_type end)
   }
 
   return end.tv_sec - start.tv_sec + (end.tv_usec - start.tv_usec)*1e-6;
+}
+
+
+
+#ifdef __APPLE__
+
+#include <sys/time.h>
+
+typedef struct timeval timestamp_type;
+
+static void get_timestamp(timestamp_type *t)
+{
+  gettimeofday(t, NULL);
+}
+
+static double timestamp_diff_in_seconds(timestamp_type start,
+timestamp_type end) {
+    return timevaldiff_in_seconds(start, end);
 }
 
 #else
@@ -59,59 +69,27 @@ static double timestamp_diff_in_seconds(timestamp_type start, timestamp_type end
 }
 
 #endif
-/*static void get_cpu_timestamp(timestamp_type *t)
-{
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, t);
-}*/
+
 
 inline double get_cpu_time(){
     return (double)clock() / CLOCKS_PER_SEC;
 }
 
 
-#include <map>
-#include <iomanip>
-#pragma once
-using namespace std;
+struct timestamp_pair {
+    struct rusage usage;
+    timestamp_type wall_time;
+} ;
 
-
-inline uint64_t cycle_counter()
-{
-  uint32_t hi, lo;
-
-  __asm __volatile__ ("\t"
-		      "rdtsc            \n\t"
-		      "movl %%edx, %0   \n\t"
-		      "movl %%eax, %1   \n\t"
-		      : "=r" (hi), "=r" (lo)
-		      :
-		      : "%edx", "%eax");
-
-  return (((uint64_t)(hi)) << 32) + ((uint64_t) lo);
+inline void timestamp_mark(timestamp_pair &pair) {
+    getrusage(RUSAGE_SELF, &pair.usage);
+    get_timestamp( &pair.wall_time );
 }
-
-inline void tp(string call="Rest")
-{
-	extern map<string,uint64_t> tpmap;
-	extern uint64_t timeaux;
-	extern string lastcall;
-	tpmap[lastcall]+=cycle_counter()-timeaux;
-	lastcall=call;
-	timeaux=cycle_counter();
+inline void timestamp_report(const timestamp_pair &pair) {
+    timestamp_type wtime2;
+    get_timestamp(&wtime2);
+    struct rusage usage;
+    getrusage(RUSAGE_SELF, &usage);
+    printf("Time: CPU %.3f s, Wall: %.3f s", timevaldiff_in_seconds(pair.usage.ru_utime, usage.ru_utime), timestamp_diff_in_seconds(pair.wall_time, wtime2) );
 }
-
-inline void tpreport()
-{
-	extern map<string,uint64_t> tpmap;
-	extern uint64_t timein;
-	timein=cycle_counter()-timein;
-	map<string,uint64_t>::const_iterator end=tpmap.end();
-	cout<<"       cycles          where"<<endl;
-	for(map<string,uint64_t>::iterator it=tpmap.begin();it!=end;++it)
-	{
-		cout << " " << setw(12) << it->second << setw(7) << setprecision(2) << fixed <<
-		floor(it->second*10000/timein)*0.01 << "%  " << it->first << endl;
-	}
-}
-
 #endif
