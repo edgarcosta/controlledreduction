@@ -12,10 +12,11 @@ compiler:
     - clang
 
 script:
-    - ./build_dependencies 
+    - ./build_dependencies > output 
     # only enable openmp for Linux and GCC
     - if [ $TRAVIS_OS_NAME = linux && $CC=GCC ]; then export OPENMP_CONFIG='--enable-openmp'; else export OPENMP_CONFIG='--disable-openmp'; fi
     - ./configure --with-mpir=${HOME}/local --with-mpfr=${HOME}/local --with-gmp=${HOME}/local --with-flint=${HOME}/local ${OPENMP_CONFIG}
     - make
+    - env
     - make check
 
