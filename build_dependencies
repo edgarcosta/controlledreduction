@@ -30,8 +30,8 @@ fi
 
 PREFIX=$(absolute_path "${PREFIX}") 
 mkdir -p ${PREFIX}
-TMP=$(absolute_path "./tmp-controlled-reduction")
 mkdir -p ${TMP} 
+TMP=$(absolute_path "tmp-controlled-reduction")
 cd ${TMP} 
 
 #Build GMP
@@ -62,7 +62,7 @@ wget http://www.mpfr.org/mpfr-current/mpfr-${MPFR_VERSION}.tar.bz2
 tar -xf mpfr-${MPFR_VERSION}.tar.bz2
 rm mpfr-${MPFR_VERSION}.tar.bz2
 cd mpfr-${MPFR_VERSION}/
-./configure ABI=$ABI --with-gmp-build= ${TMP}/mpir-${MPIR_VERSION}/ --prefix=${PREFIX}
+./configure ABI=$ABI --with-gmp-build=${TMP}/mpir-${MPIR_VERSION}/ --prefix=${PREFIX}
 make -j4
 make install
 cd ..
