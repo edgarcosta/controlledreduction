@@ -1,7 +1,7 @@
 // Copyright 2013-2017 Edgar Costa
 // See LICENSE file for license details.
 //
-// runs test_paths_J for some random curves of degree 3,4 and 5 and K3 surfaces
+// runs test_paths_ND for some random curves of degree 3,4 and 5 and K3 surfaces
 
    
 #include "dr_nd.h"

@@ -1447,7 +1447,7 @@ Vec<ZZ_p> de_Rham_non_degenerate_local::monomial_to_basis_ND(Vec<int64_t> u)
 }
 
 
-void de_Rham_non_degenerate_local::test_monomial_to_basis_ND(int64_t N)
+bool de_Rham_non_degenerate_local::test_monomial_to_basis_ND(int64_t N)
 {
     if(verbose)
         cout<<"de_Rham_non_degenerate_local::test_monomial_to_basis_ND("<<N<<")"<<endl;
@@ -1507,17 +1507,18 @@ void de_Rham_non_degenerate_local::test_monomial_to_basis_ND(int64_t N)
             }
             for( k = 0 ; k < (int64_t) coKernels_J_basis.length() ; k++ )
             {
-                if( k == j )
-                    assert( v[k] == to_ZZ_p( fact ) );
-                else
-                    assert( IsZero( v[k] ) );
+                if ( k == j and v[k] != to_ZZ_p( fact ) )
+                    return false;
+                if ( k !=j and not IsZero(v[k]) )
+                    return false;
             }
         }
     }
+    return true;
 }
 
 
-void de_Rham_non_degenerate_local::test_paths_ND(int64_t trials, int64_t paths)
+bool de_Rham_non_degenerate_local::test_paths_ND(int64_t trials, int64_t paths)
 {
     if(verbose)
         cout << "de_Rham_local::test_paths_J("<<trials<<", "<<paths<<")\n";
@@ -1594,10 +1595,11 @@ void de_Rham_non_degenerate_local::test_paths_ND(int64_t trials, int64_t paths)
 
             M_saved[pathi] = M;
             if(pathi > 0)
-                assert(M_saved[pathi-1] == M_saved[pathi]);
+                if(M_saved[pathi-1] != M_saved[pathi])
+                    return false;
         }
     }
-
+    return true;
 }
 
 

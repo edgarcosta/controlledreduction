@@ -1,7 +1,7 @@
 // Copyright 2013-2017 Edgar Costa
 // See LICENSE file for license details.
 //
-// runs test_monomial_to_basis_J for some random curves of degree 3,4 and 5 and K3 surfaces
+// runs test_monomial_to_basis_ND for some random curves of degree 3,4 and 5 and K3 surfaces
    
 #include "dr_nd.h"
 #include "timing.h"
@@ -24,7 +24,11 @@ int main() {
             int64_t degree_bound = 5;
             int64_t N = 3;
             if (n == 3) {
-                degree_bound = 4;
+                //hacky way of not running so many K3 surfaces
+                if ( i % 4 == 0 )
+                    degree_bound = 4;
+                else
+                    degree_bound = 0;
                 N = 1;
             }
             for (int64_t d = n + 1; d <= degree_bound; d++) {

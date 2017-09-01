@@ -218,12 +218,12 @@ class de_Rham_non_degenerate_local : public de_Rham_local{
          * checks that a basis element x^w \Omega / f^k ~ x^w f^l \Omega / f^(l+k)
          * for l <= N
          */
-        void test_monomial_to_basis_ND(int64_t N);
+        bool test_monomial_to_basis_ND(int64_t N);
 
         /*
          * tests the path independence while performing reductions
          */
-        void test_paths_ND(int64_t trials, int64_t paths);
+        bool test_paths_ND(int64_t trials, int64_t paths);
 
 };
 
