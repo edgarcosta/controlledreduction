@@ -7,7 +7,6 @@
 
 #include "hypersurface.h"
 #include "dr_nd.h"
-#include <omp.h>
 #include <iostream>
 
 using namespace std;
