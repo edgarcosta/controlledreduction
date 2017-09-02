@@ -10,7 +10,7 @@
 #define NTL_RANGE_CHECK
 using namespace NTL;
 
-void test_invariance(int64_t p, int64_t n, int64_t d)
+void test_invariance_J(int64_t p, int64_t n, int64_t d)
 {
     Vec<int64_t> N;
     Vec<int64_t> charpoly_prec;
@@ -59,7 +59,7 @@ int main()
     timestamp_mark(pair);
     SetSeed(to_ZZ(time(NULL)));
     cout<<"test_invariance_J...";
-
+    fflush(stdout);
     int64_t n = 2;
     for (int64_t d = n + 1; d <= 5; ++d) {
         int64_t plen = 5;
@@ -73,7 +73,7 @@ int main()
             int64_t p = GenPrime_long(plen);
             while ( p <= d )
                 p = GenPrime_long(plen);
-            test_invariance(p, n, d);
+            test_invariance_J(p, n, d);
         }
     }
 /*
@@ -83,7 +83,7 @@ int main()
     int64_t p = GenPrime_long(5);
     while ( p <= 23 )
         p = GenPrime_long(5);
-    test_invariance(p, n, d);
+    test_invariance_J(p, n, d);
 */
     cout << "PASS ";
     timestamp_report(pair);

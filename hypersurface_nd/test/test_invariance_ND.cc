@@ -63,7 +63,7 @@ int main()
     timestamp_mark(pair);
     SetSeed(to_ZZ(time(NULL)));
     cout<<"test_invariance_ND...";
-
+    fflush(stdout);
     int64_t n = 2;
     for (int64_t d = n + 1; d <= 5; ++d) {
         int64_t plen = 5;
