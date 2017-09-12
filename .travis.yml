@@ -14,6 +14,7 @@ compiler:
 before_install:
     - if [ $TRAVIS_OS_NAME = osx ]; then sudo apt-get install yasm; else brew install yasm; fi
     - ./build_dependencies > build_output 
+    # if the build fails, report why
     - [ $? != 0  ] && cat build_output
 
 script:
