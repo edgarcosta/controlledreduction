@@ -21,8 +21,8 @@ absolute_path(){
 }
 
 GMP_VERSION=6.1.2
-MPIR_VERSION=2.7.2 # 3.0.0?
-MPFR_VERSION=3.1.5
+MPIR_VERSION=3.0.0 # 2.7.2?
+MPFR_VERSION=3.1.6
 NTL_VERSION=10.5.0
 FLINT_VERSION=2.5.2
 
@@ -47,6 +47,7 @@ make -j4
 make install
 cd ..
 rm -rf gmp-${GMP_VERSION}/
+echoerr gmp-${GMP_VERSION} installed
 
 
 
