@@ -2,11 +2,14 @@
 
 controlled-reduction (version 1.0):
 
-   A program for computing the matrix of Frobenius on Monsky-Washnizter
-   cohomology of a projective hypersurface over GF(p), using the methods
-   described in "Computing zeta functions of nondegenerate projective
-   hypersurfaces over finite fields", (under preparation) by Edgar Costa and 
-   David Harvey.
+   A program for computing the Hasse-Weil zeta functions of smooth
+   hypersurfaces over finite fields, by computing an approximation of Frobenius
+   action on p-adic cohomology (Monsky-Washnizter) with sufficient precision
+   and lifting its characteristic polynomial to ZZ[x].
+   An overview of the methods can be found in: 
+    - "Computing zeta functions of nondegenerate projective hypersurfaces over 
+    finite fields", (under preparation) by Edgar Costa and David Harvey.
+    - "Effective computations of Hasse-Weil zeta functions", by Edgar Costa
 
 
 Copyright (C) 2013-2017, Edgar Costa
