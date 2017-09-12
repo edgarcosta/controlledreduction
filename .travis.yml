@@ -1,5 +1,5 @@
 language: c++
-sudo: false
+sudo: required
 
 os:
     - linux
@@ -11,8 +11,12 @@ compiler:
     - gcc
     - clang
 
+before_install:
+    - if [ $TRAVIS_OS_NAME = osx ]; then sudo apt-get install yasm; else brew install yasm; fi
+    - ./build_dependencies > build_output 
+    - [ $? != 0  ] && cat build_output
+
 script:
-    - ./build_dependencies > output 
     - export LD_LIBRARY_PATH=${HOME}/local/lib:${LD_LIBRARY_PATH}
     # only enable openmp for Linux and GCC
     - if [ $TRAVIS_OS_NAME = linux && $CC=GCC ]; then export OPENMP_CONFIG='--enable-openmp'; else export OPENMP_CONFIG='--disable-openmp'; fi

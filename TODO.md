@@ -8,3 +8,4 @@
 - hypersurface_nd/hypersurface_nd.cc
 
 # Add code covereage?
+ - throuch gcov
