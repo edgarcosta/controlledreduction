@@ -1,6 +1,6 @@
 # controlled-reduction
 
-[![Build Status](https://travis-ci.com/edgarcosta/controlled-reduction.svg?token=S83ND7hkCMyJd3TkUHbR&branch=master)](https://travis-ci.com/edgarcosta/controlled-reduction)
+[![Build Status](https://travis-ci.org/edgarcosta/controlled-reduction.svg?branch=master)](https://travis-ci.org/edgarcosta/controlled-reduction)
 
 An implementation of the controlled reduction method for computing the
 Hasse-Weil zeta functions of smooth projective hypersurfaces over finite
