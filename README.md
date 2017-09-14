@@ -34,9 +34,9 @@ To install:
 
 2. `./configure` to generate the makefile.
 
-...To link against the libaries by SageMath it should be sufficient to run `./configure --with-ntl=<SAGE_DIR>/local/`.
+   To link against the libaries by SageMath it should be sufficient to run `./configure --with-ntl=<SAGE_DIR>/local/`.
  
-...Run `./configure --help` for more options.
+   Run `./configure --help` for more options.
 
 3. `make` to build everything
 
