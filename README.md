@@ -22,18 +22,22 @@ which depend on:
  - [GMP: GNU Multiple Precision Arithmetic Library](https://gmplib.org/) (for NTL and FLINT)
  - [MPIR: Multiple Precision Integers and Rationals](mpir.org) (for FLINT)
  - [MPFR: GNU Multiple Precision Floating-Point Reliably](http://www.mpfr.org/) (for FLINT)
- 
-The script `build_dependencies` takes care of building all these dependencies for a UNIX system. 
+
+[SageMath](http://www.sagemath.org/) comes with all this libraries. 
+
+Alternatively, you might use the script `build_dependencies` to build all these dependencies in a UNIX system. 
 You can change the place where these dependencies will be installed by setting the environment variable `$PREFIX`. See the source for more details.
 
 To install:
 
-1- make sure you have the dependencies
+1- make sure you have the dependencies, if they are installed in a non-standard path, be sure to set  `$LD_LIBRARY_PATH` accordingly.
 
-2- `./configure` to generate the makefile 
+2- `./configure` to generate the makefile.
+ To link against the libaries by SageMath it should be sufficient to run :`./configure --with-ntl=<SAGE_DIR>/local/`
+ Run `./configure --help` for more options.
 
 3- `make` to build everything
 
-4- `make check` to run some tests
+4- `make check` to run some tests. 
 
-5- (not yet) `make install`
+
