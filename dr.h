@@ -132,7 +132,7 @@ class de_Rham_local{
         Mat<ZZ_p> get_reduction_matrix_J(const Vec<int64_t> u, const Vec<int64_t> v);
 
         /*
-         * retuns the reduction matrix (over ZZ) from V_{u+v} to V_u
+         * returns the reduction matrix (over ZZ) from V_{u+v} to V_u
          * that will be correct in ZZ_p
          */
         Mat<ZZ>  get_reduction_matrix_J_ZZ(const Vec<int64_t> u, const Vec<int64_t> v);
@@ -156,7 +156,7 @@ class de_Rham_local{
 
         
         /*
-         * retuns a pointer to the inclusion_matrix_J(u)
+         * returns a pointer to the inclusion_matrix_J(u)
          */
         Mat<ZZ_p>* get_inclusion_matrix_J(Vec<int64_t> u);
 
@@ -216,8 +216,10 @@ class de_Rham_local{
 
 
 
-
-bool isSmooth( const map< Vec<int64_t>, zz_p, vi64less> &f );
+// checks if F defines a smooth hypersurface
+// does this by constructing a minmal dr object
+// and checks if Jacobian ideal is irrelevant
+bool isSmooth( const map< Vec<int64_t>, zz_p, vi64less> &F );
         
 
 #endif
