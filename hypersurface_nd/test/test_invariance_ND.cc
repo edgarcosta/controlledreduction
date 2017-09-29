@@ -38,7 +38,7 @@ void test_invariance_ND(int64_t p, int64_t n, int64_t d)
         hs2 = hypersurface_non_degenerate(p, precision, new_fbar, false);
         Mat<ZZ_p> Fp_J2 = hs.frob_matrix_J(N);
         Mat<ZZ>  Frob_ZZ2 = conv<Mat<ZZ> >(Fp_J2);
-        Vec<ZZ> cp2 = charpoly_frob(Frob_ZZ, charpoly_prec, p, n - 1);
+        Vec<ZZ> cp2 = charpoly_frob(Frob_ZZ2, charpoly_prec, p, n - 1);
         if(cp2 != cp)
         {
             cout << "\n\tFAIL test_invariance_ND" <<endl;

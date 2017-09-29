@@ -1,7 +1,7 @@
 // Copyright 2013-2017 Edgar Costa
 // See LICENSE file for license details.
 //
-// the zeta function is the same under a change of variables
+// tests that the zeta function is the same under a change of variables
 
 #include "hypersurface.h"
 #include "timing.h"
@@ -34,7 +34,7 @@ void test_invariance_J(int64_t p, int64_t n, int64_t d)
         hs2 = hypersurface(p, precision, new_fbar, false);
         Mat<ZZ_p> Fp_J2 = hs.frob_matrix_J(N);
         Mat<ZZ>  Frob_ZZ2 = conv<Mat<ZZ> >(Fp_J2);
-        Vec<ZZ> cp2 = charpoly_frob(Frob_ZZ, charpoly_prec, p, n - 1);
+        Vec<ZZ> cp2 = charpoly_frob(Frob_ZZ2, charpoly_prec, p, n - 1);
         if(cp2 != cp)
         {
             cout << "\n\tFAIL test_invariance_J" <<endl;
