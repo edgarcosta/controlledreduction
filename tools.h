@@ -62,15 +62,12 @@ change_of_variables( std::map< NTL::Vec<int64_t>, T, vi64less> f, NTL::Mat<T> M)
     NTL::Vec< std::map< NTL::Vec<int64_t>, T, vi64less> > Mvec;
     typename std::map< NTL::Vec<int64_t>, T, vi64less >::iterator itf, itH, itHnew, itresult, itX;
 
-    NTL::Vec<int64_t> zero, monomial;
+    NTL::Vec<int64_t> monomial;
     NTL::Vec< NTL::Vec<int64_t> > X;
 
-    zero.SetLength(n);
+    monomial.SetLength(n, 0);
     X.SetLength(n);
-    for (int64_t i = 0; i < n; ++i)
-        zero[i] = 0;
 
-    monomial = zero;
     // X[i] = ei
     for (int64_t i = 0; i < n; ++i) {
         ++monomial[i];
@@ -89,6 +86,8 @@ change_of_variables( std::map< NTL::Vec<int64_t>, T, vi64less> f, NTL::Mat<T> M)
         assert((int64_t) itf->first.length() == n);
         std::map< NTL::Vec<int64_t>, T, vi64less> H, Hnew;
 
+        NTL::Vec<int64_t> zero;
+        zero.SetLength(n, 0);
         H[zero] = itf->second;
 
         for (int64_t i = 0; i < n ; ++i) {
