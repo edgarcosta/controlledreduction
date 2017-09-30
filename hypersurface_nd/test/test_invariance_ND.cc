@@ -22,8 +22,8 @@ void test_invariance_ND(int64_t p, int64_t n, int64_t d)
 
         hypersurface_non_degenerate hs;
         hs = hypersurface_non_degenerate(p, precision, n, d, false);
-        Mat<ZZ_p> Fp_J = hs.frob_matrix_J(N);
-        Mat<ZZ>  Frob_ZZ = conv<Mat<ZZ> >(Fp_J);
+        Mat<ZZ_p> Fp_ND = hs.frob_matrix_ND(N);
+        Mat<ZZ>  Frob_ZZ = conv<Mat<ZZ> >(Fp_ND);
         Vec<ZZ> cp = charpoly_frob(Frob_ZZ, charpoly_prec, p, n - 1);
 
         map< Vec<int64_t>, zz_p , vi64less> random_fbar, new_fbar;
@@ -36,8 +36,8 @@ void test_invariance_ND(int64_t p, int64_t n, int64_t d)
 
         hypersurface_non_degenerate hs2;
         hs2 = hypersurface_non_degenerate(p, precision, new_fbar, false);
-        Mat<ZZ_p> Fp_J2 = hs.frob_matrix_J(N);
-        Mat<ZZ>  Frob_ZZ2 = conv<Mat<ZZ> >(Fp_J2);
+        Mat<ZZ_p> Fp_ND2 = hs.frob_matrix_ND(N);
+        Mat<ZZ>  Frob_ZZ2 = conv<Mat<ZZ> >(Fp_ND2);
         Vec<ZZ> cp2 = charpoly_frob(Frob_ZZ2, charpoly_prec, p, n - 1);
         if(cp2 != cp)
         {
