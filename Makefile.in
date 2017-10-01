@@ -81,10 +81,10 @@ library: shared
 
 install: shared
 	mkdir -p $(DESTDIR)$(PREFIX)/$(LIBDIR)
-	mkdir -p $(DESTDIR)$(PREFIX)/include/controlled-reduction
+	mkdir -p $(DESTDIR)$(PREFIX)/include/controlledreduction
 	cp $(CONTROLLEDREDUCTION_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"
 	cp -a $(shell ls $(CONTROLLEDREDUCTION_LIBNAME)*) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"
-	cp $(HEADERS) $(DESTDIR)$(PREFIX)/include/controlled-reduction
+	cp $(HEADERS) $(DESTDIR)$(PREFIX)/include/controlledreduction
 
 print-%:
 	@echo '$*=$($*)'
