@@ -16,7 +16,7 @@
 
 void zeta_function(NTL::ZZX &zeta, const std::map< NTL::Vec<int64_t>, int64_t, vi64less> &f,const int64_t &p, bool verbose = false);
 
-void zeta_function(NTL::ZZX &zeta, std::vector< std::vector<int64_t> > &monomials, std::vector<int64_t> &coef, int64_t p,  bool verbose = false);
+void zeta_function(NTL::ZZX &zeta, const std::vector< std::vector<int64_t> > &monomials, const std::vector<int64_t> &coef, const int64_t &p,  bool verbose = false);
 
 #endif // WRAPPER_H_
 

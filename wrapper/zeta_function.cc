@@ -19,7 +19,7 @@
 using namespace std;
 using namespace NTL;
 
-void zeta_function(ZZX &zeta, const map< Vec<int64_t>, int64_t, vi64less> &f,const int64_t &p, bool verbose )
+void zeta_function(ZZX &zeta, const map< Vec<int64_t>, int64_t, vi64less> &f, const int64_t &p, bool verbose )
 {
     
     Vec<int64_t> monomial = f.cbegin()->first;
@@ -79,7 +79,7 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, int64_t, vi64less> &f,con
 }
 
 
-void zeta_function(ZZX &zeta, vector< vector<int64_t> > monomials, vector<int64_t> coefficients, const int64_t &p, bool verbose )
+void zeta_function(ZZX &zeta, const vector< vector<int64_t> > &monomials, const vector<int64_t> &coefficients, const int64_t &p, bool verbose )
 {
     map< Vec<int64_t>, int64_t, vi64less> f_map;
     assert( monomials.size() == coefficients.size() );
