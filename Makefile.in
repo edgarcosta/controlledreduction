@@ -31,7 +31,7 @@ BINARIES =
 all: $(OBJS) test examples
 
 clean:
-	rm -f $(OBJS) $(LOBJS)  $(TESTS) $(EXAMPLES) $(wildcard $(CONTROLLED_REDUCTION_LIBNAME)*) # libcontrolledreduction.a
+	rm -f $(OBJS) $(LOBJS)  $(TESTS) $(EXAMPLES) $(wildcard $(CONTROLLEDREDUCTION_LIBNAME)*) # libcontrolledreduction.a
 	rm -rf build
 
 
@@ -63,17 +63,17 @@ $(BUILD_DIRS): % :
 check: test
 	$(AT)$(foreach test_executable, $(TESTS), $(call test_executable) || exit $$?;)
 
-$(CONTROLLED_REDUCTION_LIB): $(LOBJS) $(SOURCES) $(HEADERS) | build_dirs 
-	$(CXX) -shared $(EXTRA_SHARED_FLAGS) $(CXXFLAGS)  $(LOBJS) -o $(CONTROLLED_REDUCTION_LIB) $(LIBS); \
-	ln -sf "$(CONTROLLED_REDUCTION_LIB)" "$(CONTROLLED_REDUCTION_LIBNAME)"; \
-	ln -sf "$(CONTROLLED_REDUCTION_LIB)" "$(CONTROLLED_REDUCTION_LIBNAME).$(CONTROLLED_REDUCTION_MAJOR)";
+$(CONTROLLEDREDUCTION_LIB): $(LOBJS) $(SOURCES) $(HEADERS) | build_dirs 
+	$(CXX) -shared $(EXTRA_SHARED_FLAGS) $(CXXFLAGS)  $(LOBJS) -o $(CONTROLLEDREDUCTION_LIB) $(LIBS); \
+	ln -sf "$(CONTROLLEDREDUCTION_LIB)" "$(CONTROLLEDREDUCTION_LIBNAME)"; \
+	ln -sf "$(CONTROLLEDREDUCTION_LIB)" "$(CONTROLLEDREDUCTION_LIBNAME).$(CONTROLLEDREDUCTION_MAJOR)";
 
 #libcontrolledreduction.a:  $(LOBJS) $(SOURCES) $(HEADERS) | build_dirs
 #	$(AT)$(foreach mod, $(BUILD_DIRS), $(AR) rcs libdeformation.a build/$(mod)/*.o || exit $$?;)
 
 
 
-shared: $(CONTROLLED_REDUCTION_LIB)
+shared: $(CONTROLLEDREDUCTION_LIB)
 
 #static: libcontrolledreduction.a
 
@@ -82,8 +82,8 @@ library: shared
 install: shared
 	mkdir -p $(DESTDIR)$(PREFIX)/$(LIBDIR)
 	mkdir -p $(DESTDIR)$(PREFIX)/include/controlled-reduction
-	cp $(CONTROLLED_REDUCTION_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"
-	cp -a $(shell ls $(CONTROLLED_REDUCTION_LIBNAME)*) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"
+	cp $(CONTROLLEDREDUCTION_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"
+	cp -a $(shell ls $(CONTROLLEDREDUCTION_LIBNAME)*) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"
 	cp $(HEADERS) $(DESTDIR)$(PREFIX)/include/controlled-reduction
 
 print-%:
