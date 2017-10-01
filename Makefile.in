@@ -81,18 +81,10 @@ library: shared
 
 install: shared
 	mkdir -p $(DESTDIR)$(PREFIX)/$(LIBDIR)
-	mkdir -p $(DESTDIR)$(PREFIX)/include/deformation
-	$(AT)if [ "$(CONTROLLED_REDUCTION_SHARED)" -eq "1" ]; then \
-		cp $(CONTROLLED_REDUCTION_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"; \
-		cp -a $(shell ls $(CONTROLLED_REDUCTION_LIBNAME)*) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"; \
-	fi
-	$(AT)if [ "$(CONTROLLED_REDUCTION_STATIC)" -eq "1" ]; then \
-		cp libdeformation.a $(DESTDIR)$(PREFIX)/$(LIBDIR); \
-	fi
-	cp $(HEADERS) $(DESTDIR)$(PREFIX)/include/deformation
-	$(AT)if [ ! -z $(EXT_HEADERS) ]; then \
-		cp $(EXT_HEADERS) $(DESTDIR)$(PREFIX)/include/deformation; \
-	fi
+	mkdir -p $(DESTDIR)$(PREFIX)/include/controlled-reduction
+	cp $(CONTROLLED_REDUCTION_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"
+	cp -a $(shell ls $(CONTROLLED_REDUCTION_LIBNAME)*) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"
+	cp $(HEADERS) $(DESTDIR)$(PREFIX)/include/controlled-reduction
 
 print-%:
 	@echo '$*=$($*)'

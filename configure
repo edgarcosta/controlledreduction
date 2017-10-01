@@ -13,7 +13,7 @@ CONTROLLED_REDUCTION_PATCH=0
 SHARED=1
 STATIC=0
 
-PREFIX="" # "/usr/local"
+PREFIX="/usr/local"
 FLINT_DIR="" # "/usr/local"
 GMP_DIR="" # "/usr/local"
 MPFR_DIR="" # "/usr/local"
@@ -144,7 +144,7 @@ while [ "$1" != "" ]; do
             fi
             ;;
         --prefix)
-            if [ ! -z ${PREFIX + word} ]; then
+            if [ ! -z ${PREFIX+word} ]; then
                 PREFIX=$VALUE
             fi
             ;;
@@ -434,6 +434,7 @@ echo "CONTROLLED_REDUCTION_LIB=$CONTROLLED_REDUCTION_LIB" >> Makefile
 echo "CONTROLLED_REDUCTION_LIBNAME=$CONTROLLED_REDUCTION_LIBNAME" >> Makefile
 echo "CONTROLLED_REDUCTION_MAJOR=$CONTROLLED_REDUCTION_MAJOR" >> Makefile
 echo "CONTROLLED_REDUCTION_SOLIB=$CONTROLLED_REDUCTION_SOLIB" >> Makefile
+echo "PREFIX=$PREFIX" >> Makefile
 echo "" >> Makefile
 echo "" >> Makefile
 echo "INCS=$INCS" >> Makefile
