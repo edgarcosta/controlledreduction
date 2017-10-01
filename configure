@@ -5,6 +5,14 @@
 #  See the file LICENSE for license details.
 
 
+#VERSION
+CONTROLLED_REDUCTION_MAJOR=0
+CONTROLLED_REDUCTION_MINOR=1
+CONTROLLED_REDUCTION_PATCH=0
+
+SHARED=1
+STATIC=0
+
 PREFIX="" # "/usr/local"
 FLINT_DIR="" # "/usr/local"
 GMP_DIR="" # "/usr/local"
@@ -352,6 +360,65 @@ if [ -z "$CXXFLAGS" ]; then
 fi
 
 
+#PIC flag
+
+if [ -z "$PIC_FLAG" ]; then
+   case "$OS" in
+      CYGWIN* | MINGW*)
+         ;;
+      *)
+         PIC_FLAG="-fPIC";;
+   esac
+fi
+
+#name for the CONTROLLED_REDUCTION_LIB
+CONTROLLED_REDUCTION_LIB_SOLIB=0
+if [ -z "$CONTROLLED_REDUCTION_LIB" ]; then
+   case "$OS" in
+      Darwin)
+         CONTROLLED_REDUCTION_LIBNAME="libcontrolledreduction.dylib"
+	 CONTROLLED_REDUCTION_LIB="libcontrolledreduction-$CONTROLLED_REDUCTION_MAJOR.$CONTROLLED_REDUCTION_MINOR.$CONTROLLED_REDUCTION_PATCH.dylib"
+         EXTRA_SHARED_FLAGS="-install_name $PREFIX/lib/$CONTROLLED_REDUCTION_LIB -compatibility_version $CONTROLLED_REDUCTION_MAJOR.$CONTROLLED_REDUCTION_MINOR -current_version $CONTROLLED_REDUCTION_MAJOR.$CONTROLLED_REDUCTION_MINOR.$CONTROLLED_REDUCTION_PATCH";;
+      CYGWIN* | MINGW*)
+         CONTROLLED_REDUCTION_LIBNAME="libcontrolledreduction.dll"
+	 CONTROLLED_REDUCTION_LIB="libcontrolledreduction-$CONTROLLED_REDUCTION_MAJOR.dll"
+	 EXTRA_SHARED_FLAGS="-static-libgcc -shared -Wl,--export-all-symbols -Wl,-soname,libcontrolledreduction-$CONTROLLED_REDUCTION_MAJOR.dll.$CONTROLLED_REDUCTION_MINOR.$CONTROLLED_REDUCTION_PATCH";;
+      *)
+         CONTROLLED_REDUCTION_LIBNAME="libcontrolledreduction.so"
+	 CONTROLLED_REDUCTION_LIB="libcontrolledreduction.so.$CONTROLLED_REDUCTION_MAJOR.$CONTROLLED_REDUCTION_MINOR.$CONTROLLED_REDUCTION_PATCH"
+	 EXTRA_SHARED_FLAGS="-Wl,-soname,libcontrolledreduction.so.$CONTROLLED_REDUCTION_MAJOR"
+	 CONTROLLED_REDUCTION_SOLIB=1;;
+   esac
+fi
+
+# sometimes LDCONFIG is not to be found in the path. Look at some common places.
+case "$OS" in
+    MINGW*|CYGWIN*|Darwin)
+	LDCONFIG="true";;
+    *)
+	if [ -z "$LDCONFIG" ]; then
+	    LDCONFIG="true"
+	    if [ "$CONTROLLED_REDUCTION_SOLIB" = "1" ]; then
+		if command -v ldconfig > /dev/null; then
+		    LDCONFIG="ldconfig"
+		elif [ -x /sbin/ldconfig ]; then
+		    LDCONFIG="/sbin/ldconfig"
+		fi
+	    fi
+	fi;;
+esac
+
+#extension for executables
+
+if [ -z "$EXEEXT" ]; then
+   case "$OS" in
+      CYGWIN* | MINGW*)
+         EXEEXT=".exe";;
+      *)
+         EXEEXT="";;
+   esac
+fi
+
 
 JOBS=`python -c 'import multiprocessing as mp; print(mp.cpu_count() + 1)'`
 
@@ -361,19 +428,35 @@ echo "" >> Makefile
 echo "SHELL=/bin/sh" >> Makefile
 echo "" >> Makefile
 echo "" >> Makefile
+echo "CONTROLLED_REDUCTION_STATIC=$STATIC" >> Makefile
+echo "CONTROLLED_REDUCTION_SHARED=$SHARED" >> Makefile
+echo "CONTROLLED_REDUCTION_LIB=$CONTROLLED_REDUCTION_LIB" >> Makefile
+echo "CONTROLLED_REDUCTION_LIBNAME=$CONTROLLED_REDUCTION_LIBNAME" >> Makefile
+echo "CONTROLLED_REDUCTION_MAJOR=$CONTROLLED_REDUCTION_MAJOR" >> Makefile
+echo "CONTROLLED_REDUCTION_SOLIB=$CONTROLLED_REDUCTION_SOLIB" >> Makefile
+echo "" >> Makefile
+echo "" >> Makefile
 echo "INCS=$INCS" >> Makefile
 echo "LIBS=$LIBS" >> Makefile
 echo "" >> Makefile
 echo "CC=$CC" >> Makefile
 echo "CXX=$CXX" >> Makefile
+echo "AR=$AR" >> Makefile
+echo "LDCONFIG=$LDCONFIG" >> Makefile
+echo "" >> Makefile
 echo "" >> Makefile
 echo "CFLAGS=$CFLAGS" >> Makefile
 echo "CXXFLAGS=$CXXFLAGS" >> Makefile
+echo "PIC_FLAG=$PIC_FLAG" >> Makefile  
 echo "" >> Makefile
 echo "" >> Makefile
 echo "JOBS=$JOBS" >> Makefile
 echo "" >> Makefile
 echo "" >> Makefile
+echo "EXEEXT=$EXEEXT" >> Makefile
+echo "" >> Makefile
+echo "" >> Makefile
+
 
 cat Makefile.in >> Makefile
 

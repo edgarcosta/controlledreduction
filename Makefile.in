@@ -3,7 +3,7 @@
 
 MAKEFLAGS+=-j$(JOBS)
 
-SOURCE_DIRS = conv dr dr_nd hypersurface hypersurface_nd matrix solve_system tools vec_int64
+SOURCE_DIRS = conv dr dr_nd hypersurface hypersurface_nd matrix solve_system tools vec_int64 wrapper
 BUILD_DIRS = $(patsubst %, build/%, $(SOURCE_DIRS)) build/test build/examples $(patsubst %, build/%/test, $(SOURCE_DIRS))
 AT=@
 define NEWLINE
@@ -15,19 +15,23 @@ export
 HEADERS = $(patsubst %, %.h, $(SOURCE_DIRS)) timing.h
 SOURCES = $(wildcard $(patsubst %, %/*.cc, $(SOURCE_DIRS)))  
 OBJS = $(patsubst %.cc, build/%.o, $(SOURCES))
+LOBJS = $(patsubst %.cc, build/%.lo, $(SOURCES))
+MOD_LOBJS = $(patsubst %, build/%.lo, $(SOURCE_DIRS))
+
 
 
 EXAMPLE_SOURCES = $(wildcard examples/*.cc)
-EXAMPLES = $(patsubst %.cc, build/%, $(EXAMPLE_SOURCES))
+EXAMPLES = $(patsubst %.cc, build/%$(EXEEXT), $(EXAMPLE_SOURCES))
 
 TEST_SOURCES = $(wildcard $(patsubst %, %/test/*.cc, $(SOURCE_DIRS)))  $(wildcard test/*.cc)
-TESTS = $(patsubst %.cc, build/%, $(TEST_SOURCES))
+TESTS = $(patsubst %.cc, build/%$(EXEEXT), $(TEST_SOURCES))
 
 BINARIES = 
 
 all: $(OBJS) test examples
 
 clean:
+	rm -f $(OBJS) $(LOBJS)  $(TESTS) $(EXAMPLES) $(wildcard $(CONTROLLED_REDUCTION_LIBNAME)*) # libcontrolledreduction.a
 	rm -rf build
 
 
@@ -37,6 +41,9 @@ test: $(TESTS)
 
 build/%.o: %.cc $(HEADERS) | build_dirs
 	$(CXX) $(CXXFLAGS) $(INCS) -c $< -o $@;
+
+build/%.lo: %.cc $(HEADERS) | build_dirs
+	$(CXX) -fPIC $(CXXFLAGS) $(INCS) -c $< -o $@;
 
 $(TESTS) : % : %.o $(OBJS) 
 	$(CXX) $(CXXFLAGS) $(INCS) $^ -o $@ $(LIBS)
@@ -56,7 +63,40 @@ $(BUILD_DIRS): % :
 check: test
 	$(AT)$(foreach test_executable, $(TESTS), $(call test_executable) || exit $$?;)
 
+$(CONTROLLED_REDUCTION_LIB): $(LOBJS) $(SOURCES) $(HEADERS) | build_dirs 
+	$(CXX) -shared $(EXTRA_SHARED_FLAGS) $(CXXFLAGS)  $(LOBJS) -o $(CONTROLLED_REDUCTION_LIB) $(LIBS); \
+	ln -sf "$(CONTROLLED_REDUCTION_LIB)" "$(CONTROLLED_REDUCTION_LIBNAME)"; \
+	ln -sf "$(CONTROLLED_REDUCTION_LIB)" "$(CONTROLLED_REDUCTION_LIBNAME).$(CONTROLLED_REDUCTION_MAJOR)";
+
+#libcontrolledreduction.a:  $(LOBJS) $(SOURCES) $(HEADERS) | build_dirs
+#	$(AT)$(foreach mod, $(BUILD_DIRS), $(AR) rcs libdeformation.a build/$(mod)/*.o || exit $$?;)
+
+
+
+shared: $(CONTROLLED_REDUCTION_LIB)
+
+#static: libcontrolledreduction.a
+
+library: shared
+
+install: shared
+	mkdir -p $(DESTDIR)$(PREFIX)/$(LIBDIR)
+	mkdir -p $(DESTDIR)$(PREFIX)/include/deformation
+	$(AT)if [ "$(CONTROLLED_REDUCTION_SHARED)" -eq "1" ]; then \
+		cp $(CONTROLLED_REDUCTION_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"; \
+		cp -a $(shell ls $(CONTROLLED_REDUCTION_LIBNAME)*) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"; \
+	fi
+	$(AT)if [ "$(CONTROLLED_REDUCTION_STATIC)" -eq "1" ]; then \
+		cp libdeformation.a $(DESTDIR)$(PREFIX)/$(LIBDIR); \
+	fi
+	cp $(HEADERS) $(DESTDIR)$(PREFIX)/include/deformation
+	$(AT)if [ ! -z $(EXT_HEADERS) ]; then \
+		cp $(EXT_HEADERS) $(DESTDIR)$(PREFIX)/include/deformation; \
+	fi
+
 print-%:
 	@echo '$*=$($*)'
 
-.PHONY: clean 
+.PHONY: clean library shared static clean examples check tests install 
+
+
