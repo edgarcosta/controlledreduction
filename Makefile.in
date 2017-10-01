@@ -1,6 +1,8 @@
 #  Copyright (C)  2016-2017 Edgar Costa
 #  See the file LICENSE for license details.
 
+LIBDIR=lib
+
 MAKEFLAGS+=-j$(JOBS)
 
 SOURCE_DIRS = conv dr dr_nd hypersurface hypersurface_nd matrix solve_system tools vec_int64 wrapper
