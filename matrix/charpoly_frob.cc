@@ -27,22 +27,24 @@ Vec<ZZ> charpoly_frob(const Mat<ZZ> M,  Vec<int64_t> prec, const int64_t p, cons
         mod[i] =power_ZZ(p, prec[i]);
         cp[i] = cp[i] % mod[i];
     }
-
-    for (int64_t i = 1; i <= degree/2; ++i) {
-        ZZ p_power = power_ZZ(p, std::min(prec[i], prec[degree - i] + ((degree-2*i)*dimension) /2));
-        if( cp[i] % p_power !=0 &&  cp[degree-i] % p_power != 0)
-        {
-            if (0 == (cp[i] + cp[degree - i] * power_ZZ(p, ((degree-2*i)*dimension) /2)) %  p_power )
-            signal = -1;
-            else
-            {
-                signal = 1;
-                assert(0 == (cp[i] - cp[degree - i] * power_ZZ(p, ((degree-2*i)*dimension) /2)) %  p_power );
+    cp[degree] = 1;
+    if( dimension % 2 == 0 )
+    {
+        // figure out the sign if dimension is even, i.e., weight is even
+        // for odd case the sign is 1
+        for (int64_t i = 1; i <= degree/2; ++i) {
+            ZZ p_power = power_ZZ(p, std::min(prec[i], prec[degree - i] + ((degree-2*i)*dimension) /2));
+            if( cp[i] % p_power !=0 &&  cp[degree-i] % p_power != 0) {
+                if (0 == (cp[i] + cp[degree - i] * power_ZZ(p, ((degree-2*i)*dimension) /2)) %  p_power )
+                    signal = -1;
+                else {
+                    signal = 1;
+                    assert(0 == (cp[i] - cp[degree - i] * power_ZZ(p, ((degree-2*i)*dimension) /2)) %  p_power );
+                }
+                break;
             }
-            break;
         }
     }
-    
     //apply the symmetry
     for (int64_t i = 0; i <= degree/2; ++i) {
         if( prec[i] >=  prec[degree - i] + ((degree-2*i)*dimension) /2 )
