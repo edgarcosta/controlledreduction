@@ -45,7 +45,7 @@ Vec<ZZ> charpoly_frob(const Mat<ZZ> M,  Vec<int64_t> prec, const int64_t p, cons
             }
         }
     }
-    cp[0] = signal *  power_ZZ(p, (degree * dimension) /2));
+    cp[0] = signal *  power_ZZ(p, (degree * dimension) /2);
     //apply the symmetry
     for (int64_t i = 0; i <= degree/2; ++i) {
         if( prec[i] >=  prec[degree - i] + ((degree-2*i)*dimension) /2 )
