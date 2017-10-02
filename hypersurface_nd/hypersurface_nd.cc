@@ -573,9 +573,14 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_flint(const int64_t coordinate, c
             for( it = fpow.get(j).begin(); it != fpow.get(j).end(); ++it)
             {
                 monomial = it->first + ei + ones;
-                if(H.find(monomial) == H.end())
-                    H[monomial].SetLength( dpowern, ZZ_p(0) );
-                H[monomial][0] += conv<ZZ_p>(Djm * rep(it->second) * rep(fact) );
+                ZZ_p tmp;
+                tmp = conv<ZZ_p>(Djm * rep(it->second) * rep(fact) );
+                if(not IsZero(tmp))
+                {
+                    if(H.find(monomial) == H.end())
+                        H[monomial].SetLength( dpowern, ZZ_p(0) );
+                    H[monomial][0] += tmp;
+                }
             }
         }
         /*
