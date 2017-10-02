@@ -57,7 +57,8 @@ void default_args(int64_t &precision, NTL::Vec<int64_t> &N, NTL::Vec<int64_t> &c
 		} else if ( 11 <= p  ) {
 			precision = 11;
 			buffer << "[6 6]\n[15 14 13 12 11 10 9 8 7 6 6 6 6 6 6 6 6 6 6 6 6]";
-	} else if ( n == 2 && d == 7 ) {
+	    }
+    } else if ( n == 2 && d == 7 ) {
 		if ( p < 5) {
 			precision = 23;
 			buffer << "[11 11]\n[23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9]";
@@ -73,7 +74,8 @@ void default_args(int64_t &precision, NTL::Vec<int64_t> &N, NTL::Vec<int64_t> &c
 		} else if ( 17 <= p  ) {
 			precision = 15;
 			buffer << "[8 8]\n[22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8]";
-	} else if ( n == 2 && d == 8 ) {
+	    }
+    } else if ( n == 2 && d == 8 ) {
 		if ( p < 5) {
 			precision = 30;
 			buffer << "[14 14]\n[32 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12]";
