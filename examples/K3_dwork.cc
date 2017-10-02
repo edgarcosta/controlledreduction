@@ -1,7 +1,5 @@
 // Copyright 2013-2017 Edgar Costa
 // See LICENSE file for license details.
-//
-// tests that the Frob  function  the same under a change of variables
 
 #include "hypersurface_nd.h"
 #include "timing.h"
