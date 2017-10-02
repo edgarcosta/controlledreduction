@@ -21,7 +21,6 @@ using namespace NTL;
 
 void zeta_function(ZZX &zeta, const map< Vec<int64_t>, int64_t, vi64less> &f, const int64_t &p, bool verbose )
 {
-    
     Vec<int64_t> monomial = f.cbegin()->first;
     int64_t n = monomial.length() - 1;
     int64_t d = 0;
@@ -37,24 +36,24 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, int64_t, vi64less> &f, co
         zz_pPush push(p);
         ZZ_pPush push2(power_ZZ(p,precision));
 
-        map< Vec<int64_t>, zz_p , vi64less> f_zz_p;
-        for(map< Vec<int64_t>, int64_t, vi64less>::const_iterator fit; fit != f.end(); ++fit)
-            f_zz_p[ fit->first ] = conv<zz_p>(fit->second);
+        map< Vec<int64_t>, zz_p , vi64less> fp;
+        for(map< Vec<int64_t>, int64_t, vi64less>::const_iterator fit = f.begin(); fit != f.end(); ++fit) 
+            fp[ fit->first ] = conv<zz_p>(fit->second);
 
-        if(!isSmooth(f_zz_p))
+        if(!isSmooth(fp))
         {
             cout << "f is not smooth!" <<endl;
             abort();
         }
         // try to find a change of variables
-        Mat<zz_p> M = find_change_of_variables(f_zz_p, p*1000 + 1000);
+        Mat<zz_p> M = find_change_of_variables(fp, p*1000 + 1000);
         bool is_ND = !IsZero(M);
         Mat<ZZ_p> Frob;
         if( is_ND )
         {
             if (verbose)
                 cout<<"Found a change of variables!"<<endl;
-            map< Vec<int64_t>, zz_p, vi64less> f_map = change_of_variables<zz_p>(f_zz_p, M);
+            map< Vec<int64_t>, zz_p, vi64less> f_map = change_of_variables<zz_p>(fp, M);
             hypersurface_non_degenerate hs_ND(p, precision, f_map, verbose);
             assert(hs_ND.dR->coKernels_J_basis.length() + 1 == charpoly_prec.length() );
             Frob = hs_ND.frob_matrix_ND(N);
@@ -63,7 +62,7 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, int64_t, vi64less> &f, co
         {
             if(verbose)
                 cout<<"Wasn't able to find a suitable change of variables to make it non degenerate!"<<endl;
-            hypersurface hs(p, precision, f_zz_p, verbose);
+            hypersurface hs(p, precision, fp, verbose);
             assert(hs.dR->coKernels_J_basis.length() + 1 == charpoly_prec.length() );
             Frob = hs.frob_matrix_J(N);
         }
@@ -73,7 +72,8 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, int64_t, vi64less> &f, co
         Mat<ZZ> Frob_ZZ;
         Frob_ZZ = conv< Mat<ZZ> >(Frob);
         Vec<ZZ> cp = charpoly_frob(Frob_ZZ, charpoly_prec, p, n - 1);
-        cout <<"Characteristic polynomial = "<< cp <<endl;
+        if(verbose)
+            cout <<"Characteristic polynomial = "<< cp <<endl;
         zeta = conv<ZZX>(cp);
     }
 }
