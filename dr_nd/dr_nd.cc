@@ -700,9 +700,7 @@ void de_Rham_non_degenerate_local::get_ND_poly_flint(fmpz_mat_struct * result, c
 
 void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fmpz_mat_struct * poly, const int64_t iterations, const fmpz * G, fmpz_t modulus)
 {
-    int64_t x;
     int64_t dpowern = fmpz_mat_ncols(poly + 0);
-    int64_t i;
 
     if(fmpz_size(modulus) > 1)
     {
@@ -719,11 +717,11 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fm
         Gout = _fmpz_vec_init(dpowern);
         Gtmp =  _fmpz_vec_init(dpowern);
 
-        for(x = iterations -1 ; x != (int64_t) -1 ; x--)
+        for(int64_t x = iterations -1 ; x >= 0 ; x--)
         {
             fmpz_one(xpower);
             mul(Gout, poly + 0, Gin);
-            for(i = 1; i <= n; i++)
+            for(int64_t i = 1; i <= n; i++)
             {
                 fmpz_mul_ui(xpower, xpower, x); // xpower = x^i
                 mul(Gtmp, poly + i, Gin);
@@ -762,7 +760,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fm
             
 
             Gin = _nmod_vec_init(dpowern);
-            for(i = 0; i < dpowern; i++)
+            for(int64_t i = 0; i < dpowern; i++)
             {
                 Gin[i] = fmpz_get_ui(G + i);
             }
@@ -774,18 +772,18 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fm
             nmod_mat_struct * poly_nmod;
             poly_nmod = (nmod_mat_struct *)flint_malloc(sizeof(nmod_mat_struct) * (n+2));
 
-            for(i = 0; i < n + 2; i++)
+            for(int64_t i = 0; i < n + 2; i++)
             {
                 nmod_mat_init(poly_nmod + i, dpowern, dpowern, mod.n);
                 for(j = 0; j < dpowern; j++)
                     for(k = 0; k < dpowern; k++)
                         nmod_mat_entry(poly_nmod + i, j, k) = fmpz_get_ui( fmpz_mat_entry(poly + i, j, k));
             }
-            for(x = iterations -1 ; x != (int64_t) -1 ; x--)
+            for(int64_t x = iterations -1 ; x >= 0; x--)
             {
                 xpower = 1;
                 mul(Gout, poly_nmod + 0, Gin, nlimbs);
-                for(i = 1; i <= n; i++)
+                for(int64_t i = 1; i <= n; i++)
                 {
                     xpower = nmod_mul(xpower, x, mod); // xpower = x^i
                     mul(Gtmp, poly_nmod + i, Gin, nlimbs);
@@ -799,10 +797,10 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fm
                 swap(Gin,Gout);
             }
 
-            for(i = 0; i < n + 2; i++)
+            for(int64_t i = 0; i < n + 2; i++)
                 nmod_mat_clear(poly_nmod+i);
             flint_free(poly_nmod);
-            for(i = 0; i < dpowern; i++)
+            for(int64_t i = 0; i < dpowern; i++)
                 fmpz_set_ui(result + i, Gin[i]);
         
             _nmod_vec_clear(Gout);
