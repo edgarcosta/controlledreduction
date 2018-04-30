@@ -50,7 +50,7 @@ git clone https://github.com/edgarcosta/controlledreduction.git
 
 3. Change your working directory and run the configure file
 ```
-cd controlledreduction && ./configure --with-ntl=$SAGE_DIR/local
+cd controlledreduction && ./configure --with-ntl=$SAGE_ROOT/local
 ```
 
 4. Compile everything by doing
