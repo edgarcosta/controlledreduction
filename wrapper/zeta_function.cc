@@ -42,7 +42,7 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, int64_t, vi64less> &f, co
 
         if(!isSmooth(fp))
         {
-            cout << "f is not smooth!" <<endl;
+            cerr << "f is not smooth!" <<endl;
             abort();
         }
         // try to find a change of variables
