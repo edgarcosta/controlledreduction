@@ -61,11 +61,11 @@ make
 5. Set up the variable `$LD_LIBRARY_PATH`, so the executables can find the libraries at run time.
 One can do this for the current terminal by doing:
 ```
-export LD_LIBRARY_PATH=$SAGE_ROOT/local/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SAGE_ROOT/local/lib
 ```
 and for this line to be ran at the start of every session one can do
 ```
-echo export LD_LIBRARY_PATH=$SAGE_ROOT/local/lib >> ~/.bashrc
+echo export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SAGE_ROOT/local/lib >> ~/.bashrc
 ```
 
 
