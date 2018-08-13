@@ -4,15 +4,12 @@
 #include "hypersurface.h"
 
 
-
-
 /*
  * returns the matrix coordinates of the p-adic approximation of frob(e_i)
  * using N_k terms, where (k+1) is the pole order of e_i
  */
 Mat<ZZ_p> hypersurface::frob_matrix_J(Vec<int64_t> N)
 {
-
     assert( n == (int64_t) N.length() );
     Mat<ZZ_p> F;
     int64_t i;
