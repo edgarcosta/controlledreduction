@@ -798,7 +798,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fm
             }
 
             for(int64_t i = 0; i < n + 2; i++)
-                nmod_mat_clear(poly_nmod+i);
+                nmod_mat_clear(poly_nmod + i);
             flint_free(poly_nmod);
             for(int64_t i = 0; i < dpowern; i++)
                 fmpz_set_ui(result + i, Gin[i]);
@@ -1805,14 +1805,12 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
     assert(k > n + 1);
 
 
-    
     nmod_t mod;
     int nlimbs;
     nmod_init(&mod, fmpz_get_ui(modulus));
     mp_ptr H, Hout;
     nlimbs = _nmod_vec_dot_bound_limbs(d, mod);
 
-     
 
     H =  _nmod_vec_init(d);
     for(i = 0; i < d; i++)
@@ -1867,7 +1865,7 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
     nmod_mat_struct * Mfd = new nmod_mat_struct[n + 2];
     for(l = 0; l < n + 2; l++)
     {
-        //compute initial table of differences        
+        //compute initial table of differences
         nmod_mat_init(Mfd + l, d, d, mod.n);
         for(i = 0; i < n + 2; i++)
         {
@@ -1882,19 +1880,18 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
         mul(Hout, Mfd + n + 1 - l, H, nlimbs);
         swap(H, Hout);
     }
-    
+    //
     // make Mfd[l] = M[a, a - 1, ..., a - l]
     // where a = k - 1 - (n + 1);
     for(l = 1; l < n + 2; l++)
         for(j = n + 1; j >= l; j--)
             nmod_mat_sub(Mfd + j, Mfd + j, Mfd + j - 1);
-    
 
     for(l = 0; l < (k - 1 - (n + 1)); l++)
     {
         // Mfd[0] =  M(k - 1 - (n + 1) - l)
         // update Mfd vector
-        
+        //
         // deg(M) = n + 1 ==> Mfd[n+1] is constant
         //
         // in the setting of controlled reduction for projective hypersurfaces
@@ -1913,11 +1910,10 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
     }
     //check that we computed M[0] in S
     assert( nmod_mat_equal(Mfd + 0, M + 0));
-    
     for(i = 0; i < n + 2; i++)
     {
-        nmod_mat_clear(Mfd + i);
         nmod_mat_clear(M + i);
+        nmod_mat_clear(Mfd + i);
     }
     delete[] Mfd;
     delete[] M;
