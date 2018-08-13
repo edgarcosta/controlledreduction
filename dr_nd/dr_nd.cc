@@ -1858,7 +1858,7 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
 
 
 
-    // Mfd[l] = M(k - 1 - (self.n + 1) + l) 
+    // Mfd[l] = M(k - 1 - (self.n + 1) + l)
     // equivalently
     // Mfd[n + 1 -l] = M(k - 1 - l)
     // Mfd = [ sum( ( self.R(k - 1 - (self.n + 1) + l) ** i) * Mi for i, Mi in  enumerate(M) ) for l in range(self.n + 2) ];
@@ -1910,7 +1910,8 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
     }
     //check that we computed M[0] in S
     assert( nmod_mat_equal(Mfd + 0, M + 0));
-    for(i = 0; i < n + 2; i++)
+
+    for(i = 0; i < Mlength; ++i)
     {
         nmod_mat_clear(M + i);
         nmod_mat_clear(Mfd + i);
