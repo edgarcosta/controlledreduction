@@ -1914,7 +1914,7 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
 
     for(i = 0; i < Mlength; ++i)
         nmod_mat_clear(M + i);
-    for(i = 0; i < n; ++i)
+    for(i = 0; i < n + 2; ++i)
         nmod_mat_clear(Mfd + i);
     delete[] Mfd;
     delete[] M;
