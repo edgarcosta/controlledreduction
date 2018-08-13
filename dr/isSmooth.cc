@@ -16,10 +16,10 @@ bool isSmooth(const map< Vec<int64_t>, zz_p, vi64less> &f )
     D.d = 0;
     for(i = 0; i <=D.n ; i++)
         D.d += (it->first)[i];
-   
+
     for(it = f.begin(); it != f.end() ; it++ )
         D.f[it->first] = rep( it->second);
-    
+
 
     D.tuple_list.SetLength( (D.n + 1) * D.d + 1);
     D.tuple_dict.SetLength( (D.n + 1) * D.d + 1);
@@ -51,6 +51,7 @@ bool isSmooth(const map< Vec<int64_t>, zz_p, vi64less> &f )
     conv(M_flint, M_zz_p);
     result = bool (M.NumRows() == nmod_mat_lu(P, M_flint, false));
     flint_free(P);
+    nmod_mat_clear(M_flint);
 
     return result;
 }
