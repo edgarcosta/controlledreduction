@@ -35,10 +35,8 @@ class de_Rham_local{
 
         map< Vec<int64_t>, zz_p, vi64less> fbar;
         map< Vec<int64_t>, ZZ_p, vi64less> f;
-        
         int64_t d;
         int64_t n;
-        
         /*
          * tuple_list[l] = the list (n+1)-tuples that are a partition of l
          */
@@ -53,7 +51,7 @@ class de_Rham_local{
          * the Hilbert polynomial as a vector
          */
         Vec<int64_t> Hilbert_J;
-        
+
         /*
          * the basis for the midle cohomology
          */
@@ -62,7 +60,7 @@ class de_Rham_local{
          * the dictionary for reverse lookup
          */
         map< Vec<int64_t>, int64_t, vi64less> coKernels_J_basis_dict;
-        
+
         /*
          * the equivalent of solve_Ji as a dictionary i->solve_Ji
          * solve_Ji is the matrix that will tell us how to write a monomial of degree i in terms of 
@@ -83,7 +81,7 @@ class de_Rham_local{
          * pole -> matrix that reduces (pole -1)! G \Omega / f^pole to the cohomology basis elements
          */
         Vec< Mat<ZZ_p> >  final_reduction_matrix_J_dict;
-        
+
         /*
          * the dictionary where we will store the reduction matrices as polynomials
          * v -> reduction_matrix(v)(u) \in ZZ_p[u0, ..., un] represented as a vector M
@@ -96,7 +94,7 @@ class de_Rham_local{
          * same map as above but stores matrices already over ZZ to avoid unecessary conversions
          */
         map< Vec<int64_t> ,  Vec< Mat<ZZ> > , vi64less>  reduction_matrix_J_ZZ_dict;
-        
+
         /*
          * FUNCTIONS
          */
@@ -111,7 +109,7 @@ class de_Rham_local{
         de_Rham_local(const char * filename);
         virtual bool save(const char * filename);
         virtual ~de_Rham_local(){};
-        
+
         void init(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, vi64less> fbar, bool verbose, bool save_memory);
 
         /*
@@ -124,7 +122,6 @@ class de_Rham_local{
          * returns the pointer for the pair
          */
         pair< Vec<int64_t>, Mat<ZZ_p> >* get_solve_J(const int64_t level);
-        
 
         /*
          * returns the reduction matrix from V_{u+v} to V_u
@@ -136,7 +133,6 @@ class de_Rham_local{
          * that will be correct in ZZ_p
          */
         Mat<ZZ>  get_reduction_matrix_J_ZZ(const Vec<int64_t> u, const Vec<int64_t> v);
-    
         Vec<ZZ_p> reduce_vector_J(const Vec<int64_t> u, const Vec<int64_t>, const Vec<ZZ_p> G);
 
         void reduce_vector_J_ZZ(Vec<ZZ> &result, const Vec<int64_t> u, const Vec<int64_t> v, const Vec<ZZ> G);
@@ -154,7 +150,6 @@ class de_Rham_local{
         map< Vec<int64_t>, Vec<Mat<ZZ_p> >, vi64less>::const_iterator compute_reduction_matrix_J(const Vec<int64_t> v);
         map< Vec<int64_t>, Vec<Mat<ZZ> >, vi64less>::const_iterator compute_reduction_matrix_J_ZZ(const Vec<int64_t> v);
 
-        
         /*
          * returns a pointer to the inclusion_matrix_J(u)
          */
@@ -180,7 +175,6 @@ class de_Rham_local{
         Mat<ZZ_p>* get_final_reduction_matrix_J(int64_t k);
 
 
-        
         /*
          * computes the matrix map
          *  (H0,...,Hn) -> H0 * df0 + ... + Hn * dfn
@@ -220,6 +214,5 @@ class de_Rham_local{
 // does this by constructing a minmal dr object
 // and checks if Jacobian ideal is irrelevant
 bool isSmooth( const map< Vec<int64_t>, zz_p, vi64less> &F );
-        
 
 #endif
