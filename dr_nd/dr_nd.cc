@@ -1820,12 +1820,13 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
     Hout = _nmod_vec_init(d);
 
 
-    nmod_mat_struct * M = new nmod_mat_struct[n + 2];
+    nmod_mat_struct * M = new nmod_mat_struct[Mlength];
 
     // we usually deal with matrices that the only nonzero entries are on the top right corner
     // we should take advantage of that
     int64_t * max_row = new int64_t[Mlength];
     int64_t * min_col = new int64_t[Mlength];
+    // recall Mlength = n + 2
     for(i = 0; i < n + 2; i++)
     {
         max_row[i] = 0;
@@ -1912,10 +1913,9 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
     assert( nmod_mat_equal(Mfd + 0, M + 0));
 
     for(i = 0; i < Mlength; ++i)
-    {
         nmod_mat_clear(M + i);
+    for(i = 0; i < n; ++i)
         nmod_mat_clear(Mfd + i);
-    }
     delete[] Mfd;
     delete[] M;
 
