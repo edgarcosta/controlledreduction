@@ -1,4 +1,4 @@
-// Copyright 2017 Edgar Costa
+// Copyright 2017-2018 Edgar Costa
 // See LICENSE file for license details.
 
 #include "wrapper.h"
@@ -11,16 +11,27 @@
 #include <cstdint>
 #include <map>
 #include <vector>
+#include <sstream>
 #include <NTL/vector.h>
 #include <NTL/ZZX.h>
 #include <NTL/mat_ZZ.h>
 #include <NTL/vec_ZZ.h>
 
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 using namespace std;
 using namespace NTL;
 
-void zeta_function(ZZX &zeta, const map< Vec<int64_t>, int64_t, vi64less> &f, const int64_t &p, bool verbose )
+void zeta_function(ZZX &zeta, const map< Vec<int64_t>, ZZ, vi64less> &f, const int64_t &p, const bool &verbose, const int threads)
 {
+    #ifdef _OPENMP
+    omp_set_num_threads(threads);
+    #else
+    assert(threads > 0);
+    #endif
     Vec<int64_t> monomial = f.cbegin()->first;
     int64_t n = monomial.length() - 1;
     int64_t d = 0;
@@ -37,7 +48,7 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, int64_t, vi64less> &f, co
         ZZ_pPush push2(power_ZZ(p,precision));
 
         map< Vec<int64_t>, zz_p , vi64less> fp;
-        for(map< Vec<int64_t>, int64_t, vi64less>::const_iterator fit = f.begin(); fit != f.end(); ++fit) 
+        for(map< Vec<int64_t>, ZZ, vi64less>::const_iterator fit = f.begin(); fit != f.end(); ++fit)
             fp[ fit->first ] = conv<zz_p>(fit->second);
 
         if(!isSmooth(fp))
@@ -66,7 +77,6 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, int64_t, vi64less> &f, co
             assert(hs.dR->coKernels_J_basis.length() + 1 == charpoly_prec.length() );
             Frob = hs.frob_matrix_J(N);
         }
-        
         if (verbose)
             cout << "Frob = "<<Frob<<endl;
         Mat<ZZ> Frob_ZZ;
@@ -79,9 +89,9 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, int64_t, vi64less> &f, co
 }
 
 
-void zeta_function(ZZX &zeta, const vector< vector<int64_t> > &monomials, const vector<int64_t> &coefficients, const int64_t &p, bool verbose )
+void zeta_function(ZZX &zeta, const vector< vector<int64_t> > &monomials, const vector<ZZ> &coefficients, const int64_t &p, const bool &verbose, const int threads)
 {
-    map< Vec<int64_t>, int64_t, vi64less> f_map;
+    map< Vec<int64_t>, ZZ, vi64less> f_map;
     assert( monomials.size() == coefficients.size() );
     for(size_t i = 0; i < monomials.size(); ++i) {
         Vec<int64_t> monomial;
@@ -90,5 +100,22 @@ void zeta_function(ZZX &zeta, const vector< vector<int64_t> > &monomials, const 
             monomial[j] = monomials[i][j];
         f_map[ monomial ] = coefficients[i];
     }
-    zeta_function(zeta, f_map, p, verbose);
+    zeta_function(zeta, f_map, p, verbose, threads);
+}
+
+/*
+ * same as above, but the input is given through string in the following format:
+ *      p
+ *      f.keys()
+ *      f.values()
+ */
+void zeta_function(ZZX &zeta, const char* input, const bool &verbose, const int threads)
+{
+    int64_t p;
+    map< Vec<int64_t>, ZZ, vi64less> f;
+    std::stringstream buffer;
+    buffer << input;
+    buffer >> p;
+    buffer >> f;
+    zeta_function(zeta, f, p, verbose, threads);
 }
