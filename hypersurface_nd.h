@@ -17,7 +17,7 @@ class hypersurface_non_degenerate : public hypersurface{
 
     public:
         //shared_ptr<de_Rham_non_degenerate_local> dR_ND;
-        de_Rham_non_degenerate_local* dR_ND; 
+        de_Rham_non_degenerate_local* dR_ND;
         hypersurface_non_degenerate(){};
         ~hypersurface_non_degenerate(){};
         hypersurface_non_degenerate(int64_t p, int64_t precision, int64_t n, int64_t d, bool verbose);
