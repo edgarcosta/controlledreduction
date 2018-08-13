@@ -40,7 +40,7 @@
 
 int main(int argc, char* argv[])
 {
-    if(argc != 4)
+    if(argc < 4)
     {
         cout<<"Needs 3 arguments: "<<argv[0]<<" #threads input_file output_file "<<endl;
         cout<<"Input file format (for a generic hypersurface):"<<endl;
@@ -71,10 +71,11 @@ int main(int argc, char* argv[])
     Mat<ZZ> Frob_ZZ;
     Vec<ZZ> cp;
     bool is_ND;
-
-
-
     
+
+
+
+
     ifstream file;
     file.open(argv[2]);
     if(! file.is_open())
@@ -87,9 +88,13 @@ int main(int argc, char* argv[])
     file2.open(argv[2]);
     numberoflines = count(istreambuf_iterator<char>(file2), istreambuf_iterator<char>(), '\n');
     file2.close();
-    
+
     file >> p;
-    
+
+    int64_t ND_tries = p*100;
+    if(argc > 4)
+      ND_tries = atoi(argv[4]);
+
     stringstream buffer;
     if(numberoflines  < 7)
     {
@@ -133,10 +138,10 @@ int main(int argc, char* argv[])
 
     zz_p::init(p);
     ZZ_p::init( power_ZZ(p,precision) );
-    
+
     hypersurface_non_degenerate hs_ND;
     hypersurface hs;
- 
+
     Vec<zz_p> f_original_vector;
     map< Vec<int64_t>, zz_p, vi64less> f_original_map;
     Vec<zz_p> f_vector;
@@ -162,7 +167,6 @@ int main(int argc, char* argv[])
     map< Vec<int64_t>, int64_t, vi64less>  tuple_d_dict;
     tuple_list_generator(tuple_d, d, (int64_t) (n +1) );
     assert(tuple_d.length() == f_original_vector.length() );
-    
 
     for( i = 0; i < (int64_t) f_original_vector.length() ; i++)
     {
@@ -170,12 +174,13 @@ int main(int argc, char* argv[])
             f_original_map[ tuple_d[i] ] = f_original_vector[i];
         tuple_d_dict[ tuple_d[i] ] = i;
     }
+
     if(!isSmooth(f_original_map))
     {
         cout << "f is not smooth!" <<endl;
         abort();
     }
-    M = find_change_of_variables(f_original_map, p*100);
+    M = find_change_of_variables(f_original_map, ND_tries);
     is_ND = !IsZero(M);
     if( is_ND )
     {
@@ -183,7 +188,6 @@ int main(int argc, char* argv[])
         f_map = change_of_variables<zz_p>(f_original_map, M);
         hs_ND = hypersurface_non_degenerate(p, precision, f_map, true);
         assert(hs_ND.dR->coKernels_J_basis.length() + 1 == absolute_precision.length() );
-    
     }
     else
     {
@@ -211,8 +215,7 @@ int main(int argc, char* argv[])
     cp = charpoly_frob(Frob_ZZ, absolute_precision, p, n - 1);
 
     cout <<"Characteristic polynomial = "<< cp <<endl;
-    
-    
+
     size_t rank;
     if(n == 3 && d == 4)
     {

@@ -24,26 +24,26 @@ int usage(char name[]){
 
 
 int main(int argc, char* argv[]) {
-    if(argc != 3) 
+    if(argc != 3)
         return usage(argv[0]);
     int64_t p = atoi(argv[1]);
     if( not ProbPrime(ZZ(p)) ) {
-        cout << p << " is not a prime!" << endl << endl; 
+        cout << p << " is not a prime!" << endl << endl;
         usage(argv[0]);
     }
     int64_t lambda = atoi(argv[2]);
-    map< Vec<int64_t>, int64_t , vi64less> f;
+    map< Vec<int64_t>, ZZ , vi64less> f;
 
     // a very lazy way to create f
     for(int64_t i = 0; i < 4; ++i) {
         Vec<int64_t> v;
         v.SetLength(4, 0);
         v[i] = 4;
-        f[v] = 1;
+        f[v] = ZZ(1);
     }
     Vec<int64_t> v;
     v.SetLength(4, 1);
-    f[v] = lambda;
+    f[v] = ZZ(lambda);
 
     ZZX cp;
     zeta_function(cp, f, p, true);
