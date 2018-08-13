@@ -103,6 +103,12 @@ void zeta_function(ZZX &zeta, const vector< vector<int64_t> > &monomials, const 
     zeta_function(zeta, f_map, p, verbose, threads);
 }
 
+void zeta_function(ZZX &zeta, const vector< vector<int64_t> > &monomials, const vector<int64_t> &coefficients, const int64_t &p, const bool &verbose, const int threads)
+{
+  zeta_function(zeta, monomials, vector<ZZ>(coefficients.begin(), coefficients.end()), p, verbose, threads);
+}
+
+
 /*
  * same as above, but the input is given through string in the following format:
  *      p
