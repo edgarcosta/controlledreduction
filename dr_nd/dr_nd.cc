@@ -61,7 +61,7 @@ de_Rham_non_degenerate_local::de_Rham_non_degenerate_local(int64_t p, int64_t pr
             x = random_zz_p();
             fbar[ tuple_list[d][i] ] = x;
             f[ tuple_list[d][i] ] = rep( x );
-        
+
         }
         B = (get_solve_ND((d-1)*(n+1)+1))->first;
         boolean = bool( B.length() != 0 );
@@ -94,7 +94,7 @@ de_Rham_non_degenerate_local::de_Rham_non_degenerate_local(const char* filename)
         file >> d;
         file >> Hilbert_J;
         file >> fbar_vector;
-        
+
         tuple_list.SetLength( (n + 1) * d + 1);
         tuple_dict.SetLength( (n + 1) * d + 1);
         for(i = 0 ; i < (n + 1) * d + 1 ; i++)
@@ -231,7 +231,7 @@ bool de_Rham_non_degenerate_local::save( const char* filename)
 
     file.open(filename, ios::out | ios::trunc);
 
-    
+
 
     if(file.is_open())
     {
@@ -280,7 +280,7 @@ bool de_Rham_non_degenerate_local::save( const char* filename)
         return false;
     }
 }
-    
+
 
 void de_Rham_non_degenerate_local::compute_everything_ND()
 {
@@ -296,7 +296,7 @@ void de_Rham_non_degenerate_local::compute_everything_ND()
         compute_reduction_matrix_ND_poly_ZZ(u);
 
 
-        
+
         bool positive = true;
         for(j = 0; j <= n; j++)
             positive = positive && (u[j] > 0);
@@ -312,10 +312,10 @@ void de_Rham_non_degenerate_local::compute_everything_ND()
                 cout << "Computing coKernels ND to basis for u = "<<u<<endl;
             compute_coKernels_ND_to_basis(u);
         }
-            
-             
+
+
     }
- 
+
 }
 
 pair< Vec<int64_t>, Mat<ZZ_p> >* de_Rham_non_degenerate_local::get_solve_ND(const int64_t level)
@@ -352,7 +352,7 @@ Mat<ZZ_p> de_Rham_non_degenerate_local::get_reduction_matrix_ND(const Vec<int64_
     map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_iterator it;
 
     it = compute_reduction_matrix_ND(v);
-    
+
     result.SetDims( coKernels_ND_basis.length() , coKernels_ND_basis.length());
 
     map< Vec<int64_t>, Mat<ZZ_p>, vi64less>::const_iterator itM;
@@ -362,7 +362,7 @@ Mat<ZZ_p> de_Rham_non_degenerate_local::get_reduction_matrix_ND(const Vec<int64_
         set(monomial_evaluated);
         for( i = 0; i <= n ; i++)
             mul(monomial_evaluated, monomial_evaluated, power_ZZ(u[i],(itM->first)[i]) );
-        
+
         result += conv<ZZ_p>(monomial_evaluated) * itM->second;
     }
 
@@ -422,7 +422,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND(Vec<ZZ_p> &result, const Vec
     map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_iterator it;
 
     it = compute_reduction_matrix_ND(v);
-    
+
     result.SetLength( coKernels_ND_basis.length());
     clear(result);
 
@@ -433,7 +433,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND(Vec<ZZ_p> &result, const Vec
         set(monomial_evaluated);
         for( i = 0; i <= n ; i++)
             mul(monomial_evaluated, monomial_evaluated, power_ZZ(u[i],(itM->first)[i]) );
-        
+
         result +=  itM->second * (conv<ZZ_p>(monomial_evaluated) * G);
     }
 
@@ -456,7 +456,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_ZZ(Vec<ZZ> &result, const Ve
     map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ>, vi64less> , vi64less>::const_iterator it;
 
     it = compute_reduction_matrix_ND_ZZ(v);
-   
+
     map< Vec<int64_t>, Mat<ZZ>, vi64less>::const_iterator itM;
     itM = (it->second).begin();
     set(monomial_evaluated);
@@ -493,7 +493,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly(Vec<ZZ_p> &result, cons
     map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_iterator it;
     map< Vec<int64_t>, Mat<ZZ_p>, vi64less>::const_iterator itM;
     Vec<ZZ_p> Gout, Gin, Gtmp;
-    
+
     Vec< Mat<ZZ_p> > poly;
     poly.SetLength(n+2);
     for( i = 0; i < n+2; i++)
@@ -501,7 +501,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly(Vec<ZZ_p> &result, cons
 
 
     it = compute_reduction_matrix_ND_poly(v);
-    
+
 
     for( itM = (it->second).begin(); itM != (it->second).end() ; itM++)
     {
@@ -516,7 +516,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly(Vec<ZZ_p> &result, cons
             (poly[ itM->first[n+1] ])[0] += conv<ZZ_p>(monomial_evaluated) * (itM->second)[0];
         else
             poly[ (itM->first)[n+1] ] += itM->second * conv<ZZ_p>(monomial_evaluated);
- 
+
     }
 
     //assert( poly[0] ==  get_reduction_matrix_ND(u,v) );
@@ -577,7 +577,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_ZZ(Vec<ZZ> &result, con
     poly_unreduced = poly;
 
     it = compute_reduction_matrix_ND_poly_ZZ(v);
-    
+
 
     for( itM = (it->second).begin(); itM != (it->second).end() ; itM++)
     {
@@ -666,7 +666,7 @@ void de_Rham_non_degenerate_local::get_ND_poly_flint(fmpz_mat_struct * result, c
     poly_unreduced = poly;
 
     it = compute_reduction_matrix_ND_poly_ZZ(v);
-    
+
 
     for( itM = (it->second).begin(); itM != (it->second).end() ; itM++)
     {
@@ -750,14 +750,14 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fm
             int nlimbs;
             nmod_init(&mod, fmpz_get_ui(modulus));
             int64_t j,k;
-            
+
             mp_limb_t xpower;
             mp_limb_t tmp;
 
             mp_ptr Gout;
             mp_ptr Gin;
             mp_ptr Gtmp;
-            
+
 
             Gin = _nmod_vec_init(dpowern);
             for(int64_t i = 0; i < dpowern; i++)
@@ -766,9 +766,9 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fm
             }
             Gout = _nmod_vec_init(dpowern);
             Gtmp =  _nmod_vec_init(dpowern);
-            
+
             nlimbs = _nmod_vec_dot_bound_limbs(dpowern, mod);
-            
+
             nmod_mat_struct * poly_nmod;
             poly_nmod = (nmod_mat_struct *)flint_malloc(sizeof(nmod_mat_struct) * (n+2));
 
@@ -802,12 +802,12 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fm
             flint_free(poly_nmod);
             for(int64_t i = 0; i < dpowern; i++)
                 fmpz_set_ui(result + i, Gin[i]);
-        
+
             _nmod_vec_clear(Gout);
             _nmod_vec_clear(Gin);
             _nmod_vec_clear(Gtmp);
         }
-    } 
+    }
 }
 
 
@@ -829,7 +829,7 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
         Vec<int64_t> zero, r, s;
         Vec<ZZ_p> F;
         map< Vec<int64_t>, Vec<ZZ_p>, vi64less > H, Hnew;
-        map< Vec<int64_t>, Vec<ZZ_p>, vi64less >::const_iterator itH; 
+        map< Vec<int64_t>, Vec<ZZ_p>, vi64less >::const_iterator itH;
         Vec< pair< Vec<int64_t>, Mat<ZZ_p> >* > solve;
         Vec<ZZ_p>* Hnew_zero;
         Vec<ZZ_p>* Hnew_Ui;
@@ -882,7 +882,7 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
                 // d- n=  (d- 1) * (n + 1) + 1  - n*d
                 r = tweak(v, d - n);
                 s = v - r; // sum(s) = d - n
-                
+
                 // for now  H is just a monomial
                 coordinate_of_H = tuple_dict[ (d-1)*(n+1)+ 1][ coKernels_ND_basis[ coordinate_of_monomial] + s ];
 
@@ -894,7 +894,7 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
                 for( i = 0 ; i < (int64_t) (solve[n]->second).NumRows(); i++)
                     F[i] = (solve[n]->second)[i][ coordinate_of_H ];
 
-                
+
                 Hnew_zero =  &(Hnew[zero]);
                 Hnew_zero->SetLength(dim_Hnew);
 
@@ -1028,21 +1028,21 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ>, vi64less> , vi64less>::const_iter
     {
         if(verbose)
             cout<<"Computing the reduction matrix ND (ZZ) for v = "<<v<<endl;
-        map< Vec<int64_t>, Mat<ZZ>, vi64less>* result_zz;
         map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_iterator it;
         map< Vec<int64_t>, Mat<ZZ_p>, vi64less>::const_iterator it_result;
         bool existQ;
-        result_zz = &(reduction_matrix_ND_ZZ_dict[v]);
+        map< Vec<int64_t>, Mat<ZZ>, vi64less> &result_zz = reduction_matrix_ND_ZZ_dict[v];
         it = reduction_matrix_ND_dict.find(v);
         existQ = (it != reduction_matrix_ND_dict.end());
         if( !existQ)
             it = compute_reduction_matrix_ND(v);
 
         for(it_result = (it->second).begin(); it_result != (it->second).end(); it_result++)
-            (*result_zz)[it_result->first] = conv< Mat<ZZ> >(it_result->second);
+            result_zz[it_result->first] = conv< Mat<ZZ> >(it_result->second);
+
         if( !existQ && save_memory )
             reduction_matrix_ND_dict.erase(v);
-        
+
         return reduction_matrix_ND_ZZ_dict.find(v);
     }
 }
@@ -1061,7 +1061,7 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
     {
         if(verbose)
             cout<<"Computing the reduction matrix poly ND for v = "<<v<<endl;
- 
+
         bool existQ;
         it = reduction_matrix_ND_dict.find(v);
         existQ = (it != reduction_matrix_ND_dict.end());
@@ -1071,13 +1071,12 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
 
         map< Vec<int64_t>, Mat<ZZ_p>, vi64less>::const_iterator it_matrix;
         map< Vec<int64_t>, Mat<ZZ_p>, vi64less>::iterator it_result;
-        map< Vec<int64_t>, Mat<ZZ_p> , vi64less>* result;
         map< Vec<int64_t>, int64_t, vi64less> monomial_expanded;
         map< Vec<int64_t>, int64_t, vi64less>::const_iterator it_monomial;
         int64_t i, sum, dpowern;
         dpowern = coKernels_ND_basis.length();
-     
-        result = &(reduction_matrix_ND_poly_dict[v]);
+
+        map< Vec<int64_t>, Mat<ZZ_p> , vi64less> result = reduction_matrix_ND_poly_dict[v];
 
         for( it_matrix =  (it->second).begin(); it_matrix != (it->second).end(); it_matrix++)
         {
@@ -1086,14 +1085,14 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
                 sum += it_matrix->first[i];
 
             monomial_expanded = change_of_variables_monomial( it_matrix->first, v);
-            
+
             for( it_monomial = monomial_expanded.begin(); it_monomial != monomial_expanded.end(); it_monomial++)
             {
-               it_result = result->find(it_monomial->first);
-               if( it_result == result->end() )
+               it_result = result.find(it_monomial->first);
+               if( it_result == result.end() )
                {
-                    (*result)[it_monomial->first].SetDims( dpowern, dpowern);
-                    it_result = result->find(it_monomial->first);
+                    result[it_monomial->first].SetDims( dpowern, dpowern);
+                    it_result = result.find(it_monomial->first);
                }
 
                if( sum == n+1)
@@ -1107,11 +1106,11 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
             }
         }
 
-        for(it_result = result->begin(); it_result != result->end(); )
+        for(it_result = result.begin(); it_result != result.end(); )
         {
             if( IsZero(it_result->second) )
             {
-                result->erase(it_result++);
+                result.erase(it_result++);
             }
             else
             {
@@ -1137,24 +1136,23 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ>, vi64less> , vi64less>::const_iter
             cout<<"Computing the reduction matrix poly ND (ZZ) for v = "<<v<<endl;
         bool existQ;
         map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_iterator it;
-        map< Vec<int64_t>, Mat<ZZ>, vi64less>* result_zz;
         map< Vec<int64_t>, Mat<ZZ_p>, vi64less>::const_iterator it_result;
-        
+
         it = reduction_matrix_ND_poly_dict.find(v);
         existQ = (it != reduction_matrix_ND_poly_dict.end());
         if(!existQ)
             it = compute_reduction_matrix_ND_poly(v);
 
-        result_zz = &(reduction_matrix_ND_poly_ZZ_dict[v]);
-    
+        map< Vec<int64_t>, Mat<ZZ>, vi64less> &result_zz = reduction_matrix_ND_poly_ZZ_dict[v];
+
         for(it_result = (it->second).begin(); it_result != (it->second).end(); it_result++)
-            (*result_zz)[it_result->first] = conv< Mat<ZZ> >(it_result->second);
+            result_zz[it_result->first] = conv< Mat<ZZ> >(it_result->second);
         if( !existQ && save_memory )
             reduction_matrix_ND_poly_dict.erase(v);
 
         return reduction_matrix_ND_poly_ZZ_dict.find(v);
     }
-}   
+}
 
 
 
@@ -1196,7 +1194,7 @@ void de_Rham_non_degenerate_local::compute_inclusion_matrix_ND(const Vec<int64_t
     Vec<int64_t> u_minus_ones;
     Vec< Mat<ZZ_p> >* result;
     pair< Vec<int64_t>, Mat<ZZ_p> >* solve;
-    
+
     result = &inclusion_matrix_ND_dict[u];
     result->SetLength(n);
 
@@ -1252,15 +1250,15 @@ void de_Rham_non_degenerate_local::compute_coKernels_ND_to_basis(const Vec<int64
     /*
      * Computes the matrix from W_u to the cohomology basis
      * sum(u) = d and ui > 0
-     * 
-     * For x^u * ( monomial of Gn ) Omega / x0 ... xn 
-     * write it as 
+     *
+     * For x^u * ( monomial of Gn ) Omega / x0 ... xn
+     * write it as
      * x^a x^w where sum(w) = (d - 2) * (n + 1) + 1
      * hence x^w = \sum Fi di f
      * reduce x^a \sum Fi di f \Omega / f^(n+1) to H \Omega / f^n and apply final_reduction
      *
      * for all the rest use the inclusion and final_reductions
-     */ 
+     */
     int64_t coordinate_of_monomial_w, coordinate_of_monomial_Fi, dim_Fi, i, j, l, pos;
     pair<Vec<int64_t>, Mat<ZZ_p> > *solve_top_J, *solve_n_ND;
     Mat<ZZ_p>* result;
@@ -1284,7 +1282,7 @@ void de_Rham_non_degenerate_local::compute_coKernels_ND_to_basis(const Vec<int64
     for(l = 0; l < n; l++)
     {
         /*
-         * get_inclusion_matrix_ND(u, l) 
+         * get_inclusion_matrix_ND(u, l)
          * x^u l! G_l/f^(l+1) (x0...xn) to -> l! H / f^(l+1) ( G_l \in W_u  and the factorial is implicit)
          * deg H = (l + 1) * d - (n + 1)
          *
@@ -1332,7 +1330,7 @@ void de_Rham_non_degenerate_local::compute_coKernels_ND_to_basis(const Vec<int64
             {
                 if(a[i] + tuple_list[d * n - 2 * n][coordinate_of_monomial_Fi][i] >0)
                     H[ tuple_dict[ d * n - (n + 1) ][ a + tuple_list[d * n - 2 * n][coordinate_of_monomial_Fi] - ei] ] += (a[i] + tuple_list[d * n - 2 * n][coordinate_of_monomial_Fi][i]) * F[i*dim_Fi + coordinate_of_monomial_Fi];
-            }   
+            }
             ei[i]--;
         }
         mul(tmp_vec, *( get_final_reduction_matrix_J(n) ), H);
@@ -1381,7 +1379,7 @@ void de_Rham_non_degenerate_local::matrix_ND(Mat<ZZ_p>& result, int64_t l)
     }
 }
 
-    
+
 
 
 
@@ -1454,7 +1452,7 @@ bool de_Rham_non_degenerate_local::test_monomial_to_basis_ND(int64_t N)
     Vec<int64_t> u;
     Vec<ZZ_p> v;
     int64_t i, j, k, m, fact, sum;
-    
+
     v.SetLength( coKernels_J_basis.length() );
 
     fpow.SetLength(N+1);
@@ -1530,7 +1528,7 @@ bool de_Rham_non_degenerate_local::test_paths_ND(int64_t trials, int64_t paths)
     Mat<ZZ_p> Mred;
     u_orig.SetLength(n+1);
     v.SetLength(n+1);
-    
+
     for(attempt = 0; attempt < trials; attempt++)
     {
         if(verbose)
@@ -1543,7 +1541,7 @@ bool de_Rham_non_degenerate_local::test_paths_ND(int64_t trials, int64_t paths)
             u_orig[i] = 1+RandomBnd(20);
             sum += u_orig[i];
         }
-        
+
         while( sum % d != 0 )
         {
             k = RandomBnd(n+1);
@@ -1588,7 +1586,7 @@ bool de_Rham_non_degenerate_local::test_paths_ND(int64_t trials, int64_t paths)
                 Mred = get_reduction_matrix_ND(u, v);
                 mul(M, Mred, M);
             }
-            
+
             mul(M, *(get_coKernels_ND_to_basis(u)), M);
 
             M_saved[pathi] = M;
@@ -1614,10 +1612,10 @@ bool isND(const map< Vec<int64_t>, zz_p, vi64less> &f)
     D.d = 0;
     for(i = 0; i <=D.n ; i++)
         D.d += (it->first)[i];
-   
+
     for(it = f.begin(); it != f.end() ; it++ )
         D.f[it->first] = rep( it->second);
-    
+
 
     D.tuple_list.SetLength( (D.n + 1) * D.d + 1);
     D.tuple_dict.SetLength( (D.n + 1) * D.d + 1);
@@ -1672,7 +1670,7 @@ Mat<zz_p> find_change_of_variables( map< Vec<int64_t>, zz_p, vi64less> f, int64_
         not_nd = !( isND(new_f) );
         i++;
     }
-    
+
     if(not_nd)
     {
         clear(M);
@@ -1685,7 +1683,7 @@ Mat<zz_p> find_change_of_variables( map< Vec<int64_t>, zz_p, vi64less> f, int64_
 static void  nmod_mat_sub_submatrix(nmod_mat_t C, const nmod_mat_t A, const nmod_mat_t B, const int64_t max_row, const int64_t min_col)
 {
     slong i;
-    
+
     if (C->c == 0)
        return;
 
@@ -1716,7 +1714,7 @@ static void  nmod_mat_sub_submatrix(nmod_mat_t C, const nmod_mat_t A, const nmod
         case 1  : _nmod_vec_sub(C->rows[i] + min_col, A->rows[i] + min_col, B->rows[i] + min_col, d, C->mod);
         case 0 :  ;
     }
-   
+
     if(C->mod.norm)
     {
         switch(d)
@@ -1793,7 +1791,7 @@ static void  nmod_mat_sub_submatrix(nmod_mat_t C, const nmod_mat_t A, const nmod
  * - k, a positive integer > n + 1
  * - G, a vector
  * - poly = M, a vector with (n + 1) matrices, representing  M(Y) = M_0 + M_1 * Y + M_2 Y^2 + ... + M_ * Y^n + M_{n+1} *Y^(n+1)
- * 
+ *
  * Output:
  * - H = M(0) M(1) ... M(k-1) G
 */
