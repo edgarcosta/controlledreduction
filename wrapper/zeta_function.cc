@@ -60,6 +60,7 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, ZZ, vi64less> &f, const i
         Mat<zz_p> M = find_change_of_variables(fp, p*1000 + 1000);
         bool is_ND = !IsZero(M);
         Mat<ZZ_p> Frob;
+
         if( is_ND )
         {
             if (verbose)
@@ -68,6 +69,7 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, ZZ, vi64less> &f, const i
             hypersurface_non_degenerate hs_ND(p, precision, f_map, verbose);
             assert(hs_ND.dR->coKernels_J_basis.length() + 1 == charpoly_prec.length() );
             Frob = hs_ND.frob_matrix_ND(N);
+            delete hs_ND.dR_ND;
         }
         else
         {
@@ -79,11 +81,13 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, ZZ, vi64less> &f, const i
         }
         if (verbose)
             cout << "Frob = "<<Frob<<endl;
+
         Mat<ZZ> Frob_ZZ;
         Frob_ZZ = conv< Mat<ZZ> >(Frob);
         Vec<ZZ> cp = charpoly_frob(Frob_ZZ, charpoly_prec, p, n - 1);
         if(verbose)
             cout <<"Characteristic polynomial = "<< cp <<endl;
+
         zeta = conv<ZZX>(cp);
     }
 }
