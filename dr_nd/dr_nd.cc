@@ -1146,7 +1146,8 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ>, vi64less> , vi64less>::const_iter
         map< Vec<int64_t>, Mat<ZZ>, vi64less> &result_zz = reduction_matrix_ND_poly_ZZ_dict[v];
 
         for(it_result = (it->second).begin(); it_result != (it->second).end(); it_result++)
-            result_zz[it_result->first] = conv< Mat<ZZ> >(it_result->second);
+
+            conv(result_zz[it_result->first], it_result->second);
         if( !existQ && save_memory )
             reduction_matrix_ND_poly_dict.erase(v);
 
