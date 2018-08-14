@@ -169,7 +169,7 @@ void default_args(int64_t &precision, NTL::Vec<int64_t> &N, NTL::Vec<int64_t> &c
     } else {
         using namespace std;
         cout << "I'm sorry. We don't have the precomputed values of working precision and N for n = "<<n<<"d = "<< d <<endl;
-        cout << "Please email \"Edgar Costa\" <edgarcosta@math.dartmouth.edu>" << endl;
+        cout << "Please email \"Edgar Costa\" <edgarc@mit.edu>" << endl;
         abort();
     }
     buffer >> N;
