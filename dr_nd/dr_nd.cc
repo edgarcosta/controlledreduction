@@ -1039,7 +1039,6 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ>, vi64less> , vi64less>::const_iter
 
         for(it_result = (it->second).begin(); it_result != (it->second).end(); it_result++)
             result_zz[it_result->first] = conv< Mat<ZZ> >(it_result->second);
-
         if( !existQ && save_memory )
             reduction_matrix_ND_dict.erase(v);
 
@@ -1071,12 +1070,13 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
 
         map< Vec<int64_t>, Mat<ZZ_p>, vi64less>::const_iterator it_matrix;
         map< Vec<int64_t>, Mat<ZZ_p>, vi64less>::iterator it_result;
+        map< Vec<int64_t>, Mat<ZZ_p> , vi64less>* result;
         map< Vec<int64_t>, int64_t, vi64less> monomial_expanded;
         map< Vec<int64_t>, int64_t, vi64less>::const_iterator it_monomial;
         int64_t i, sum, dpowern;
         dpowern = coKernels_ND_basis.length();
 
-        map< Vec<int64_t>, Mat<ZZ_p> , vi64less> result = reduction_matrix_ND_poly_dict[v];
+        result = &(reduction_matrix_ND_poly_dict[v]);
 
         for( it_matrix =  (it->second).begin(); it_matrix != (it->second).end(); it_matrix++)
         {
@@ -1088,11 +1088,11 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
 
             for( it_monomial = monomial_expanded.begin(); it_monomial != monomial_expanded.end(); it_monomial++)
             {
-               it_result = result.find(it_monomial->first);
-               if( it_result == result.end() )
+               it_result = result->find(it_monomial->first);
+               if( it_result == result->end() )
                {
-                    result[it_monomial->first].SetDims( dpowern, dpowern);
-                    it_result = result.find(it_monomial->first);
+                    (*result)[it_monomial->first].SetDims( dpowern, dpowern);
+                    it_result = result->find(it_monomial->first);
                }
 
                if( sum == n+1)
@@ -1106,11 +1106,11 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
             }
         }
 
-        for(it_result = result.begin(); it_result != result.end(); )
+        for(it_result = result->begin(); it_result != result->end(); )
         {
             if( IsZero(it_result->second) )
             {
-                result.erase(it_result++);
+                result->erase(it_result++);
             }
             else
             {
