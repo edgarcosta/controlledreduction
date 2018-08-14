@@ -78,6 +78,7 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, ZZ, vi64less> &f, const i
             hypersurface hs(p, precision, fp, verbose);
             assert(hs.dR->coKernels_J_basis.length() + 1 == charpoly_prec.length() );
             Frob = hs.frob_matrix_J(N);
+            delete hs.dR;
         }
         if (verbose)
             cout << "Frob = "<<Frob<<endl;
