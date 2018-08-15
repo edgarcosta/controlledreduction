@@ -72,7 +72,6 @@ int main()
             plen = 4;
             runs = 1;
         }
-        
         for (int64_t i = 0; i < runs; ++i) {
             int64_t p = GenPrime_long(plen);
             while ( p <= d )
