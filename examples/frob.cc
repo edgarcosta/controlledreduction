@@ -247,10 +247,10 @@ int main(int argc, char* argv[])
      * rank
      * wall time
      * user time
-     */    
+     */
     ofstream output;
     stringstream ss;
-    
+
     ss << p <<endl;
     ss << precision <<endl;
     ss << n <<endl;
@@ -281,7 +281,7 @@ int main(int argc, char* argv[])
     cout << ss.str() ;
     cout << "EOF"<<endl;
 
-    
+    /*
     //cleaning memory
     if(is_ND)
     {
@@ -291,6 +291,7 @@ int main(int argc, char* argv[])
     {
         delete hs.dR;
     }
+    */
 
     return 0;
 }
