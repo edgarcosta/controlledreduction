@@ -57,7 +57,7 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, ZZ, vi64less> &f, const i
             abort();
         }
         // try to find a change of variables
-        Mat<zz_p> M = find_change_of_variables(fp, p*1000 + 1000);
+        Mat<zz_p> M = find_change_of_variables(fp, p*100 + 100);
         bool is_ND = !IsZero(M);
         Mat<ZZ_p> Frob;
 
