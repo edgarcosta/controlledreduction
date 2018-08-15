@@ -1,7 +1,6 @@
 // Copyright 2013-2017 Edgar Costa
 // See LICENSE file for license details.
 // hypersurface.h: header file for the class hypersurface, which contains the routines to compute the Frobenius matrix
-  
 
 
 #ifndef HYPERSURFACE_H
@@ -24,8 +23,8 @@ class hypersurface{
         int64_t n;
         bool verbose;
         //we need it as pointer, so we are able to extend it to a de_Rham_non_degenerate_local
-        //shared_ptr<de_Rham_local> dR;
-        de_Rham_local* dR;
+        shared_ptr<de_Rham_local> dR;
+        //de_Rham_local* dR;
         /*
          * fpow[j] stores the coefficients of Frob(f^j)
          * st u-> c[u] is the coefficient of x^pu of Frob(f^j)
@@ -34,7 +33,7 @@ class hypersurface{
 
         hypersurface() {};
         virtual ~hypersurface(){};
-        
+
         hypersurface(int64_t p, int64_t precision, int64_t n, int64_t d, Vec<zz_p> fbar_vector, bool verbose);
         hypersurface(int64_t p, int64_t precision, int64_t n, int64_t d, bool verbose);
         hypersurface(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, vi64less> fbar, bool verbose);
@@ -42,10 +41,10 @@ class hypersurface{
         virtual bool save(const char * filename);
 
         /*
-         * assures the array fpow 
+         * assures the array fpow
          * (where we store the powers of f)
          * has enough powers of f
-         */ 
+         */
         void compute_fpow(int64_t power);
 
 

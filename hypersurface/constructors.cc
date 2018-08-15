@@ -1,6 +1,6 @@
 // Copyright 2013-2017 Edgar Costa
 // See LICENSE file for license details.
-  
+
 #include "hypersurface.h"
 
 hypersurface::hypersurface(int64_t p, int64_t precision, int64_t n, int64_t d, bool verbose)
@@ -10,8 +10,8 @@ hypersurface::hypersurface(int64_t p, int64_t precision, int64_t n, int64_t d, b
     this->n = n;
     this->d = d;
     this->verbose = verbose;
-    //dR = make_shared<de_Rham_local>(p, precision, n, d, verbose);
-    dR = new de_Rham_local(p, precision, n, d, verbose);
+    dR = make_shared<de_Rham_local>(p, precision, n, d, verbose);
+    //dR = new de_Rham_local(p, precision, n, d, verbose);
     fpow.SetLength(1);
 
     Vec<int64_t> u;
@@ -31,8 +31,8 @@ hypersurface::hypersurface(int64_t p, int64_t precision, int64_t n, int64_t d, V
     this->n = n;
     this->d = d;
     this->verbose = verbose;
-    //dR = make_shared<de_Rham_local>(p, precision, n, d, fbar_vector, verbose);
-    dR = new de_Rham_local(p, precision, n, d, fbar_vector, verbose);
+    dR = make_shared<de_Rham_local>(p, precision, n, d, fbar_vector, verbose);
+    //dR = new de_Rham_local(p, precision, n, d, fbar_vector, verbose);
     fpow.SetLength(1);
 
     Vec<int64_t> u;
@@ -51,8 +51,8 @@ hypersurface::hypersurface(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p
 {
     this->p = p;
     this->precision = precision;
-    //dR = make_shared<de_Rham_local>(p, precision, fbar, verbose);
-    dR = new de_Rham_local(p, precision, fbar, verbose);
+    dR = make_shared<de_Rham_local>(p, precision, fbar, verbose);
+    //dR = new de_Rham_local(p, precision, fbar, verbose);
     n = dR->n;
     d = dR->d;
     this->verbose = verbose;
@@ -71,8 +71,8 @@ hypersurface::hypersurface(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p
 
 hypersurface::hypersurface(const char * filename)
 {
-    //dR = make_shared<de_Rham_local>(filename);
-    dR = new de_Rham_local(filename);
+    dR = make_shared<de_Rham_local>(filename);
+    //dR = new de_Rham_local(filename);
     p = dR->p;
     precision = dR->precision;
     n = dR->n;

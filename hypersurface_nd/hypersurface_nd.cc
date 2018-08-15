@@ -19,8 +19,8 @@ hypersurface_non_degenerate::hypersurface_non_degenerate(int64_t p, int64_t prec
     this->n = n;
     this->d = d;
     this->verbose = verbose;
-    //dR_ND = make_shared<de_Rham_non_degenerate_local>(p, precision, n, d, verbose);
-    dR_ND = new de_Rham_non_degenerate_local(p, precision, n, d, verbose);
+    dR_ND = make_shared<de_Rham_non_degenerate_local>(p, precision, n, d, verbose);
+    //dR_ND = new de_Rham_non_degenerate_local(p, precision, n, d, verbose);
     dR = dR_ND;
     fpow.SetLength(1);
 
@@ -42,8 +42,8 @@ hypersurface_non_degenerate::hypersurface_non_degenerate(int64_t p, int64_t prec
     this->n = n;
     this->d = d;
     this->verbose = verbose;
-    //dR_ND = make_shared<de_Rham_non_degenerate_local>(p, precision, n, d, fbar_vector, verbose);
-    dR_ND = new de_Rham_non_degenerate_local(p, precision, n, d, fbar_vector, verbose);
+    dR_ND = make_shared<de_Rham_non_degenerate_local>(p, precision, n, d, fbar_vector, verbose);
+    //dR_ND = new de_Rham_non_degenerate_local(p, precision, n, d, fbar_vector, verbose);
     dR = dR_ND;
     fpow.SetLength(1);
 
@@ -62,8 +62,8 @@ hypersurface_non_degenerate::hypersurface_non_degenerate(int64_t p, int64_t prec
 {
     this->p = p;
     this->precision = precision;
-    //dR_ND = make_shared<de_Rham_non_degenerate_local>(p, precision, fbar, verbose);
-    dR_ND = new de_Rham_non_degenerate_local(p, precision, fbar, verbose);
+    dR_ND = make_shared<de_Rham_non_degenerate_local>(p, precision, fbar, verbose);
+    //dR_ND = new de_Rham_non_degenerate_local(p, precision, fbar, verbose);
     dR = dR_ND;
     n = dR->n;
     d = dR->d;
@@ -83,8 +83,8 @@ hypersurface_non_degenerate::hypersurface_non_degenerate(int64_t p, int64_t prec
 
 hypersurface_non_degenerate::hypersurface_non_degenerate(const char * filename)
 {
-    //dR_ND = make_shared<de_Rham_non_degenerate_local>(filename);
-    dR_ND = new de_Rham_non_degenerate_local(filename);
+    dR_ND = make_shared<de_Rham_non_degenerate_local>(filename);
+    //dR_ND = new de_Rham_non_degenerate_local(filename);
     dR = dR_ND;
     p = dR->p;
     precision = dR->precision;
