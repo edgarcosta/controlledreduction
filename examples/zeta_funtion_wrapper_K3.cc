@@ -19,7 +19,8 @@ int main()
   // --> x^4 +  x*y^3 + z*w^3 + x^3*y + z^3*w = 0 over F_23
   char buffer[] = "23\n[[4 0 0 0] [1  3  0  0]  [0  0  1  3]  [3  1  0  0]  [0  0  3  1]]\n[1 1  1  1  1]";
   ZZX cp;
-  zeta_function(cp, buffer, true, 1);
+  Mat<ZZ> Frob;
+  zeta_function(cp, Frob, buffer, true, 1);
   cout << cp << endl;
 
   return 0;

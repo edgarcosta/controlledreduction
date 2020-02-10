@@ -138,6 +138,16 @@ T  factorial (int64_t n, int64_t start = 1) {
     return result;
 }
 
+template<typename T>
+T max(const NTL::Vec<T> &v)
+{
+    T m = v[0];
+    for(int64_t i = 1; i < v.length(); ++i)
+        if(v[i] > m)
+            m = v[i];
+    return m;
+}
+
 // returns v_p(n!) and result = (n! / p^{v_p(n!)})
 int64_t factorial_p_adic(NTL::ZZ_p &result, const int64_t n, const int64_t p, const int64_t start = 1);
 

@@ -46,7 +46,8 @@ int main(int argc, char* argv[]) {
     f[v] = ZZ(lambda);
 
     ZZX cp;
-    zeta_function(cp, f, p, true);
+    Mat<ZZ> Frob;
+    zeta_function(cp, Frob, f, p, true);
     cout << cp << endl;
     return 0;
 }

@@ -1,4 +1,4 @@
-// Copyright 2017-2018 Edgar Costa
+// Copyright 2017-2020 Edgar Costa
 // See LICENSE file for license details.
 
 #include "wrapper.h"
@@ -25,7 +25,16 @@
 using namespace std;
 using namespace NTL;
 
-void zeta_function(ZZX &zeta, const map< Vec<int64_t>, ZZ, vi64less> &f, const int64_t &p, const bool &verbose, const int threads)
+void zeta_function(
+    ZZX &zeta, // the zeta function
+    Mat<ZZ> &Frob_ZZ, // the Frobenius matrix
+    const map< Vec<int64_t>, ZZ, vi64less> &f, //f as a vector
+    const int64_t &p, //the prime p
+    const bool &verbose, //enable/disable verbose mode
+    const int threads, //number of threads
+    const int64_t &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
+    const bool  &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
+    )
 {
     #ifdef _OPENMP
     omp_set_num_threads(threads);
@@ -38,11 +47,35 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, ZZ, vi64less> &f, const i
     for(int64_t i = 0; i < n + 1; ++i)
         d += monomial[i];
 
+
     Vec<int64_t> N;
     Vec<int64_t> charpoly_prec;
     int64_t precision;
     //populates precision, N, and charpoly_prec
     default_args(precision, N, charpoly_prec, p, n, d);
+    if(min_abs_precision > 0) {
+      // lets figure out an upper bound for the relative precision vector
+      Vec<int64_t> r_vector;
+      r_vector.SetLength(n);
+      for(int64_t i = 0; i < n; ++i) {
+        r_vector[i] = N[i] + (i + 1) - n;
+      }
+
+      // we can now modify r_vector accordingly
+      for(int64_t i = 0; i < n; ++i) {
+        r_vector[i] = max(r_vector[i], min_abs_precision - (n - 1) + i);
+        N[i] = r_vector[i] + n - (i + 1);
+        precision = r_vector[i] + max(int64_t(0), valuation_of_factorial(p * (i + N[i]) - 1, p) - i);
+      }
+      // too messy for small p
+      if( p < 2*n + max(r_vector) ) {
+          cout <<"p is too small, only implemented for p >= 2*n + r = ";
+          cout << 2*n + max(r_vector) << endl;
+          cout<<"bye bye"<<endl;
+          abort();
+      }
+    }
+
     {
         zz_pPush push(p);
         ZZ_pPush push2(power_ZZ(p,precision));
@@ -57,7 +90,10 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, ZZ, vi64less> &f, const i
             abort();
         }
         // try to find a change of variables
-        Mat<zz_p> M = find_change_of_variables(fp, p*100 + 100);
+        Mat<zz_p> M;
+        if(find_better_model) {
+          find_change_of_variables(fp, p*100 + 100);
+        }
         bool is_ND = !IsZero(M);
         Mat<ZZ_p> Frob;
 
@@ -69,7 +105,7 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, ZZ, vi64less> &f, const i
             hypersurface_non_degenerate hs_ND(p, precision, f_map, verbose);
             assert(hs_ND.dR->coKernels_J_basis.length() + 1 == charpoly_prec.length() );
             Frob = hs_ND.frob_matrix_ND(N);
-            //FIXME
+            // FIXME?
             //delete hs_ND.dR_ND;
         }
         else
@@ -79,12 +115,12 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, ZZ, vi64less> &f, const i
             hypersurface hs(p, precision, fp, verbose);
             assert(hs.dR->coKernels_J_basis.length() + 1 == charpoly_prec.length() );
             Frob = hs.frob_matrix_J(N);
+            // FIXME?
             //delete hs.dR;
         }
         if (verbose)
             cout << "Frob = "<<Frob<<endl;
 
-        Mat<ZZ> Frob_ZZ;
         Frob_ZZ = conv< Mat<ZZ> >(Frob);
         Vec<ZZ> cp = charpoly_frob(Frob_ZZ, charpoly_prec, p, n - 1);
         if(verbose)
@@ -95,23 +131,45 @@ void zeta_function(ZZX &zeta, const map< Vec<int64_t>, ZZ, vi64less> &f, const i
 }
 
 
-void zeta_function(ZZX &zeta, const vector< vector<int64_t> > &monomials, const vector<ZZ> &coefficients, const int64_t &p, const bool &verbose, const int threads)
+void zeta_function(
+    ZZX &zeta, // the zeta function
+    Mat<ZZ> &Frob_ZZ, // the Frobenius matrix
+    const vector< vector<int64_t> > &monomials, // monomials of f
+    const vector<ZZ> &coefficients, // coefficient of f
+    const int64_t &p, //the prime p
+    const bool &verbose, //enable/disable verbose mode
+    const int threads, //number of threads
+    const int64_t &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
+    const bool  &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
+    )
 {
     map< Vec<int64_t>, ZZ, vi64less> f_map;
     assert( monomials.size() == coefficients.size() );
-    for(size_t i = 0; i < monomials.size(); ++i) {
+    for(uint64_t i = 0; i < monomials.size(); ++i) {
         Vec<int64_t> monomial;
         monomial.SetLength(monomials[i].size(), 0);
-        for(size_t j = 0; j < monomials[i].size(); ++j) 
+        for(uint64_t j = 0; j < monomials[i].size(); ++j)
             monomial[j] = monomials[i][j];
         f_map[ monomial ] = coefficients[i];
     }
-    zeta_function(zeta, f_map, p, verbose, threads);
+    zeta_function(zeta, Frob_ZZ, f_map,
+        p, verbose, threads, min_abs_precision, find_better_model);
 }
 
-void zeta_function(ZZX &zeta, const vector< vector<int64_t> > &monomials, const vector<int64_t> &coefficients, const int64_t &p, const bool &verbose, const int threads)
+void zeta_function(
+    ZZX &zeta, // the zeta function
+    Mat<ZZ> &Frob_ZZ, // the Frobenius matrix
+    const vector< vector<int64_t> > &monomials,
+    const vector<int64_t> &coefficients,
+    const int64_t &p, //the prime p
+    const bool &verbose, //enable/disable verbose mode
+    const int threads, //number of threads
+    const int64_t &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
+    const bool  &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
+    )
 {
-  zeta_function(zeta, monomials, vector<ZZ>(coefficients.begin(), coefficients.end()), p, verbose, threads);
+  zeta_function(zeta, Frob_ZZ, monomials, vector<ZZ>(coefficients.begin(), coefficients.end()),
+      p, verbose, threads, min_abs_precision, find_better_model);
 }
 
 
@@ -121,7 +179,15 @@ void zeta_function(ZZX &zeta, const vector< vector<int64_t> > &monomials, const 
  *      f.keys()
  *      f.values()
  */
-void zeta_function(ZZX &zeta, const char* input, const bool &verbose, const int threads)
+void zeta_function(
+    ZZX &zeta, // the zeta function
+    Mat<ZZ> &Frob_ZZ, // the Frobenius matrix
+    const char* input,
+    const bool &verbose, //enable/disable verbose mode
+    const int threads, //number of threads
+    const int64_t &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
+    const bool  &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
+    )
 {
     int64_t p;
     map< Vec<int64_t>, ZZ, vi64less> f;
@@ -129,5 +195,6 @@ void zeta_function(ZZX &zeta, const char* input, const bool &verbose, const int 
     buffer << input;
     buffer >> p;
     buffer >> f;
-    zeta_function(zeta, f, p, verbose, threads);
+    zeta_function(zeta, Frob_ZZ, f,
+        p, verbose, threads, min_abs_precision, find_better_model);
 }

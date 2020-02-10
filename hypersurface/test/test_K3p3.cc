@@ -99,5 +99,5 @@ int main()
     cout << "PASS ";
     timestamp_report(pair);
     cout << endl;
-    return 0; 
+    return 0;
 }

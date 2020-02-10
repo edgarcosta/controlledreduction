@@ -26,9 +26,10 @@ int test_dwork() {
   coef.push_back(ZZ(1));
   ZZX cp;
 
-  cout<<"zeta_function(ZZX, vector< vector<int64_t> >, vector<ZZ>, 23, false, 1) K3 dwork...";
+  cout<<"zeta_function(ZZX, Mat<ZZ>, vector< vector<int64_t> >, vector<ZZ>, 23, false, 1) K3 dwork...";
   fflush(stdout);
-  zeta_function(cp, mon, coef, 23, false, 1);
+  Mat<ZZ> Frob;
+  zeta_function(cp, Frob, mon, coef, 23, false, 1);
   ZZX expected;
 
   stringstream buffer;
@@ -47,9 +48,10 @@ int test_dwork() {
 int test_genus3() {
   char input[] = "17\n[[1 2 1] [2 0 2] [3 1 0] [1 3 0] [2 2 0] [0 2 2] [1 1 2] [3 0 1] [0 0 4] [2 1 1] [1 0 3] [0 4 0]]\n[-3 1 1 -4 1 3 -3 1 2 3 -4 2]";
   ZZX out;
-  cout<<"test zeta_function(ZZX, string, false, 1) g=3...";
+  Mat<ZZ> Frob;
+  cout<<"test zeta_function(ZZX, Mat<ZZ>, string, false, 1) g=3...";
   fflush(stdout);
-  zeta_function(out, input, false, 1);
+  zeta_function(out, Frob, input, false, 1);
   stringstream buffer;
   buffer << "[4913 -4046 1887 -548 111 -14 1]";
   ZZX expected;
@@ -68,9 +70,10 @@ int test_genus3() {
 int test_K3() {
   char input[] = "23\n[[4 0 0 0] [1  3  0  0]  [0  0  1  3]  [3  1  0  0]  [0  0  3  1]]\n[1 1  1  1  1]";
   ZZX out;
-  cout<<"test zeta_function(ZZX, string, false, 1) K3...";
+  Mat<ZZ> Frob;
+  cout<<"test zeta_function(ZZX, Mat<ZZ>, string, false, 1) K3...";
   fflush(stdout);
-  zeta_function(out, input, false, 1);
+  zeta_function(out, Frob, input, false, 1);
   stringstream buffer;
   buffer << "[-39471584120695485887249589623 1716155831334586342923895201 694248294717583133054278966 -30184708465981875350186042 -5562277647022665774607627 241838158566202859765549 26802637582333589558408 -1165332068797112589496 -86212132515567942814 3748353587633388818 193710366435022724 -8422189845000988 -308075416095454 13394583308498 342258975368 -14880825016 -253815787 11035469 113206 -4922 -23 1]";
   ZZX expected;

@@ -7,7 +7,9 @@
 
 #include<NTL/vector.h>
 
-//we can do this much better..... see toric code
+//we can do this much better
+// see toric code
+// or the block if(min_abs_precision > 0) in zeta_function
 void default_args(int64_t &precision, NTL::Vec<int64_t> &N, NTL::Vec<int64_t> &charpoly_prec, const int64_t &p, const int64_t &n, const int64_t &d)
 {
     std::stringstream buffer;
