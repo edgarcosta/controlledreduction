@@ -15,7 +15,7 @@ endef
 export
 
 HEADERS = $(patsubst %, %.h, $(SOURCE_DIRS)) timing.h
-SOURCES = $(wildcard $(patsubst %, %/*.cc, $(SOURCE_DIRS)))  
+SOURCES = $(wildcard $(patsubst %, %/*.cc, $(SOURCE_DIRS)))
 OBJS = $(patsubst %.cc, build/%.o, $(SOURCES))
 LOBJS = $(patsubst %.cc, build/%.lo, $(SOURCES))
 MOD_LOBJS = $(patsubst %, build/%.lo, $(SOURCE_DIRS))
@@ -28,7 +28,7 @@ EXAMPLES = $(patsubst %.cc, build/%$(EXEEXT), $(EXAMPLE_SOURCES))
 TEST_SOURCES = $(wildcard $(patsubst %, %/test/*.cc, $(SOURCE_DIRS)))  $(wildcard test/*.cc)
 TESTS = $(patsubst %.cc, build/%$(EXEEXT), $(TEST_SOURCES))
 
-BINARIES = 
+BINARIES =
 
 all: $(OBJS) test examples
 
@@ -47,13 +47,13 @@ build/%.o: %.cc $(HEADERS) | build_dirs
 build/%.lo: %.cc $(HEADERS) | build_dirs
 	$(CXX) -fPIC $(CXXFLAGS) $(INCS) -c $< -o $@;
 
-$(TESTS) : % : %.o $(OBJS) 
+$(TESTS) : % : %.o $(OBJS)
 	$(CXX) $(CXXFLAGS) $(INCS) $^ -o $@ $(LIBS)
 
-build/%.valgrind : %.cc $(SOURCES) 
+build/%.valgrind : %.cc $(SOURCES)
 	$(CXX) $(CXXFLAGS) $(INCS) $^ -o $@ $(LIBS)
 
-$(EXAMPLES) : % : %.o $(OBJS) 
+$(EXAMPLES) : % : %.o $(OBJS)
 	$(CXX) $(CXXFLAGS) $(INCS) $^ -o $@ $(LIBS)
 
 build_dirs: $(BUILD_DIRS)
@@ -65,7 +65,7 @@ $(BUILD_DIRS): % :
 check: test
 	$(AT)$(foreach test_executable, $(TESTS), $(call test_executable) || exit $$?;)
 
-$(CONTROLLEDREDUCTION_LIB): $(LOBJS) $(SOURCES) $(HEADERS) | build_dirs 
+$(CONTROLLEDREDUCTION_LIB): $(LOBJS) $(SOURCES) $(HEADERS) | build_dirs
 	$(CXX) -shared $(EXTRA_SHARED_FLAGS) $(CXXFLAGS)  $(LOBJS) -o $(CONTROLLEDREDUCTION_LIB) $(LIBS); \
 	ln -sf "$(CONTROLLEDREDUCTION_LIB)" "$(CONTROLLEDREDUCTION_LIBNAME)"; \
 	ln -sf "$(CONTROLLEDREDUCTION_LIB)" "$(CONTROLLEDREDUCTION_LIBNAME).$(CONTROLLEDREDUCTION_MAJOR)";
@@ -87,10 +87,13 @@ install: shared
 	cp $(CONTROLLEDREDUCTION_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"
 	cp -a $(shell ls $(CONTROLLEDREDUCTION_LIBNAME)*) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"
 	cp $(HEADERS) $(DESTDIR)$(PREFIX)/include/controlledreduction
+	if [ $(OS) = "Darwin" ]; then \
+		install_name_tool -id "$(DESTDIR)$(PREFIX)/$(LIBDIR)/$(CONTROLLEDREDUCTION_LIB)" "$(DESTDIR)$(PREFIX)/$(LIBDIR)/$(CONTROLLEDREDUCTION_LIBNAME)"; \
+	fi
 
 print-%:
 	@echo '$*=$($*)'
 
-.PHONY: clean library shared static clean examples check tests install 
+.PHONY: clean library shared static clean examples check tests install
 
 

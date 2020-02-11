@@ -435,6 +435,7 @@ echo "CONTROLLEDREDUCTION_LIBNAME=$CONTROLLEDREDUCTION_LIBNAME" >> Makefile
 echo "CONTROLLEDREDUCTION_MAJOR=$CONTROLLEDREDUCTION_MAJOR" >> Makefile
 echo "CONTROLLEDREDUCTION_SOLIB=$CONTROLLEDREDUCTION_SOLIB" >> Makefile
 echo "PREFIX=$PREFIX" >> Makefile
+echo "OS=$OS" >> Makefile
 echo "" >> Makefile
 echo "" >> Makefile
 echo "INCS=$INCS" >> Makefile
