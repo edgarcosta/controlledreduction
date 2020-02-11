@@ -31,9 +31,9 @@ void zeta_function(
     const map< Vec<int64_t>, ZZ, vi64less> &f, //f as a vector
     const int64_t &p, //the prime p
     const bool &verbose, //enable/disable verbose mode
-    const int threads, //number of threads
-    const int64_t &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
-    const bool  &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
+    const int &threads, //number of threads
+    const int &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
+    const bool &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
     )
 {
     #ifdef _OPENMP
@@ -138,9 +138,9 @@ void zeta_function(
     const vector<ZZ> &coefficients, // coefficient of f
     const int64_t &p, //the prime p
     const bool &verbose, //enable/disable verbose mode
-    const int threads, //number of threads
-    const int64_t &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
-    const bool  &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
+    const int &threads, //number of threads
+    const int &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
+    const bool &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
     )
 {
     map< Vec<int64_t>, ZZ, vi64less> f_map;
@@ -163,9 +163,9 @@ void zeta_function(
     const vector<int64_t> &coefficients,
     const int64_t &p, //the prime p
     const bool &verbose, //enable/disable verbose mode
-    const int threads, //number of threads
-    const int64_t &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
-    const bool  &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
+    const int &threads, //number of threads
+    const int &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
+    const bool &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
     )
 {
   zeta_function(zeta, Frob_ZZ, monomials, vector<ZZ>(coefficients.begin(), coefficients.end()),
@@ -184,8 +184,8 @@ void zeta_function(
     Mat<ZZ> &Frob_ZZ, // the Frobenius matrix
     const char* input,
     const bool &verbose, //enable/disable verbose mode
-    const int threads, //number of threads
-    const int64_t &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
+    const int &threads, //number of threads
+    const int &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
     const bool  &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
     )
 {
