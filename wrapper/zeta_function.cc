@@ -84,25 +84,37 @@ void zeta_function(
         for(map< Vec<int64_t>, ZZ, vi64less>::const_iterator fit = f.begin(); fit != f.end(); ++fit)
             fp[ fit->first ] = conv<zz_p>(fit->second);
 
+        map< Vec<int64_t>, ZZ_p, vi64less> f_ZZp;
+        for(map< Vec<int64_t>, ZZ, vi64less>::const_iterator fit = f.begin(); fit != f.end(); ++fit)
+            f_ZZp[ fit->first ] = conv<ZZ_p>(fit->second);
+
         if(!isSmooth(fp))
         {
             cerr << "f is not smooth!" <<endl;
             abort();
         }
-        // try to find a change of variables
-        Mat<zz_p> M;
-        if(find_better_model) {
-          find_change_of_variables(fp, p*100 + 100);
+        bool is_ND = isND(fp);
+        if(!is_ND and find_better_model) {
+          Mat<zz_p> M = find_change_of_variables(fp, p*100 + 100);
+          if(!IsZero(M)) {
+            if (verbose) {
+                cout<<"Found a change of variables!"<<endl;
+            }
+            Mat<ZZ_p> M_ZZ_p = conv< Mat<ZZ_p> >(conv<Mat<ZZ> >(M));
+            f_ZZp = change_of_variables<ZZ_p>(f_ZZp, M_ZZ_p);
+            is_ND = true;
+          } else {
+            if(verbose) {
+                cout<<"Wasn't able to find a suitable change of variables to make it non degenerate!"<<endl;
+            }
+          }
+
         }
-        bool is_ND = !IsZero(M);
         Mat<ZZ_p> Frob;
 
         if( is_ND )
         {
-            if (verbose)
-                cout<<"Found a change of variables!"<<endl;
-            map< Vec<int64_t>, zz_p, vi64less> f_map = change_of_variables<zz_p>(fp, M);
-            hypersurface_non_degenerate hs_ND(p, precision, f_map, verbose);
+            hypersurface_non_degenerate hs_ND(p, precision, f_ZZp, verbose);
             assert(hs_ND.dR->coKernels_J_basis.length() + 1 == charpoly_prec.length() );
             Frob = hs_ND.frob_matrix_ND(N);
             // FIXME?
@@ -110,9 +122,7 @@ void zeta_function(
         }
         else
         {
-            if(verbose)
-                cout<<"Wasn't able to find a suitable change of variables to make it non degenerate!"<<endl;
-            hypersurface hs(p, precision, fp, verbose);
+            hypersurface hs(p, precision, f_ZZp, verbose);
             assert(hs.dR->coKernels_J_basis.length() + 1 == charpoly_prec.length() );
             Frob = hs.frob_matrix_J(N);
             // FIXME?
