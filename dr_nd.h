@@ -97,6 +97,8 @@ class de_Rham_non_degenerate_local : public de_Rham_local{
 
         de_Rham_non_degenerate_local(){};
         de_Rham_non_degenerate_local(int64_t p, int64_t precision, int64_t n, int64_t d, bool verbose, bool save_memory = true);
+        de_Rham_non_degenerate_local(int64_t p, int64_t precision, int64_t n, int64_t d, Vec<ZZ_p> fbar_vector, bool verbose, bool save_memory = true);
+        de_Rham_non_degenerate_local(int64_t p, int64_t precision, map< Vec<int64_t>, ZZ_p, vi64less> fbar, bool verbose, bool save_memory = true);
         de_Rham_non_degenerate_local(int64_t p, int64_t precision, int64_t n, int64_t d, Vec<zz_p> fbar_vector, bool verbose, bool save_memory = true);
         de_Rham_non_degenerate_local(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, vi64less> fbar, bool verbose, bool save_memory = true);
         de_Rham_non_degenerate_local(const char* filename);
@@ -104,7 +106,7 @@ class de_Rham_non_degenerate_local : public de_Rham_local{
 
         ~de_Rham_non_degenerate_local(){};
 
-        void init_ND(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, vi64less> fbar, bool verbose, bool save_memory);
+        void init_ND(int64_t p, int64_t precision, map< Vec<int64_t>, ZZ_p, vi64less> f, bool verbose, bool save_memory);
         
 
         /*

@@ -9,23 +9,42 @@
 void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_t Mlength, const int64_t k, const fmpz * G, fmpz_t modulus);
 
 //constructors
-de_Rham_non_degenerate_local::de_Rham_non_degenerate_local(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, vi64less> fbar, bool verbose, bool save_memory)
-{
-    init_ND(p, precision, fbar, verbose, save_memory);
+de_Rham_non_degenerate_local::de_Rham_non_degenerate_local(int64_t p, int64_t precision, int64_t n, int64_t d, Vec<ZZ_p> f_vector, bool verbose, bool save_memory) {
+    Vec< Vec<int64_t> > tuple_d;
+    map< Vec<int64_t>, ZZ_p, vi64less> f_map;
+    int64_t i;
+    tuple_list_generator(tuple_d, d, (int64_t) (n + 1) );
+    assert(tuple_d.length() == f_vector.length() );
+    for( i = 0; i < (int64_t) f_vector.length() ; i++)
+        f_map[ tuple_d[i] ] = f_vector[i];
+
+    init_ND(p, precision, f_map, verbose,save_memory);
+
+}
+de_Rham_non_degenerate_local::de_Rham_non_degenerate_local(int64_t p, int64_t precision, map< Vec<int64_t>, ZZ_p, vi64less> f, bool verbose, bool save_memory) {
+    init_ND(p, precision, f, verbose, save_memory);
+};
+de_Rham_non_degenerate_local::de_Rham_non_degenerate_local(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, vi64less> fbar, bool verbose, bool save_memory) {
+    // naively lift fbar to f
+    map< Vec<int64_t>, zz_p, vi64less>::iterator it;
+    for(it = fbar.begin(); it != fbar.end(); ++it) {
+        f[it->first] = rep(it->second);
+    }
+    init_ND(p, precision, f, verbose, save_memory);
 }
 
 
 de_Rham_non_degenerate_local::de_Rham_non_degenerate_local(int64_t p, int64_t precision, int64_t n, int64_t d, Vec<zz_p> fbar_vector, bool verbose, bool save_memory)
 {
     Vec< Vec<int64_t> > tuple_d;
-    map< Vec<int64_t>, zz_p, vi64less> fbar_map;
+    map< Vec<int64_t>, ZZ_p, vi64less> f_map;
     int64_t i;
     tuple_list_generator(tuple_d, d, (int64_t) (n + 1) );
     assert(tuple_d.length() == fbar_vector.length() );
     for( i = 0; i < (int64_t) fbar_vector.length() ; i++)
-        fbar_map[ tuple_d[i] ] = fbar_vector[i];
+        f_map[ tuple_d[i] ] = rep(fbar_vector[i]);
 
-    init_ND(p, precision, fbar_map, verbose,save_memory);
+    init_ND(p, precision, f_map, verbose,save_memory);
 
 }
 
@@ -71,7 +90,7 @@ de_Rham_non_degenerate_local::de_Rham_non_degenerate_local(int64_t p, int64_t pr
     this->precision = precision;
 
 
-    init_ND(p, precision, fbar, verbose, save_memory);
+    init_ND(p, precision, f, verbose, save_memory);
 }
 
 de_Rham_non_degenerate_local::de_Rham_non_degenerate_local(const char* filename)
@@ -164,9 +183,9 @@ de_Rham_non_degenerate_local::de_Rham_non_degenerate_local(const char* filename)
     }
 }
 
-void de_Rham_non_degenerate_local::init_ND(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, vi64less> fbar, bool verbose, bool save_memory)
+void de_Rham_non_degenerate_local::init_ND(int64_t p, int64_t precision, map< Vec<int64_t>, ZZ_p, vi64less> f, bool verbose, bool save_memory)
 {
-    init(p, precision, fbar, verbose, save_memory);
+    init(p, precision, f, verbose, save_memory);
 
     int64_t i, j;
     ZZX pol, H;

@@ -1,26 +1,48 @@
 // Copyright 2013-2017 Edgar Costa
 // See LICENSE file for license details.
 // dr.cpp: routines for the class de_Rham_local
-   
+
 #include "dr.h"
 //constructors
+de_Rham_local::de_Rham_local(int64_t p, int64_t precision, map< Vec<int64_t>, ZZ_p, vi64less> f, bool verbose , bool save_memory) {
+    init(p, precision, f, verbose, save_memory);
+}
+
+de_Rham_local::de_Rham_local(int64_t p, int64_t precision, int64_t n, int64_t d, Vec< ZZ_p> f_vector, bool verbose, bool save_memory) {
+    Vec< Vec<int64_t> > tuple_d;
+    map< Vec<int64_t>, ZZ_p, vi64less> f_map;
+    int64_t i;
+    tuple_list_generator(tuple_d, d, (int64_t) (n + 1) );
+    assert(tuple_d.length() == f_vector.length() );
+    for( i = 0; i < (int64_t) f_vector.length() ; i++)
+        f_map[ tuple_d[i] ] = f_vector[i];
+
+    init(p, precision, f_map, verbose, save_memory);
+}
+
 
 de_Rham_local::de_Rham_local(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, vi64less> fbar, bool verbose, bool save_memory)
 {
-    init(p, precision, fbar, verbose, save_memory);
+    // naively lift fbar to f
+    map< Vec<int64_t>, zz_p, vi64less>::iterator it;
+    for(it = fbar.begin(); it != fbar.end(); ++it) {
+        f[it->first] = rep(it->second);
+    }
+    init(p, precision, f, verbose, save_memory);
 }
 
 de_Rham_local::de_Rham_local(int64_t p, int64_t precision, int64_t n, int64_t d, Vec<zz_p> fbar_vector, bool verbose, bool save_memory)
 {
     Vec< Vec<int64_t> > tuple_d;
-    map< Vec<int64_t>, zz_p, vi64less> fbar_map;
+    map< Vec<int64_t>, ZZ_p, vi64less> f_map;
     int64_t i;
     tuple_list_generator(tuple_d, d, (int64_t) (n + 1) );
     assert(tuple_d.length() == fbar_vector.length() );
     for( i = 0; i < (int64_t) fbar_vector.length() ; i++)
-        fbar_map[ tuple_d[i] ] = fbar_vector[i];
+        // naively lift fbar to f
+        f_map[ tuple_d[i] ] = rep(fbar_vector[i]);
 
-    init(p, precision, fbar_map, verbose, save_memory);
+    init(p, precision, f_map, verbose, save_memory);
 
 }
 
@@ -56,7 +78,7 @@ de_Rham_local::de_Rham_local(int64_t p, int64_t precision, int64_t n, int64_t d,
             x = random_zz_p();
             fbar[ tuple_list[d][i] ] = x;
             f[ tuple_list[d][i] ] = rep( x );
-        
+
         }
         B = (get_solve_J((d-2)*(n+1)+1))->first;
         boolean = bool( B.length() != 0 );
@@ -64,10 +86,10 @@ de_Rham_local::de_Rham_local(int64_t p, int64_t precision, int64_t n, int64_t d,
 
     solve_J.clear();
     this->precision = precision;
-    
-    init(p, precision, fbar, verbose, save_memory);
 
-    
+    init(p, precision, f, verbose, save_memory);
+
+
 }
 
 de_Rham_local::de_Rham_local(const char* filename)
@@ -90,7 +112,7 @@ de_Rham_local::de_Rham_local(const char* filename)
         file >> d;
         file >> Hilbert_J;
         file >> fbar_vector;
-        
+
         tuple_list.SetLength( (n + 1) * d + 1);
         tuple_dict.SetLength( (n + 1) * d + 1);
         for(i = 0 ; i < (n + 1) * d + 1 ; i++)
@@ -130,7 +152,7 @@ de_Rham_local::de_Rham_local(const char* filename)
         {
             coKernels_J_basis_dict[ coKernels_J_basis[i] ] = i;
         }
-        
+
     }
     else
     {

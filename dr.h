@@ -104,13 +104,16 @@ class de_Rham_local{
          */
         de_Rham_local(){};
         de_Rham_local(int64_t p, int64_t precision, int64_t n, int64_t d, bool verbose, bool save_memory = true);
+        de_Rham_local(int64_t p, int64_t precision, int64_t n, int64_t d, Vec< ZZ_p> f_vector, bool verbose, bool save_memory = true);
+        de_Rham_local(int64_t p, int64_t precision, map< Vec<int64_t>, ZZ_p, vi64less> f, bool verbose , bool save_memory = true);
+        // if given fbar, we lift to f naively
         de_Rham_local(int64_t p, int64_t precision, int64_t n, int64_t d, Vec< zz_p> fbar_vector, bool verbose, bool save_memory = true);
         de_Rham_local(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, vi64less> fbar, bool verbose , bool save_memory = true);
         de_Rham_local(const char * filename);
         virtual bool save(const char * filename);
         virtual ~de_Rham_local(){};
 
-        void init(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, vi64less> fbar, bool verbose, bool save_memory);
+        void init(int64_t p, int64_t precision, map< Vec<int64_t>, ZZ_p, vi64less> f, bool verbose, bool save_memory);
 
         /*
          * computes all the reduction and inclusion matrices

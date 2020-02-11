@@ -4,26 +4,26 @@
 #include "dr.h"
 
 //basically a constructor
-void de_Rham_local::init(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, vi64less> fbar, bool verbose, bool save_memory)
+void de_Rham_local::init(int64_t p, int64_t precision, map< Vec<int64_t>, ZZ_p, vi64less> f, bool verbose, bool save_memory)
 {
     int64_t i, j;
     ZZX pol, H;
     pair< Vec<int64_t>, Mat<ZZ_p> >* solve_pair;
 
-    map< Vec<int64_t>, zz_p, vi64less>::iterator it;
+    map< Vec<int64_t>, ZZ_p, vi64less>::iterator it;
 
 
     this->p = p;
     this->precision = precision;
     this->verbose = verbose;
     this->save_memory = save_memory;
-    this->fbar = fbar;
-    for(it = fbar.begin(); it != fbar.end(); it++)
+    this->f = f;
+    for(it = f.begin(); it != f.end(); it++)
     {
-        f[it->first] = rep(it->second);
+        fbar[it->first] = rep(it->second) % p;
     }
 
-    it = fbar.begin();
+    it = f.begin();
     n = (int64_t) (it->first).length() - 1;
     d = 0;
     for(i = 0; i <= n; i++)
@@ -36,8 +36,8 @@ void de_Rham_local::init(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, 
         cout<<" p = "<<p;
         cout<<" precision = "<<precision;
         cout<<endl;
-        cout <<"fbar = \n";
-        cout <<= fbar;
+        cout <<"f = \n";
+        cout <<= f;
         cout <<endl;
     }
 
