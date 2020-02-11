@@ -345,7 +345,11 @@ if [ "$GDB" = "1" ]; then
 fi
 
 if [ "$OPENMP" = "1" ]; then
-    FLAGS="${FLAGS} -fopenmp";
+  if [ $OS = "Darwin" ]; then
+    FLAGS="${FLAGS} -Xpreprocessor"
+    LIBS="${LIBS} -lomp"
+  fi
+  FLAGS="${FLAGS} -fopenmp";
 fi
 
 if [ "$ASSERT" = "0" ]; then

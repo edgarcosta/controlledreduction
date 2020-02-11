@@ -1,6 +1,6 @@
 // Copyright 2013-2017 Edgar Costa
 // See LICENSE file for license details.
-   
+
 #include "dr.h"
 
 //basically a constructor
@@ -9,9 +9,9 @@ void de_Rham_local::init(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, 
     int64_t i, j;
     ZZX pol, H;
     pair< Vec<int64_t>, Mat<ZZ_p> >* solve_pair;
-    
+
     map< Vec<int64_t>, zz_p, vi64less>::iterator it;
-    
+
 
     this->p = p;
     this->precision = precision;
@@ -41,11 +41,11 @@ void de_Rham_local::init(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, 
         cout <<endl;
     }
 
-    
+
     assert(d>n);
 
     assert(d%p != 0);
-    
+
     tuple_list.SetLength( (n + 1) * d + 1);
     tuple_dict.SetLength( (n + 1) * d + 1);
     for(i = 0 ; i < (n + 1) * d + 1 ; i++)
@@ -81,7 +81,7 @@ void de_Rham_local::init(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, 
 
     solve_pair = get_solve_J((d - 2)*(n + 1) + 1);
     assert((solve_pair->first).length() == 0);
- 
+
     for( i = 0 ; i < n; i++)
     {
         solve_pair = get_solve_J((i+1)*d-(n+1));
@@ -95,7 +95,7 @@ void de_Rham_local::init(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, 
     for( i = 0; i < (int64_t)coKernels_J_basis.length(); i++ )
     {
         coKernels_J_basis_dict[ coKernels_J_basis[i] ] = i;
-    }    
+    }
 
 }
 
