@@ -1,6 +1,6 @@
 // Copyright 2013-2017 Edgar Costa
 // See LICENSE file for license details.
-// 
+//
 // hypersurface_bs.cpp: routines for the class hypersurface hypersurface_non_degenerate
 
 #include "hypersurface_nd.h"
@@ -83,11 +83,11 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_ZZ(const int64_t coordinate, cons
         ones[i] = 1;
 
     ei = dR_ND->coKernels_J_basis[coordinate];
-    
+
     F.SetLength(dR_ND->coKernels_J_basis.length());
 
     compute_fpow(N-1);
-    
+
     if( loop == 0)
     {
         Vec<long> fpow_length;
@@ -106,7 +106,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_ZZ(const int64_t coordinate, cons
     m = (sum + n + 1)/d;
 
     dpowern = dR_ND->coKernels_ND_basis.length();
-    
+
     H_last.SetLength(dpowern);
 
     for( e = m + N - 1; e != 0; e--)
@@ -168,7 +168,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_ZZ(const int64_t coordinate, cons
 
             G = conv< Vec<ZZ> >(Hit->second);
             // choosing the main reduction direction
-            
+
             if( e > 1)
             {
                 sum = 0;
@@ -194,7 +194,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_ZZ(const int64_t coordinate, cons
             dest = p*Hit->first;
 
             end = (e > 1)? p: p - 1;
-            
+
             switch(loop)
             {
                 case 0:
@@ -291,7 +291,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_ZZ_p(const int64_t coordinate, co
         ones[i] = 1;
 
     ei = dR_ND->coKernels_J_basis[coordinate];
-    
+
     F.SetLength(dR_ND->coKernels_J_basis.length());
 
     compute_fpow(N-1);
@@ -303,7 +303,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_ZZ_p(const int64_t coordinate, co
     m = (sum + n + 1)/d;
 
     dpowern = dR_ND->coKernels_ND_basis.length();
-    
+
     H_last.SetLength(dpowern);
 
     for( e = m + N - 1; e != 0; e--)
@@ -343,7 +343,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_ZZ_p(const int64_t coordinate, co
         //assert( fact == factorial<ZZ_p>( p * (m + N - 1) - 1, p*e ) );
         end = (e > 1) ? p : p - 1;
 
-        
+
         for( i = 0; i < end ; i++)
             fact *= p*e - i - 1;
         /*
@@ -362,7 +362,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_ZZ_p(const int64_t coordinate, co
 
             G = Hit->second;
             // choosing the main reduction direction
-            
+
             if( e > 1)
             {
                 sum = 0;
@@ -388,7 +388,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_ZZ_p(const int64_t coordinate, co
             dest = p*Hit->first;
 
             //end = (e > 1)? p: p - 1;
-            
+
             switch(loop)
             {
                 case 0:
@@ -433,7 +433,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_ZZ_p(const int64_t coordinate, co
     assert(IsZero(remainder));
     inv(fact, to_ZZ_p(tmp) );
     F *= fact;
-    
+
     if( n - 1 >= val)
         F *= to_ZZ_p(power_ZZ(p, n - 1 - val));
     else
@@ -478,12 +478,12 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_flint(const int64_t coordinate, c
         ones[i] = 1;
 
     ei = dR_ND->coKernels_J_basis[coordinate];
-    
+
     F.SetLength(dR_ND->coKernels_J_basis.length());
 
     compute_fpow(N-1);
-    
-    
+
+
     sum = 0;
     for(i = 0; i <= n; i++)
         sum += ei[i];
@@ -491,7 +491,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_flint(const int64_t coordinate, c
     m = (sum + n + 1)/d;
 
     dpowern = dR_ND->coKernels_ND_basis.length();
-    
+
     H_last.SetLength(dpowern);
 
     for( e = m + N - 1; e != 0; e--)
@@ -573,7 +573,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_flint(const int64_t coordinate, c
                 }
 
                 // choosing the main reduction direction
-                
+
                 if( e > 1)
                 {
                     sum = 0;
@@ -614,10 +614,10 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_flint(const int64_t coordinate, c
             #pragma omp parallel for shared(G_list, poly_list, end, dpowern, modulus) private(i) schedule(dynamic)
             for( i = 0; i < Hlen; i++)
                 dR_ND->reduce_vector_ND_poly_flint(G_list + i*dpowern, poly_list + i*(n+2), end, G_list + i*dpowern, modulus);
-            
+
             for(i = 0; i < Hlen*(n+2); i++)
                 fmpz_mat_clear(poly_list + i);
-            
+
             for(i = 0; i < Hlen; i++)
             {
                 conv(G_ZZ_p, G_list + i*dpowern, dpowern);
@@ -676,7 +676,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_flint(const int64_t coordinate, c
                     sum = 0;
                     for(i = 0; i<= n; i++)
                         v[i] = 0;
-                    
+
                     if( e > m)
                         shift = ei;
                     else
@@ -706,11 +706,11 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_flint(const int64_t coordinate, c
                 conv(G_list + j*dpowern, Hit->second);
                 dR_ND->get_ND_poly_flint(poly_list + j*(n+2), dest, v);
                 //j++;
-                
+
                 dR_ND->reduce_vector_ND_poly_flint(G_list, poly_list, end, G_list, modulus);
-                
+
                 conv(G_ZZ_p, G_list, dpowern);
-                
+
                 conv(u, u_list, n + 1);
                 conv(v, v_list, n + 1);
 
@@ -741,7 +741,7 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_flint(const int64_t coordinate, c
             fmpz_clear(modulus);
             // reduced all terms from p*e to p*(e-1) and if e = 1 to basis
             H.swap(Hnew);
- 
+
         }
     }
     //Perform factorial division

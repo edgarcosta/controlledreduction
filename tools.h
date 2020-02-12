@@ -34,7 +34,7 @@
     } \
 }
 #else
-#define assert_print(condition, statement) ((void)0)
+#define assert_print(left, operator, right) ((void)0)
 #endif
 
 
