@@ -64,8 +64,9 @@ void zeta_function(
       // we can now modify r_vector accordingly
       for(int64_t i = 0; i < n; ++i) {
         r_vector[i] = max(r_vector[i], min_abs_precision - (n - 1) + i);
+        assert(r_vector[i] + n - (i + 1) >=  N[i]);
         N[i] = r_vector[i] + n - (i + 1);
-        precision = r_vector[i] + max(int64_t(0), valuation_of_factorial(p * (i + N[i]) - 1, p) - i);
+        precision = max(precision, r_vector[i] + max(int64_t(0), valuation_of_factorial(p * (i + N[i]) - 1, p) - i));
       }
       // too messy for small p
       if( p < 2*n + max(r_vector) ) {
