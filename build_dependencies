@@ -52,28 +52,28 @@ echoerr gmp-${GMP_VERSION} installed
 
 
 #Build mpir
-wget http://mpir.org/mpir-${MPIR_VERSION}.tar.bz2 -nv
-tar -xf mpir-${MPIR_VERSION}.tar.bz2
-rm mpir-${MPIR_VERSION}.tar.bz2
-cd mpir-${MPIR_VERSION}/
-./configure ABI=$ABI --enable-gmpcompat --prefix=${PREFIX}
-make -j4
-make install
-cd ..
-echoerr mpir-${MPIR_VERSION} installed
+#wget http://mpir.org/mpir-${MPIR_VERSION}.tar.bz2 -nv
+#tar -xf mpir-${MPIR_VERSION}.tar.bz2
+#rm mpir-${MPIR_VERSION}.tar.bz2
+#cd mpir-${MPIR_VERSION}/
+#./configure ABI=$ABI --enable-gmpcompat --prefix=${PREFIX}
+#make -j4
+#make install
+#cd ..
+#echoerr mpir-${MPIR_VERSION} installed
 
 #Build mpfr
-wget https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VERSION}.tar.bz2 -nv
-tar -xf mpfr-${MPFR_VERSION}.tar.bz2
-rm mpfr-${MPFR_VERSION}.tar.bz2
-cd mpfr-${MPFR_VERSION}/
-./configure ABI=$ABI --with-gmp-build=${TMP}/mpir-${MPIR_VERSION}/ --prefix=${PREFIX}
-make -j4
-make install
-cd ..
-rm -rf mpir-${MPIR_VERSION}/
-rm -rf mpfr-${MPFR_VERSION}/
-echoerr mpfr-${MPFR_VERSION} installed
+#wget https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VERSION}.tar.bz2 -nv
+#tar -xf mpfr-${MPFR_VERSION}.tar.bz2
+#rm mpfr-${MPFR_VERSION}.tar.bz2
+#cd mpfr-${MPFR_VERSION}/
+#./configure ABI=$ABI --with-gmp-build=${TMP}/mpir-${MPIR_VERSION}/ --prefix=${PREFIX}
+#make -j4
+#make install
+#cd ..
+#rm -rf mpir-${MPIR_VERSION}/
+#rm -rf mpfr-${MPFR_VERSION}/
+#echoerr mpfr-${MPFR_VERSION} installed
 
 export LD_LIBRARY_PATH=${PREFIX}/lib:${LD_LIBRARY_PATH}
 #Build NTL
