@@ -52,15 +52,15 @@ echoerr gmp-${GMP_VERSION} installed
 
 
 #Build mpir
-#wget http://mpir.org/mpir-${MPIR_VERSION}.tar.bz2 -nv
-#tar -xf mpir-${MPIR_VERSION}.tar.bz2
-#rm mpir-${MPIR_VERSION}.tar.bz2
-#cd mpir-${MPIR_VERSION}/
-#./configure ABI=$ABI --enable-gmpcompat --prefix=${PREFIX}
-#make -j4
-#make install
-#cd ..
-#echoerr mpir-${MPIR_VERSION} installed
+wget http://mpir.org/mpir-${MPIR_VERSION}.tar.bz2 -nv
+tar -xf mpir-${MPIR_VERSION}.tar.bz2
+rm mpir-${MPIR_VERSION}.tar.bz2
+cd mpir-${MPIR_VERSION}/
+./configure ABI=$ABI --enable-gmpcompat --prefix=${PREFIX}
+make -j4
+make install
+cd ..
+echoerr mpir-${MPIR_VERSION} installed
 
 #Build mpfr
 wget https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VERSION}.tar.bz2 -nv
