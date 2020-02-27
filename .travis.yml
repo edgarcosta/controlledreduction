@@ -12,7 +12,7 @@ compiler:
     - clang
 
 before_install:
-  #- if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install yasm; else brew update && brew install yasm; fi
+    - if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install yasm; else brew install yasm; fi
     - ./build_dependencies > build_output
 
 script:
