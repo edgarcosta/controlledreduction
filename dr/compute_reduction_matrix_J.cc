@@ -1,6 +1,6 @@
 // Copyright 2013-2017 Edgar Costa
 // See LICENSE file for license details.
-   
+
 #include "dr.h"
 
 /*
@@ -23,20 +23,16 @@ map< Vec<int64_t>, Vec<Mat<ZZ_p> >, vi64less>::const_iterator de_Rham_local::com
         if(verbose)
             cout<<"Computing the reduction matrix J for v = "<<v<<endl;
 
-        Mat<ZZ_p>* solve_top;
         Vec< Vec<int64_t> >* list_G;
         Vec< Vec<int64_t> >* list_F;
         map< Vec<int64_t>, int64_t, vi64less>* dict_G;
         map< Vec<int64_t>, int64_t, vi64less>* dict_w;
-        Vec<int64_t> w, one_minus_ei;
-        Vec< Mat<ZZ_p> >* M;
-        Vec<ZZ_p> F;
-        int64_t i, dim_Fi, coordinate_of_monomial, coordinate_of_w, coordinate_of_monomial_of_Fi, row;
-        bool boolean;
-        
 
+
+        Mat<ZZ_p>* solve_top;
         solve_top = &( ( get_solve_J( (d - 2)*(n + 1) + 1) )->second );
 
+        Vec<ZZ_p> F;
         F.SetLength(solve_top->NumRows());
 
         list_G = &tuple_list[ d * n - n ];
@@ -44,26 +40,38 @@ map< Vec<int64_t>, Vec<Mat<ZZ_p> >, vi64less>::const_iterator de_Rham_local::com
         dict_w = &tuple_dict[ (d * n - n) + d - (n+1) ]; //deg G + sum(v) - (n+1) = (d-2)*(n+1) + 1
         list_F = &tuple_list[ d * n - 2 * n ]; //deg G + d -(n+1) - (d-1) = (d-2)*(n+1) + 1 - ( d - 1)
 
-        
-        dim_Fi = list_F->length();
 
+        int64_t dim_Fi = list_F->length();
+
+        Vec< Mat<ZZ_p> >* M;
         M = &(reduction_matrix_J_dict[v]);
         M->SetLength(n+2);
 
-        for(i = 0; i < n + 2; i++)
+        for(int64_t i = 0; i < n + 2; i++)
         {
             (*M)[i].SetDims(list_G->length(),list_G->length());
         }
 
+        Vec<int64_t> one_minus_ei;
         one_minus_ei.SetLength(n+1);
-        for(i = 0; i<= n ; i++)
+        for(int64_t i = 0; i<= n ; i++)
             one_minus_ei[i] = 1;
 
-        for( coordinate_of_monomial = 0; coordinate_of_monomial < (int64_t) list_G->length() ; coordinate_of_monomial++ )
+        #ifdef _OPENMP
+        ZZ_pContext context;
+        context.save();
+        #endif
+
+        #pragma omp parallel for
+        for(int64_t coordinate_of_monomial = 0; coordinate_of_monomial < (int64_t) list_G->length() ; ++coordinate_of_monomial)
         {
+            #ifdef _OPENMP
+            context.restore();
+            #endif
+            Vec<int64_t> w;
             w = (*list_G)[coordinate_of_monomial] + v; // sum(w) = d * n - n + d
-            boolean = true;
-            for(i = 0; i <= n; i++)
+            bool boolean = true;
+            for(int64_t i = 0; i <= n; i++)
             {
                 if( w[i] > 0)
                     w[i]--;
@@ -76,25 +84,22 @@ map< Vec<int64_t>, Vec<Mat<ZZ_p> >, vi64less>::const_iterator de_Rham_local::com
             if(boolean) // sum(w) = d * n - 2n + d - 1
             {
                 int64_t sum=0;
-                for( i =0 ; i <= n ; i++)
+                for(int64_t i =0 ; i <= n ; ++i)
                     sum += w[i];
                 assert(sum == d * n - 2*n + d - 1);
-                coordinate_of_w = (*dict_w)[w];
+                int64_t coordinate_of_w = (*dict_w)[w];
                 // F = solve_top.column(coordinate_of_w)
-                for( i = 0; i < (int64_t) solve_top->NumRows(); i++)
-                {
+                for(int64_t i = 0; i < (int64_t) solve_top->NumRows(); ++i) {
                     F[i] = solve_top->get(i, coordinate_of_w);
                 }
-                for( i = 0; i <= n; i++)
-                {
+                for(int64_t i = 0; i <= n; i++) {
                     one_minus_ei[i]--;
-                    for(coordinate_of_monomial_of_Fi = 0; coordinate_of_monomial_of_Fi < dim_Fi; coordinate_of_monomial_of_Fi++)
-                    {
+                    for(int64_t coordinate_of_monomial_of_Fi = 0; coordinate_of_monomial_of_Fi < dim_Fi; ++coordinate_of_monomial_of_Fi) {
                         // x^(u+v) * G / x0 ... xn = \sum c_w x^u * x^w
                         // x^u * x^w = x^u \sum F_i di f ~ \sum di( x^u F_i )
                         // x^u * x^s * di f ~ (u[i]+s[i]) x^u * x^s / xi
                         // (u[i]+s[i]) * x^u * x^s x0 * ... * xi-1 * xi+1 * ... xn / x0 ... xn
-                        row = (*dict_G)[ (*list_F)[coordinate_of_monomial_of_Fi] + one_minus_ei ];
+                        int64_t row = (*dict_G)[ (*list_F)[coordinate_of_monomial_of_Fi] + one_minus_ei ];
                         (*M)[0][row][coordinate_of_monomial] += (*list_F)[coordinate_of_monomial_of_Fi][i] * F[i*dim_Fi + coordinate_of_monomial_of_Fi];
                         (*M)[i+1][row][coordinate_of_monomial] += F[i*dim_Fi + coordinate_of_monomial_of_Fi];
                     }

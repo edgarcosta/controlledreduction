@@ -2,6 +2,9 @@
 // See LICENSE file for license details.
 
 #include "hypersurface.h"
+#ifdef _OPENMP
+# include <omp.h>
+#endif
 
 
 /*
@@ -13,11 +16,22 @@ Mat<ZZ_p> hypersurface::frob_matrix_J(Vec<int64_t> N)
     assert( n == (int64_t) N.length() );
     Mat<ZZ_p> F;
     int64_t i;
-    //dR->compute_everything_J();
+    #ifdef _OPENMP
+    if(omp_get_max_threads() > 1) {
+      dR->compute_everything_J();
+      compute_fpow(max(N) - 1);
+    }
+    ZZ_pContext context;
+    context.save();
+    #endif
     F.SetDims( dR->coKernels_J_basis.length(), dR->coKernels_J_basis.length() );
 
+    #pragma omp parallel for schedule(dynamic)
     for( i = 0; i < (int64_t) dR->coKernels_J_basis.length(); i++)
     {
+        #ifdef _OPENMP
+        context.restore();
+        #endif
         int64_t j, m, sum;
         sum = 0;
         for( j = 0; j<=n; j++)
