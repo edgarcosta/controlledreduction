@@ -5,6 +5,9 @@
 
 #include "dr_nd.h"
 #include "matrix.h"
+#ifdef _OPENMP
+# include <omp.h>
+#endif
 
 void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_t Mlength, const int64_t k, const fmpz * G, fmpz_t modulus);
 
@@ -301,16 +304,19 @@ bool de_Rham_non_degenerate_local::save( const char* filename)
 }
 
 
-void de_Rham_non_degenerate_local::compute_everything_ND()
+void de_Rham_non_degenerate_local::compute_everything_ND(bool J, bool ND_ZZ)
 {
-    compute_everything_J();
+    if(J)
+      compute_everything_J();
     int64_t i,j;
     Vec<int64_t> u;
     for(i = 0; i < (int64_t) tuple_list[d].length(); i++)
     {
         u = tuple_list[d][i];
-        compute_reduction_matrix_ND( u );
-        compute_reduction_matrix_ND_ZZ(u);
+        compute_reduction_matrix_ND(u);
+        // Not used anywhere by default
+        if(ND_ZZ)
+          compute_reduction_matrix_ND_ZZ(u);
         compute_reduction_matrix_ND_poly( u );
         compute_reduction_matrix_ND_poly_ZZ(u);
 
@@ -841,94 +847,95 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
     {
         if(verbose)
             cout<<"Computing the reduction matrix ND for v = "<<v<<endl;
-        int64_t coordinate_of_coKernel_element, coordinate_of_monomial, coordinate_of_monomial_of_Fi, coordinate_of_H, coordinate_of_Hnew;
-        int64_t reduction_steps, dim_Fi, dim_Hnew, dpowern, i, l, sum;
-        int64_t k;
-        Vec<Vec<int64_t> > U;
-        Vec<int64_t> zero, r, s;
-        Vec<ZZ_p> F;
-        map< Vec<int64_t>, Vec<ZZ_p>, vi64less > H, Hnew;
-        map< Vec<int64_t>, Vec<ZZ_p>, vi64less >::const_iterator itH;
-        Vec< pair< Vec<int64_t>, Mat<ZZ_p> >* > solve;
-        Vec<ZZ_p>* Hnew_zero;
-        Vec<ZZ_p>* Hnew_Ui;
         map< Vec<int64_t>, Mat<ZZ_p>, vi64less>* result;
-        map< Vec<int64_t>, Mat<ZZ_p>, vi64less>::iterator it_result;
 
         result = &(reduction_matrix_ND_dict[v]);
 
-        sum = 0;
-        for(i = 0; i <= n; i++)
-            sum += v[i];
+        int64_t dsum = 0;
+        for(int64_t i = 0; i <= n; i++)
+            dsum += v[i];
 
-        assert(sum == d);
+        assert(dsum == d);
 
-
+        Vec<int64_t> zero;
         zero.SetLength(n+1);
-        for(i = 0 ; i <= n; i++)
+        for(int64_t i = 0 ; i <= n; i++)
             zero[i] = 0;
 
+        Vec<Vec<int64_t> > U;
         U.SetLength(n+1);
-        for(i = 0; i <= n; i++)
+        for(int64_t i = 0; i <= n; i++)
         {
             zero[i]++;
             U[i] = zero;
             zero[i]--;
         }
 
-        dpowern = coKernels_ND_basis.length(); //power_long(d, n);
+        int64_t dpowern = coKernels_ND_basis.length(); //power_long(d, n);
 
 
+        Vec< pair< Vec<int64_t>, Mat<ZZ_p> >* > solve;
         solve.SetLength(n + 1);
-        for(i = 0; i < n; i++)
+        for(int64_t i = 0; i < n; i++)
             solve[i] = get_solve_ND( (i+1)*d );
         solve[n] = get_solve_ND( (d-1) * (n + 1) + 1);
 
-        for(coordinate_of_monomial = 0; coordinate_of_monomial < dpowern ; coordinate_of_monomial++)
-        {
-            Hnew.clear();
-            H.clear();
 
-            sum = 0;
-            for( i = 0 ; i <=n ; i++)
+        #ifdef _OPENMP
+        ZZ_pContext context;
+        context.save();
+        #endif
+        #pragma omp parallel for
+        for(int64_t coordinate_of_monomial = 0; coordinate_of_monomial < dpowern ; ++coordinate_of_monomial) {
+            #ifdef _OPENMP
+            context.restore();
+            #endif
+            map< Vec<int64_t>, Vec<ZZ_p>, vi64less > H, Hnew;
+            Vec<ZZ_p>* Hnew_zero;
+            Vec<ZZ_p>* Hnew_Ui;
+            int64_t reduction_steps;
+
+            int64_t sum = 0;
+            for(int64_t i = 0 ; i <=n ; i++)
                 sum += coKernels_ND_basis[ coordinate_of_monomial ][i];
 
             assert( sum % d == 0);
-            l = sum/d;
+            int64_t l = sum/d;
 
             if(l == n)
             {
                 // d- n=  (d- 1) * (n + 1) + 1  - n*d
-                r = tweak(v, d - n);
-                s = v - r; // sum(s) = d - n
+                Vec<int64_t> r = tweak(v, d - n);
+                Vec<int64_t> s = v - r; // sum(s) = d - n
 
                 // for now  H is just a monomial
-                coordinate_of_H = tuple_dict[ (d-1)*(n+1)+ 1][ coKernels_ND_basis[ coordinate_of_monomial] + s ];
+                int64_t coordinate_of_H = tuple_dict[ (d-1)*(n+1)+ 1][ coKernels_ND_basis[ coordinate_of_monomial] + s ];
 
-                dim_Fi = tuple_list[ d * n -n ].length(); // = (d-1)*(n+1) + 1 - d
-                dim_Hnew = tuple_list[n*d].length();
+                int64_t dim_Fi = tuple_list[ d * n -n ].length(); // = (d-1)*(n+1) + 1 - d
+                int64_t dim_Hnew = tuple_list[n*d].length();
 
                 // F = solve[n] * H
+                Vec<ZZ_p> F;
                 F.SetLength( (solve[n]->second).NumRows() );
-                for( i = 0 ; i < (int64_t) (solve[n]->second).NumRows(); i++)
+                for(int64_t i = 0 ; i < (int64_t) (solve[n]->second).NumRows(); i++)
                     F[i] = (solve[n]->second)[i][ coordinate_of_H ];
 
 
                 Hnew_zero =  &(Hnew[zero]);
                 Hnew_zero->SetLength(dim_Hnew);
 
-                for(i = 0; i <= n; i++)
+                for(int64_t i = 0; i <= n; i++)
                 {
                     Hnew_Ui = &(Hnew[U[i]]);
                     Hnew_Ui->SetLength(dim_Hnew);
-                    for( coordinate_of_monomial_of_Fi = 0; coordinate_of_monomial_of_Fi < dim_Fi; coordinate_of_monomial_of_Fi++ )
+                    for(int64_t coordinate_of_monomial_of_Fi = 0; coordinate_of_monomial_of_Fi < dim_Fi; ++coordinate_of_monomial_of_Fi )
                     {
                         // x^(u+r) H / x0 ... xn = x^(u+r) * \sum Fi xi di f / x0 ... xn
                         // ps: there are no coKernels at this level
                         // ~ \sum di( x^(u+r) * xi * Fi / x0 ... xn) = x^u * newH / x0 ... xn
                         // Let x^w be a monomial of Fi
                         // x^(u + r) * x^w * xi * di f / x0 ... xn ~ (u[i] - 1 + r[i] + w[i] + 1) x^u * x^r * x^w
-                        coordinate_of_Hnew = tuple_dict[n * d][ r + tuple_list[d * n - n][coordinate_of_monomial_of_Fi] ];
+                        int64_t coordinate_of_Hnew = tuple_dict[n * d][ r + tuple_list[d * n - n][coordinate_of_monomial_of_Fi] ];
                         (*Hnew_Ui)[ coordinate_of_Hnew ] += F[ i * dim_Fi + coordinate_of_monomial_of_Fi ];
                         (*Hnew_zero)[ coordinate_of_Hnew ] += (r[i] + tuple_list[d * n - n][coordinate_of_monomial_of_Fi][i]) *  F[ i * dim_Fi + coordinate_of_monomial_of_Fi ];
                     }
@@ -947,7 +954,7 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
                 // x^v * monomial_of_Gl, deg = l * d + d
             }
 
-            for( k = reduction_steps-1; k >= 0; k-- )
+            for(int64_t k = reduction_steps-1; k >= 0; k-- )
             {
                 /*
                  * H is polynomial with vector coefficients
@@ -956,23 +963,24 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
                  *
                  * we will process each monomial of H individually
                  */
-                dim_Hnew = tuple_list[ k * d ].length();
-                dim_Fi = dim_Hnew;
+                int64_t dim_Hnew = tuple_list[ k * d ].length();
+                int64_t dim_Fi = dim_Hnew;
                 Hnew.clear();
-                for(itH = H.begin();  itH != H.end(); itH++)
+                for(map< Vec<int64_t>, Vec<ZZ_p>, vi64less >::const_iterator itH = H.begin();  itH != H.end(); itH++)
                 {
                     // How to write monomial = \sum Fi xi di f + coKernls
                     // deg Fi = k * d
+                    Vec<ZZ_p> F;
                     F = solve[k]->second * itH->second;
 
                     Hnew_zero = &(Hnew[itH->first]);
                     Hnew_zero->SetLength(dim_Hnew);
-                    for(i = 0; i <= n; i++)
+                    for(int64_t  i = 0; i <= n; i++)
                     {
                         Hnew_Ui = &(Hnew[itH->first + U[i] ]);
                         Hnew_Ui->SetLength(dim_Hnew);
 
-                        for( coordinate_of_monomial_of_Fi = 0; coordinate_of_monomial_of_Fi < dim_Fi; coordinate_of_monomial_of_Fi++)
+                        for(int64_t coordinate_of_monomial_of_Fi = 0; coordinate_of_monomial_of_Fi < dim_Fi; coordinate_of_monomial_of_Fi++)
                         {
                             /*
                              * x^u H / x0...xn = x^u * (\sum Fi xi di f )/ x0... xn
@@ -988,9 +996,10 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
 
                     if( (int64_t) (k+1) <= n )
                     {
-                        for( coordinate_of_coKernel_element = 0; coordinate_of_coKernel_element < (int64_t) solve[k]->first.length(); coordinate_of_coKernel_element++ )
+                        #pragma omp critical
+                        for(int64_t coordinate_of_coKernel_element = 0; coordinate_of_coKernel_element < (int64_t) solve[k]->first.length(); coordinate_of_coKernel_element++ )
                         {
-                            it_result = result->find(itH->first);
+                            map< Vec<int64_t>, Mat<ZZ_p>, vi64less>::iterator it_result = result->find(itH->first);
                             if( it_result == result->end() )
                             {
                                 (*result)[itH->first].SetDims(dpowern, dpowern);
@@ -1007,10 +1016,11 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
 
                 if( k == 0)
                 {
+                    #pragma omp critical
                     // no more reductions needed, only the constant term is left on H
-                    for( itH = H.begin(); itH != H.end(); itH++ )
+                    for(map< Vec<int64_t>, Vec<ZZ_p>, vi64less >::const_iterator itH = H.begin(); itH != H.end(); itH++ )
                     {
-                        it_result = result->find(itH->first);
+                        map< Vec<int64_t>, Mat<ZZ_p>, vi64less>::iterator it_result = result->find(itH->first);
                         if( it_result == result->end() )
                         {
                             ((*result)[itH->first]).SetDims(dpowern, dpowern);
@@ -1022,7 +1032,8 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
                 }
             }//loop over k ends
         }
-        for(it_result = result->begin(); it_result != result->end(); )
+        #pragma omp critical
+        for(map< Vec<int64_t>, Mat<ZZ_p>, vi64less>::iterator it_result = result->begin(); it_result != result->end(); )
         {
             if( IsZero(it_result->second) )
             {

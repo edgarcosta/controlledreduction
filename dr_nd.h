@@ -112,7 +112,7 @@ class de_Rham_non_degenerate_local : public de_Rham_local{
         /*
          * computes all the reduction and inclusion matrices
          */
-        void compute_everything_ND();
+        void compute_everything_ND(bool J=true, bool ND_ZZ=true);
 
         /*
          * computes the pair solve_ND[l] and adds it to the dictionary (if not computed already)
