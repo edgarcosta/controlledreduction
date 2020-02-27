@@ -6,21 +6,20 @@ matrix:
           dist: trusty
           sudo: required
         - os: osx
-          osx_image: xcode7.3
 
 compiler:
     - gcc
     - clang
 
 before_install:
-    - if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install yasm; else brew update && brew install yasm; fi
-    - ./build_dependencies > build_output 
+  #- if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install yasm; else brew update && brew install yasm; fi
+    - ./build_dependencies > build_output
 
 script:
     - export LD_LIBRARY_PATH=${HOME}/local/lib:${LD_LIBRARY_PATH}
     # only enable openmp for Linux and GCC
-    - if [ $TRAVIS_OS_NAME = linux && $CC=GCC ]; then export OPENMP_CONFIG='--enable-openmp'; else export OPENMP_CONFIG='--disable-openmp'; fi
-    - ./configure --with-mpir=${HOME}/local --with-mpfr=${HOME}/local --with-gmp=${HOME}/local --with-flint=${HOME}/local ${OPENMP_CONFIG}
+    # - if [ $TRAVIS_OS_NAME = linux && $CC=GCC ]; then export OPENMP_CONFIG='--enable-openmp'; else export OPENMP_CONFIG='--disable-openmp'; fi
+    - ./configure --with-mpir=${HOME}/local --with-mpfr=${HOME}/local --with-gmp=${HOME}/local --with-flint=${HOME}/local #${OPENMP_CONFIG}
     - make
     - env
     - make check
