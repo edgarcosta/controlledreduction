@@ -1,18 +1,22 @@
-language: c++
-
-matrix:
-    include:
-        - os: linux
-          dist: trusty
-          sudo: required
-        - os: osx
+language: cpp
+os:
+  - linux
+  - osx
 
 compiler:
     - gcc
     - clang
 
+addons:
+  apt:
+    packages:
+      - yasm
+      - libomp-dev
+
 before_install:
-    - if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install yasm libomp-dev; else brew install yasm libomp; fi
+    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
+    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install yasm; fi
+    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install libomp; fi
     - ./build_dependencies > build_output
 
 script:
