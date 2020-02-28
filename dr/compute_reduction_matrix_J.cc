@@ -32,8 +32,6 @@ map< Vec<int64_t>, Vec<Mat<ZZ_p> >, vi64less>::const_iterator de_Rham_local::com
         Mat<ZZ_p>* solve_top;
         solve_top = &( ( get_solve_J( (d - 2)*(n + 1) + 1) )->second );
 
-        Vec<ZZ_p> F;
-        F.SetLength(solve_top->NumRows());
 
         list_G = &tuple_list[ d * n - n ];
         dict_G = &tuple_dict[ d * n - n ];
@@ -52,10 +50,6 @@ map< Vec<int64_t>, Vec<Mat<ZZ_p> >, vi64less>::const_iterator de_Rham_local::com
             (*M)[i].SetDims(list_G->length(),list_G->length());
         }
 
-        Vec<int64_t> one_minus_ei;
-        one_minus_ei.SetLength(n+1);
-        for(int64_t i = 0; i<= n ; i++)
-            one_minus_ei[i] = 1;
 
         #ifdef _OPENMP
         ZZ_pContext context;
@@ -68,6 +62,10 @@ map< Vec<int64_t>, Vec<Mat<ZZ_p> >, vi64less>::const_iterator de_Rham_local::com
             #ifdef _OPENMP
             context.restore();
             #endif
+            Vec<int64_t> one_minus_ei;
+            one_minus_ei.SetLength(n+1);
+            for(int64_t i = 0; i<= n ; i++)
+              one_minus_ei[i] = 1;
             Vec<int64_t> w;
             w = (*list_G)[coordinate_of_monomial] + v; // sum(w) = d * n - n + d
             bool boolean = true;
@@ -89,6 +87,8 @@ map< Vec<int64_t>, Vec<Mat<ZZ_p> >, vi64less>::const_iterator de_Rham_local::com
                 assert(sum == d * n - 2*n + d - 1);
                 int64_t coordinate_of_w = (*dict_w)[w];
                 // F = solve_top.column(coordinate_of_w)
+                Vec<ZZ_p> F;
+                F.SetLength(solve_top->NumRows());
                 for(int64_t i = 0; i < (int64_t) solve_top->NumRows(); ++i) {
                     F[i] = solve_top->get(i, coordinate_of_w);
                 }

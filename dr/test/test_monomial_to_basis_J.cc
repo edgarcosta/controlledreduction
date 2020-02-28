@@ -32,7 +32,7 @@ int main() {
                 ZZ_p::init( power_ZZ(p, precision) );
                 de_Rham_local D;
                 // cout << p <<" "<<n<<" "<<d<<endl; 
-                D = de_Rham_local(p, precision, n, d, false);
+                D = de_Rham_local(p, precision, n, d, true);
                 bool test_success = D.test_monomial_to_basis_J(N);
                 if (not test_success ) {
                     cout << "\n\tFAIL test_monomial_to_basis_J" <<endl;
