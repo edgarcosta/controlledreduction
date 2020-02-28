@@ -38,9 +38,6 @@ hypersurface_non_degenerate::hypersurface_non_degenerate(int64_t p, int64_t prec
 hypersurface_non_degenerate::hypersurface_non_degenerate(int64_t p, int64_t precision, map< Vec<int64_t>, zz_p, vi64less> fbar, bool verbose) {
     dR = dR_ND = make_shared<de_Rham_non_degenerate_local>(p, precision, fbar, verbose);
     init_after_dR();
-#ifdef _OPENMP
-# include <omp.h>
-#endif
 }
 
 
@@ -779,7 +776,7 @@ Mat<ZZ_p> hypersurface_non_degenerate::frob_matrix_ND(Vec<int64_t> N)
 {
     assert( n == (int64_t) N.length() );
     Mat<ZZ_p> F;
-    #ifdef _OPENMP
+    #if defined _OPENMP && defined NTL_THREADS
     if(omp_get_max_threads() > 1) {
       dR_ND->compute_everything_ND(false, false);
       compute_fpow(max(N) - 1);
@@ -792,7 +789,7 @@ Mat<ZZ_p> hypersurface_non_degenerate::frob_matrix_ND(Vec<int64_t> N)
     #pragma omp parallel for schedule(dynamic)
     for(int64_t i = 0; i < (int64_t) dR->coKernels_J_basis.length(); i++)
     {
-        #ifdef _OPENMP
+        #if defined _OPENMP && defined NTL_THREADS
         context.restore();
         #endif
         int64_t j, m, sum;

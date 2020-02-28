@@ -51,7 +51,7 @@ map< Vec<int64_t>, Vec<Mat<ZZ_p> >, vi64less>::const_iterator de_Rham_local::com
         }
 
 
-        #ifdef _OPENMP
+        #if defined _OPENMP && defined NTL_THREADS
         ZZ_pContext context;
         context.save();
         #endif
@@ -59,7 +59,7 @@ map< Vec<int64_t>, Vec<Mat<ZZ_p> >, vi64less>::const_iterator de_Rham_local::com
         #pragma omp parallel for
         for(int64_t coordinate_of_monomial = 0; coordinate_of_monomial < (int64_t) list_G->length() ; ++coordinate_of_monomial)
         {
-            #ifdef _OPENMP
+            #if defined _OPENMP && defined NTL_THREADS
             context.restore();
             #endif
             Vec<int64_t> one_minus_ei;

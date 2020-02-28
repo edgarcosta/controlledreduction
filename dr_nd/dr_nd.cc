@@ -881,13 +881,13 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
         solve[n] = get_solve_ND( (d-1) * (n + 1) + 1);
 
 
-        #ifdef _OPENMP
+        #if defined _OPENMP && defined NTL_THREADS
         ZZ_pContext context;
         context.save();
         #endif
         #pragma omp parallel for
         for(int64_t coordinate_of_monomial = 0; coordinate_of_monomial < dpowern ; ++coordinate_of_monomial) {
-            #ifdef _OPENMP
+            #if defined _OPENMP && defined NTL_THREADS
             context.restore();
             #endif
             map< Vec<int64_t>, Vec<ZZ_p>, vi64less > H, Hnew;

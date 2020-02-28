@@ -16,7 +16,7 @@ Mat<ZZ_p> hypersurface::frob_matrix_J(Vec<int64_t> N)
     assert( n == (int64_t) N.length() );
     Mat<ZZ_p> F;
     int64_t i;
-    #ifdef _OPENMP
+    #if defined _OPENMP && defined NTL_THREADS
     if(omp_get_max_threads() > 1) {
       dR->compute_everything_J();
       compute_fpow(max(N) - 1);
@@ -29,7 +29,7 @@ Mat<ZZ_p> hypersurface::frob_matrix_J(Vec<int64_t> N)
     #pragma omp parallel for schedule(dynamic)
     for( i = 0; i < (int64_t) dR->coKernels_J_basis.length(); i++)
     {
-        #ifdef _OPENMP
+        #if defined _OPENMP && defined NTL_THREADS
         context.restore();
         #endif
         int64_t j, m, sum;
