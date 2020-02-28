@@ -2,7 +2,7 @@
 // See LICENSE file for license details.
 //
 // runs test_monomial_to_basis_J for some random curves of degree 3,4 and 5 and K3 surfaces
-   
+
 #include "dr.h"
 #include "timing.h"
 
@@ -31,8 +31,8 @@ int main() {
                 zz_p::init(p);
                 ZZ_p::init( power_ZZ(p, precision) );
                 de_Rham_local D;
-                // cout << p <<" "<<n<<" "<<d<<endl; 
-                D = de_Rham_local(p, precision, n, d, true);
+                // cout << p <<" "<<n<<" "<<d<<endl;
+                D = de_Rham_local(p, precision, n, d, false);
                 bool test_success = D.test_monomial_to_basis_J(N);
                 if (not test_success ) {
                     cout << "\n\tFAIL test_monomial_to_basis_J" <<endl;
