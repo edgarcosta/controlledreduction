@@ -776,6 +776,7 @@ Mat<ZZ_p> hypersurface_non_degenerate::frob_matrix_ND(Vec<int64_t> N)
 {
     assert( n == (int64_t) N.length() );
     Mat<ZZ_p> F;
+    F.SetDims( dR->coKernels_J_basis.length(), dR->coKernels_J_basis.length() );
     #if defined _OPENMP && defined NTL_THREADS
     if(omp_get_max_threads() > 1) {
       dR_ND->compute_everything_ND(false, false);
@@ -783,10 +784,8 @@ Mat<ZZ_p> hypersurface_non_degenerate::frob_matrix_ND(Vec<int64_t> N)
     }
     ZZ_pContext context;
     context.save();
-    #endif
-    F.SetDims( dR->coKernels_J_basis.length(), dR->coKernels_J_basis.length() );
-
     #pragma omp parallel for schedule(dynamic)
+    #endif
     for(int64_t i = 0; i < (int64_t) dR->coKernels_J_basis.length(); i++)
     {
         #if defined _OPENMP && defined NTL_THREADS

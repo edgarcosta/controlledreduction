@@ -884,8 +884,8 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
         #if defined _OPENMP && defined NTL_THREADS
         ZZ_pContext context;
         context.save();
-        #endif
         #pragma omp parallel for
+        #endif
         for(int64_t coordinate_of_monomial = 0; coordinate_of_monomial < dpowern ; ++coordinate_of_monomial) {
             #if defined _OPENMP && defined NTL_THREADS
             context.restore();
