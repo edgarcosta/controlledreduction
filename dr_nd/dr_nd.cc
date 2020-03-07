@@ -228,6 +228,13 @@ void de_Rham_non_degenerate_local::init_ND(int64_t p, int64_t precision, map< Ve
 
     for( i = 0; i < (int64_t) coKernels_ND_basis.length(); i++)
         coKernels_ND_basis_dict[ coKernels_ND_basis[i] ] = i;
+
+    if(verbose)
+    {
+        cout << "coKernels_ND_basis = ";
+        cout << coKernels_ND_basis;
+        cout <<endl;
+    }
 }
 
 bool de_Rham_non_degenerate_local::save( const char* filename)

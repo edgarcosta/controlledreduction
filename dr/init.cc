@@ -96,6 +96,12 @@ void de_Rham_local::init(int64_t p, int64_t precision, map< Vec<int64_t>, ZZ_p, 
     {
         coKernels_J_basis_dict[ coKernels_J_basis[i] ] = i;
     }
+    if(verbose)
+    {
+        cout << "coKernels_J_basis = ";
+        cout << coKernels_J_basis;
+        cout <<endl;
+    }
 
 }
 
