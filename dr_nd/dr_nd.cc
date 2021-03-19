@@ -1910,7 +1910,11 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
         for(i = 0; i < n + 2; i++)
         {
             mp_limb_t tmp = nmod_pow_ui(k - 1 - (n + 1) + l, i, mod);
-            nmod_mat_scalar_mul_add(Mfd + l, Mfd + l, tmp, M + i);
+# if __FLINT_RELEASE > 20700
+            nmod_mat_scalar_addmul_ui(Mfd + l, Mfd + l, M + i, tmp);
+# else
+            nmod_mat_scalar_mul_add(Mfd + l, Mfd + l, M + i);
+# endif
         }
     }
     for(l = 0; l < n + 2; l++)
