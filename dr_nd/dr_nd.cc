@@ -1913,7 +1913,7 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
 # if __FLINT_RELEASE > 20700
             nmod_mat_scalar_addmul_ui(Mfd + l, Mfd + l, M + i, tmp);
 # else
-            nmod_mat_scalar_mul_add(Mfd + l, Mfd + l, M + i);
+            nmod_mat_scalar_mul_add(Mfd + l, Mfd + l, tmp, M + i);
 # endif
         }
     }
