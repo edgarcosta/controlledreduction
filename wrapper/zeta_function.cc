@@ -158,7 +158,7 @@ void zeta_function(
           if(verbose)
             cout <<"Characteristic polynomial = "<< cp <<endl;
         } else {
-          cp = charpoly_frob(Frob_ZZ); // not enough precision
+          cp = charpoly(Frob_ZZ); // not enough precision
           // reduce the output precision accordingly
           ZZ p_abs_precision = power_ZZ(p, abs_precision);
           for(size_t i=0; i < cp.length(); ++i) {
