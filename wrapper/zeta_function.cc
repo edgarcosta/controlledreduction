@@ -72,6 +72,7 @@ void zeta_function(
           precision = max(precision, r_vector[i] + max(int64_t(0), valuation_of_factorial(p * (i + N[i]) - 1, p) - i));
         }
       } else {
+        precision = 1;
         for(int64_t i = 0; i < n; ++i) {
           // the columns corresponding to H^(i,(n-1) - i) have valuation (n-1) - i
           int relative_prec = abs_precision - (n - 1) + i;
