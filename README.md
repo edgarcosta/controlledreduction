@@ -32,7 +32,7 @@ However, [SageMath](http://www.sagemath.org/) comes with all this libraries.
 
 ## Installation
 
-There are 3 options:
+There are 2 options:
 
 ### Using SageMath to provide the dependencies
 

@@ -68,7 +68,7 @@ void inline mul(mp_ptr result, const nmod_mat_t A, mp_srcptr v, const int nlimbs
     ar = nmod_mat_nrows(A);
     ac = nmod_mat_ncols(A);
     for( i = 0; i < ar; ++i)
-        result[i] = _nmod_vec_dot((A->rows)[i], v, ac, A->mod, nlimbs);
+        result[i] = _nmod_vec_dot((A->rows)[i], v, ac, A->mod, nlimbs);       
 }
 
 

@@ -558,7 +558,9 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_flint(const int64_t coordinate, c
         int64_t * v_list;// Hlen*(n+1) matrix
         fmpz_mat_struct * poly_list;// Hlen*(n+2) matrix
         fmpz * G_list; // Hlen*dpowern matrix
-
+        fmpz_t modulus;
+        fmpz_init(modulus);
+        conv(modulus, ZZ_p::modulus());
 #ifdef _OPENMP
         if(omp_get_max_threads() > 1)
         {
@@ -742,12 +744,12 @@ Vec<ZZ_p> hypersurface_non_degenerate::frob_ND_flint(const int64_t coordinate, c
             flint_free(v_list);
             flint_free(poly_list);
             _fmpz_vec_clear(G_list,Hlen*dpowern);
+            fmpz_clear(modulus);
             // reduced all terms from p*e to p*(e-1) and if e = 1 to basis
             H.swap(Hnew);
 
         }
     }
-    fmpz_clear(modulus);
     //Perform factorial division
     /*
     assert( fact == factorial<ZZ_p>( p*(m + N - 1) - 1) );
