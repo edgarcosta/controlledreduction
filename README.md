@@ -1,7 +1,5 @@
 # controlled-reduction
 
-[![Build Status](https://travis-ci.org/edgarcosta/controlledreduction.svg?branch=master)](https://travis-ci.org/edgarcosta/controlledreduction)
-
 ## PyPI package
 
 For a PyPI package that integrates most of controlled-reduction into SageMath, see [pycontrolledreduction](https://github.com/edgarcosta/pycontrolledreduction/).
