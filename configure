@@ -309,14 +309,14 @@ fi;
 
 # include paths
 
-INCS="-I\$(CURDIR)"
+INCS="-I'\$(CURDIR)'"
 for INC_DIR in ${INC_DIRS}; do
    INCS="${INCS} -isystem${INC_DIR}"
 done
 
 # library paths
 
-LLIBS="-L\$(CURDIR)"
+LLIBS="-L'\$(CURDIR)'"
 for LIB_DIR in ${LIB_DIRS} ${EXTRA_LIB_DIRS}; do
    LLIBS="${LLIBS} -L${LIB_DIR}"
 done

@@ -153,7 +153,7 @@ class de_Rham_non_degenerate_local : public de_Rham_local{
          * reduces a vector from W_{u+k*v) to W_u
          * this function is threadsafe!
          */
-        void reduce_vector_ND_poly_flint(fmpz * result, fmpz_mat_struct * poly, const int64_t k, const fmpz * G, fmpz_t modulus);
+        void reduce_vector_ND_poly_flint(fmpz * result, fmpz_mat_struct * poly, const int64_t k, const fmpz * G, const fmpz_t &modulus);
 
 
 

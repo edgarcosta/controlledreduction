@@ -21,7 +21,8 @@ void zeta_function(
     const int64_t &p, // the prime p
     const bool &verbose = false, //enable/disable verbose mode
     const int &threads = 1, //number of threads
-    const int &min_abs_precision = 0, // in case we want Frob correct mod p^min_abs_precision,
+    const int &abs_precision = 0, // in case we want Frob correct mod p^abs_precision,
+    const bool &increase_precision_to_deduce_zeta = true, // in case we want compute Frob with enough precision to deduce the zeta function
     const bool &find_better_model = true // if one should try to find a non-degenerate model, this usually speeds up the overall computation
     );
 
@@ -34,7 +35,8 @@ void zeta_function(
     const int64_t &p, // the prime p
     const bool &verbose = false, //enable/disable verbose mode
     const int &threads = 1, //number of threads
-    const int &min_abs_precision = 0, // in case we want Frob correct mod p^min_abs_precision,
+    const int &abs_precision = 0, // in case we want Frob correct mod p^abs_precision,
+    const bool &increase_precision_to_deduce_zeta = true, // in case we want compute Frob with enough precision to deduce the zeta function
     const bool &find_better_model = true // if one should try to find a non-degenerate model, this usually speeds up the overall computation
     );
 
@@ -47,7 +49,8 @@ void zeta_function(
     const int64_t &p, // the prime p
     const bool &verbose = false, //enable/disable verbose mode
     const int &threads = 1, //number of threads
-    const int &min_abs_precision = 0, // in case we want Frob correct mod p^min_abs_precision,
+    const int &abs_precision = 0, // in case we want Frob correct mod p^abs_precision,
+    const bool &increase_precision_to_deduce_zeta = true, // in case we want compute Frob with enough precision to deduce the zeta function
     const bool &find_better_model = true // if one should try to find a non-degenerate model, this usually speeds up the overall computation
     );
 
@@ -64,7 +67,8 @@ void zeta_function(
     const char* input,
     const bool &verbose = false, //enable/disable verbose mode
     const int &threads = 1, //number of threads
-    const int &min_abs_precision = 0, // in case we want Frob correct mod p^min_abs_precision,
+    const int &abs_precision = 0, // in case we want Frob correct mod p^abs_precision,
+    const bool &increase_precision_to_deduce_zeta = true, // in case we want compute Frob with enough precision to deduce the zeta function
     const bool &find_better_model = true // if one should try to find a non-degenerate model, this usually speeds up the overall computation
     );
 

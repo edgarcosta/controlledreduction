@@ -32,7 +32,8 @@ void zeta_function(
     const int64_t &p, //the prime p
     const bool &verbose, //enable/disable verbose mode
     const int &threads, //number of threads
-    const int &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
+    const int &abs_precision, // in case we want Frob correct at least mod p^abs_precision,
+    const bool &increase_precision_to_deduce_zeta, // in case we want compute Frob with enough precision to deduce the zeta function
     const bool &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
     )
 {
@@ -51,9 +52,10 @@ void zeta_function(
     Vec<int64_t> N;
     Vec<int64_t> charpoly_prec;
     int64_t precision;
+    bool lift_charpoly = true;
     //populates precision, N, and charpoly_prec
     default_args(precision, N, charpoly_prec, p, n, d);
-    if(min_abs_precision > 0) {
+    if(abs_precision > 0) {
       // lets figure out an upper bound for the relative precision vector
       Vec<int64_t> r_vector;
       r_vector.SetLength(n);
@@ -62,18 +64,36 @@ void zeta_function(
       }
 
       // we can now modify r_vector accordingly
-      for(int64_t i = 0; i < n; ++i) {
-        r_vector[i] = max(r_vector[i], min_abs_precision - (n - 1) + i);
-        assert(r_vector[i] + n - (i + 1) >=  N[i]);
-        N[i] = r_vector[i] + n - (i + 1);
-        precision = max(precision, r_vector[i] + max(int64_t(0), valuation_of_factorial(p * (i + N[i]) - 1, p) - i));
+      if(increase_precision_to_deduce_zeta) {
+        for(int64_t i = 0; i < n; ++i) {
+          r_vector[i] = max(r_vector[i], abs_precision - (n - 1) + i);
+          assert(r_vector[i] + n - (i + 1) >=  N[i]);
+          N[i] = r_vector[i] + n - (i + 1);
+          precision = max(precision, r_vector[i] + max(int64_t(0), valuation_of_factorial(p * (i + N[i]) - 1, p) - i));
+        }
+      } else {
+        precision = 1;
+        for(int64_t i = 0; i < n; ++i) {
+          // the columns corresponding to H^(i,(n-1) - i) have valuation (n-1) - i
+          int relative_prec = abs_precision - (n - 1) + i;
+          // if we drop the relative prec of a column, we can no longer lift
+          lift_charpoly = lift_charpoly && (relative_prec >= r_vector[i]);
+          if(relative_prec <= 0) {
+            r_vector[i] = N[i] = 0; //these columns will be zero regardless
+          } else {
+            r_vector[i] = abs_precision - (n - 1) + i;
+            N[i] = r_vector[i] + n - (i + 1);
+            precision = max(precision, r_vector[i] + max(int64_t(0), valuation_of_factorial(p * (i + N[i]) - 1, p) - i));
+          }
+        }
       }
+      assert(abs_precision <= precision);
       // too messy for small p
       if( p < 2*n + max(r_vector) ) {
-          cout <<"p is too small, only implemented for p >= 2*n + r = ";
-          cout << 2*n + max(r_vector) << endl;
-          cout<<"bye bye"<<endl;
-          abort();
+        cout <<"p is too small, optional parameters on precision only implemented for p >= 2*n + r = ";
+        cout << 2*n + max(r_vector) << endl;
+        cout<<"bye bye"<<endl;
+        abort();
       }
     }
 
@@ -129,13 +149,23 @@ void zeta_function(
             // FIXME?
             //delete hs.dR;
         }
+        Frob_ZZ = conv< Mat<ZZ> >(Frob);
+        Vec<ZZ> cp;
         if (verbose)
             cout << "Frob = "<<Frob<<endl;
 
-        Frob_ZZ = conv< Mat<ZZ> >(Frob);
-        Vec<ZZ> cp = charpoly_frob(Frob_ZZ, charpoly_prec, p, n - 1);
-        if(verbose)
+        if(lift_charpoly) {
+          cp = charpoly_frob(Frob_ZZ, charpoly_prec, p, n - 1);
+          if(verbose)
             cout <<"Characteristic polynomial = "<< cp <<endl;
+        } else {
+          cp = charpoly(Frob_ZZ); // not enough precision
+          // reduce the output precision accordingly
+          ZZ p_abs_precision = power_ZZ(p, abs_precision);
+          for(size_t i=0; i < cp.length(); ++i) {
+            cp[i] %= p_abs_precision;
+          }
+        }
 
         zeta = conv<ZZX>(cp);
     }
@@ -150,7 +180,8 @@ void zeta_function(
     const int64_t &p, //the prime p
     const bool &verbose, //enable/disable verbose mode
     const int &threads, //number of threads
-    const int &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
+    const int &abs_precision, // in case we want Frob correct mod p^abs_precision,
+    const bool &increase_precision_to_deduce_zeta, // in case we want Frob with enough precision to deduce the zeta function
     const bool &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
     )
 {
@@ -164,7 +195,9 @@ void zeta_function(
         f_map[ monomial ] = coefficients[i];
     }
     zeta_function(zeta, Frob_ZZ, f_map,
-        p, verbose, threads, min_abs_precision, find_better_model);
+        p, verbose, threads,
+        abs_precision, increase_precision_to_deduce_zeta,
+        find_better_model);
 }
 
 void zeta_function(
@@ -175,12 +208,15 @@ void zeta_function(
     const int64_t &p, //the prime p
     const bool &verbose, //enable/disable verbose mode
     const int &threads, //number of threads
-    const int &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
+    const int &abs_precision, // in case we want Frob correct mod p^abs_precision,
+    const bool &increase_precision_to_deduce_zeta, // in case we want compute Frob with enough precision to deduce the zeta function
     const bool &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
     )
 {
   zeta_function(zeta, Frob_ZZ, monomials, vector<ZZ>(coefficients.begin(), coefficients.end()),
-      p, verbose, threads, min_abs_precision, find_better_model);
+      p, verbose, threads,
+      abs_precision, increase_precision_to_deduce_zeta,
+      find_better_model);
 }
 
 
@@ -196,8 +232,9 @@ void zeta_function(
     const char* input,
     const bool &verbose, //enable/disable verbose mode
     const int &threads, //number of threads
-    const int &min_abs_precision, // in case we want Frob correct mod p^min_abs_precision,
-    const bool  &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
+    const int &abs_precision, // in case we want Frob correct mod p^abs_precision,
+    const bool &increase_precision_to_deduce_zeta, // in case we want compute Frob with enough precision to deduce the zeta function
+    const bool &find_better_model // if one should try to find a non-degenerate model, this usually speeds up the overall computation
     )
 {
     int64_t p;
@@ -207,5 +244,7 @@ void zeta_function(
     buffer >> p;
     buffer >> f;
     zeta_function(zeta, Frob_ZZ, f,
-        p, verbose, threads, min_abs_precision, find_better_model);
+        p, verbose, threads,
+        abs_precision, increase_precision_to_deduce_zeta,
+        find_better_model);
 }

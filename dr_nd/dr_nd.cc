@@ -14,7 +14,7 @@
 #include <flint/nmod.h>
 #endif
 
-void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_t Mlength, const int64_t k, const fmpz * G, fmpz_t modulus);
+void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_t Mlength, const int64_t k, const fmpz * G, const fmpz_t &modulus);
 
 //constructors
 de_Rham_non_degenerate_local::de_Rham_non_degenerate_local(int64_t p, int64_t precision, int64_t n, int64_t d, Vec<ZZ_p> f_vector, bool verbose, bool save_memory) {
@@ -746,7 +746,7 @@ void de_Rham_non_degenerate_local::get_ND_poly_flint(fmpz_mat_struct * result, c
 
 
 
-void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fmpz_mat_struct * poly, const int64_t iterations, const fmpz * G, fmpz_t modulus)
+void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fmpz_mat_struct * poly, const int64_t iterations, const fmpz * G, const fmpz_t& modulus)
 {
     int64_t dpowern = fmpz_mat_ncols(poly + 0);
 
@@ -1852,7 +1852,7 @@ static void  nmod_mat_sub_submatrix(nmod_mat_t C, const nmod_mat_t A, const nmod
  * Output:
  * - H = M(0) M(1) ... M(k-1) G
 */
-void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_t Mlength, const int64_t k, const fmpz * G, fmpz_t modulus)
+void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_t Mlength, const int64_t k, const fmpz * G, const fmpz_t &modulus)
 {
     int64_t l, i, j;
     int64_t n = Mlength - 2;
@@ -1926,7 +1926,11 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
         for(i = 0; i < n + 2; i++)
         {
             mp_limb_t tmp = nmod_pow_ui(k - 1 - (n + 1) + l, i, mod);
+# if __FLINT_RELEASE > 20700
+            nmod_mat_scalar_addmul_ui(Mfd + l, Mfd + l, M + i, tmp);
+# else
             nmod_mat_scalar_mul_add(Mfd + l, Mfd + l, tmp, M + i);
+# endif
         }
     }
     for(l = 0; l < n + 2; l++)
