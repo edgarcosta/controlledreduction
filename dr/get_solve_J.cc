@@ -18,12 +18,12 @@ pair< Vec<int64_t>, Mat<ZZ_p> >* de_Rham_local::get_solve_J(int64_t level)
     double wall_time, user_time;
 
     Mat<ZZ_p> MJ;
+    matrix_J(MJ, level);
     if(verbose) {
         user_time = get_cpu_time();
         get_timestamp(&wtime1);
         cout << "Computing and solving matrix of relations at degree = "<<level<<" ( "<<MJ.NumRows()<<"x"<<MJ.NumCols()<<" )."<<endl;
     }
-    matrix_J(MJ, level);
 
     solve_system_padic(solve_J[level].first, solve_J[level].second, MJ, precision);
     if (verbose) {
