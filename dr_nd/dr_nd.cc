@@ -5,6 +5,7 @@
 
 #include "dr_nd.h"
 #include "matrix.h"
+#include "timing.h"
 #ifdef _OPENMP
 # include <omp.h>
 #endif
@@ -359,11 +360,22 @@ pair< Vec<int64_t>, Mat<ZZ_p> >* de_Rham_non_degenerate_local::get_solve_ND(cons
     if( it != solve_ND.end() )
         return &(it->second);
 
+    timestamp_type wtime1, wtime2;
+    double wall_time, user_time;
     Mat<ZZ_p> MND;
     matrix_ND(MND, level);
-    if(verbose)
+    if(verbose) {
+        user_time = get_cpu_time();
+        get_timestamp(&wtime1);
         cout<<"Computing and solving the ND matrix of relations at degree = "<<level<<" ( "<<MND.NumRows()<<"x"<<MND.NumCols()<<" )."<<endl;
+    }
     solve_system_padic( solve_ND[level].first, solve_ND[level].second, MND, precision);
+    if (verbose) {
+        get_timestamp(&wtime2);
+        wall_time = timestamp_diff_in_seconds(wtime1,wtime2);
+        user_time = get_cpu_time() - user_time;
+        printf("Time: CPU %.2f s, Wall: %.2f s\n", user_time, wall_time );
+    }
     return &(solve_ND[level]);
 }
 
