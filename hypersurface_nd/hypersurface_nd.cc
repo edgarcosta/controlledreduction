@@ -6,6 +6,8 @@
 #include "hypersurface_nd.h"
 #include "timing.h"
 
+#include <flint/fmpz_vec.h>
+
 #ifdef _OPENMP
 # include <omp.h>
 #endif

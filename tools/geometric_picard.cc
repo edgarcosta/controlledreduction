@@ -7,6 +7,7 @@
 #include <assert.h>
 
 #include <flint/arith.h>
+#include <flint/fmpz_poly.h>
 #include <flint/fmpz_poly_mat.h>
 #include <flint/fmpz_poly_factor.h>
 #include <NTL/vector.h>

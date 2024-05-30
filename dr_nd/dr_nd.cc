@@ -8,6 +8,8 @@
 #ifdef _OPENMP
 # include <omp.h>
 #endif
+#include <flint/fmpz_vec.h>
+#include <flint/nmod.h>
 
 void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_t Mlength, const int64_t k, const fmpz * G, const fmpz_t &modulus);
 
