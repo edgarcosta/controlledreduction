@@ -27,7 +27,7 @@ bool de_Rham_local::test_monomial_to_basis_J(int64_t N)
     for( i = 0; i <= n; i++)
         u[i] = 0;
 
-    set( fpow[0][u] );
+    NTL::set( fpow[0][u] );
 
     for( i = 0; i < N; i++)
     {

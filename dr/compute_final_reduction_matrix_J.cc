@@ -27,7 +27,7 @@ void de_Rham_local::compute_final_reduction_matrix_J(int64_t k)
             for( j = 0; j < (int64_t) list_G->length(); j++)
             {
                 if( (*list_G)[j] == coKernels_J_basis[i] )
-                    set((*M)[i][j]);
+                    NTL::set((*M)[i][j]);
             }
         }
     }

@@ -25,7 +25,7 @@ Vec<ZZ_p> hypersurface::frob_J_ZZ_p(const int64_t coordinate, const int64_t N, c
     map< Vec<int64_t>, Vec<ZZ_p>, vi64less >::iterator Hnewit;
     map< Vec<int64_t>, ZZ_p, vi64less>::const_iterator it;
     
-    set(fact);
+    NTL::set(fact);
 
     v.SetLength(n+1);
 

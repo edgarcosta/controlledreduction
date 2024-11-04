@@ -52,7 +52,7 @@ bool de_Rham_local::test_paths_J(int64_t trials, int64_t paths)
             M.kill();
             M.SetDims( tuple_list[d*n-n].length(), tuple_list[d*n-n].length());
             for( i = 0; i < (int64_t) tuple_list[d*n-n].length(); i++)
-                set( M[i][i] );
+                NTL::set( M[i][i] );
             sum_u = 0;
             u = u_orig;
             for( i = 0; i < n+1; i++)
