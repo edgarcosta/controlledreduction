@@ -38,7 +38,7 @@ void de_Rham_local::compute_inclusion_matrix_J(Vec<int64_t> u)
             }
         } 
         if(boolean)
-            set( (*M)[  (*dict_H)[w] ][ coordinate_of_monomial ] );
+            NTL::set( (*M)[  (*dict_H)[w] ][ coordinate_of_monomial ] );
     }
 }
 

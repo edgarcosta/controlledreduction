@@ -36,7 +36,7 @@ Vec<ZZ_p> de_Rham_local::monomial_to_basis_J(const Vec<int64_t> u)
         w = tweak( u, d * n - n );
         sub(s, u, w);
         // u = w + s
-        set( G[ tuple_dict[d*n - n][s] ] );
+        NTL::set( G[ tuple_dict[d*n - n][s] ] );
 
         for( e = m; e > n; e--)
         {
@@ -103,7 +103,7 @@ Vec<ZZ_p> de_Rham_local::monomial_to_basis_J(const Vec<int64_t> u)
         for( i = 0; i <= n ; i++)
             w[i]--;
 
-        set( G[ tuple_dict[ sum - (n+1)][w] ] );
+        NTL::set( G[ tuple_dict[ sum - (n+1)][w] ] );
         M = get_final_reduction_matrix_J(m);
         mul(G_new, *M, G);
 

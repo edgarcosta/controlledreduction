@@ -16,7 +16,7 @@ void hypersurface::init_after_dR() {
     u.SetLength(n + 1);
     for( i = 0; i <= n ; i++)
         u[i] = 0;
-    set( fpow[0][u] );
+    NTL::set( fpow[0][u] );
     fpow[0][u]=1;
 }
 

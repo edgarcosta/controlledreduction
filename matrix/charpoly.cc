@@ -24,8 +24,8 @@ Vec<ZZ> charpoly(const Mat<ZZ> M) {
     result.SetLength(n+1);
     e.SetLength(n+1);
     p.SetLength(n+1);
-    set(e[0]);
-    set(result[n]);
+    NTL::set(e[0]);
+    NTL::set(result[n]);
     p[1] = trace(M);
 
     powerM = M;
