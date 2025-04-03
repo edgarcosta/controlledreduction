@@ -39,9 +39,9 @@ There are 3 options:
 1. Figuring out where `SageMath` is installed. 
 We recommend doing this and storing in an environmental variable by doing:
 ```
-SAGE_ROOT=$(sage -c "print SAGE_ROOT")
+SAGE_ROOT=$(sage -c "print(SAGE_ROOT)")
 ```
-Alternatively, in Sage do `print SAGE_ROOT` and on the unix terminal:
+Alternatively, in Sage do `print(SAGE_ROOT)` and on the unix terminal:
 `
 SAGE_ROOT=<the line printed in Sage>
 `
