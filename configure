@@ -277,6 +277,13 @@ if [ -z "$NTL_DIR" ]; then
         "/opt/homebrew" "/usr/local" "/opt/local" "/usr"
 fi
 
+if [ -z "$MPFR_DIR" ]; then
+    detect_dep MPFR_DIR "mpfr.h" "mpfr" \
+        "$SAGE_LOCAL" "$SAGE_ROOT/local" \
+        "/opt/homebrew/opt/mpfr" "/usr/local/opt/mpfr" \
+        "/opt/homebrew" "/usr/local" "/opt/local" "/usr"
+fi
+
 if [ -z "$NTL_DIR" ]; then
     echo "NTL not found. Install NTL or rerun with --with-ntl=<path>."
     exit 1
@@ -287,6 +294,10 @@ if [ -z "$FLINT_DIR" ]; then
 fi
 if [ -z "$GMP_DIR" ]; then
     echo "GMP not found. Install GMP or rerun with --with-gmp=<path>."
+    exit 1
+fi
+if [ -z "$MPFR_DIR" ]; then
+    echo "MPFR not found. Install MPFR or rerun with --with-mpfr=<path>."
     exit 1
 fi
 

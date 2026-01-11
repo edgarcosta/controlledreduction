@@ -99,7 +99,7 @@ build/examples/K3_dwork
 
 1. Install dependencies:
 ```
-brew install flint ntl gmp libomp
+brew install flint ntl gmp mpfr libomp
 ```
 
 2. Run configure (auto-detects Homebrew prefixes by default):

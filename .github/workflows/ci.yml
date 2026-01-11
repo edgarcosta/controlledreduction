@@ -22,13 +22,13 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libc6-dev linux-libc-dev yasm libomp-dev libntl-dev libflint-dev libgmp-dev libmpfr-dev
+          sudo apt-get install -y build-essential libc6-dev libc-dev linux-libc-dev libstdc++-13-dev yasm libomp-dev libntl-dev libflint-dev libgmp-dev libmpfr-dev
 
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
           brew update
-          brew install yasm libomp gmp ntl flint
+          brew install yasm libomp gmp mpfr ntl flint
 
       - name: Configure
         run: |
