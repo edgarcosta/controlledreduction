@@ -117,14 +117,15 @@ detect_dep(){
    for prefix in "$@"; do
       [ -z "$prefix" ] && continue
       if [ -f "$prefix/include/$header" ]; then
-         if [ -d "$prefix/lib" ] && ls "$prefix/lib/lib$libname."* >/dev/null 2>&1; then
-            eval "$var_name=$prefix"
-            return 0
-         fi
-         if [ -d "$prefix/lib64" ] && ls "$prefix/lib64/lib$libname."* >/dev/null 2>&1; then
-            eval "$var_name=$prefix"
-            return 0
-         fi
+         for libdir in "$prefix/lib" "$prefix/lib64" \
+             "$prefix/lib/x86_64-linux-gnu" \
+             "$prefix/lib/aarch64-linux-gnu" \
+             "$prefix/lib/arm-linux-gnueabihf"; do
+            if [ -d "$libdir" ] && ls "$libdir/lib$libname."* >/dev/null 2>&1; then
+               eval "$var_name=$prefix"
+               return 0
+            fi
+         done
       fi
    done
    return 1
@@ -253,6 +254,15 @@ if [ -n "${FLINT_DIR}" ]; then
     elif [ -d "${FLINT_DIR}/lib64" ]; then
        FLINT_LIB_DIR="${FLINT_DIR}/lib64"
        FLINT_INC_DIR="${FLINT_DIR}/include"
+    elif [ -d "${FLINT_DIR}/lib/x86_64-linux-gnu" ]; then
+       FLINT_LIB_DIR="${FLINT_DIR}/lib/x86_64-linux-gnu"
+       FLINT_INC_DIR="${FLINT_DIR}/include"
+    elif [ -d "${FLINT_DIR}/lib/aarch64-linux-gnu" ]; then
+       FLINT_LIB_DIR="${FLINT_DIR}/lib/aarch64-linux-gnu"
+       FLINT_INC_DIR="${FLINT_DIR}/include"
+    elif [ -d "${FLINT_DIR}/lib/arm-linux-gnueabihf" ]; then
+       FLINT_LIB_DIR="${FLINT_DIR}/lib/arm-linux-gnueabihf"
+       FLINT_INC_DIR="${FLINT_DIR}/include"
     elif [ -d "${FLINT_DIR}/.libs" ]; then
        FLINT_LIB_DIR="${FLINT_DIR}/.libs"
        FLINT_INC_DIR="${FLINT_DIR}"
@@ -275,6 +285,15 @@ if [ -n "${GMP_DIR}" ]; then
     elif [ -d "${GMP_DIR}/lib64" ]; then
        GMP_LIB_DIR="${GMP_DIR}/lib64"
        GMP_INC_DIR="${GMP_DIR}/include"
+    elif [ -d "${GMP_DIR}/lib/x86_64-linux-gnu" ]; then
+       GMP_LIB_DIR="${GMP_DIR}/lib/x86_64-linux-gnu"
+       GMP_INC_DIR="${GMP_DIR}/include"
+    elif [ -d "${GMP_DIR}/lib/aarch64-linux-gnu" ]; then
+       GMP_LIB_DIR="${GMP_DIR}/lib/aarch64-linux-gnu"
+       GMP_INC_DIR="${GMP_DIR}/include"
+    elif [ -d "${GMP_DIR}/lib/arm-linux-gnueabihf" ]; then
+       GMP_LIB_DIR="${GMP_DIR}/lib/arm-linux-gnueabihf"
+       GMP_INC_DIR="${GMP_DIR}/include"
     elif [ -d "${GMP_DIR}/.libs" ]; then
        GMP_LIB_DIR="${GMP_DIR}/.libs"
        GMP_INC_DIR="${GMP_DIR}"
@@ -296,6 +315,15 @@ if [ -n "${MPFR_DIR}" ]; then
        MPFR_INC_DIR="${MPFR_DIR}/include"
     elif [ -d "${MPFR_DIR}/lib64" ]; then
        MPFR_LIB_DIR="${MPFR_DIR}/lib64"
+       MPFR_INC_DIR="${MPFR_DIR}/include"
+    elif [ -d "${MPFR_DIR}/lib/x86_64-linux-gnu" ]; then
+       MPFR_LIB_DIR="${MPFR_DIR}/lib/x86_64-linux-gnu"
+       MPFR_INC_DIR="${MPFR_DIR}/include"
+    elif [ -d "${MPFR_DIR}/lib/aarch64-linux-gnu" ]; then
+       MPFR_LIB_DIR="${MPFR_DIR}/lib/aarch64-linux-gnu"
+       MPFR_INC_DIR="${MPFR_DIR}/include"
+    elif [ -d "${MPFR_DIR}/lib/arm-linux-gnueabihf" ]; then
+       MPFR_LIB_DIR="${MPFR_DIR}/lib/arm-linux-gnueabihf"
        MPFR_INC_DIR="${MPFR_DIR}/include"
     elif [ -d "${MPFR_DIR}/.libs" ]; then
        MPFR_LIB_DIR="${MPFR_DIR}/.libs"
@@ -322,6 +350,15 @@ if [ -n "${MPIR_DIR}" ]; then
     elif [ -d "${MPIR_DIR}/lib64" ]; then
        MPIR_LIB_DIR="${MPIR_DIR}/lib64"
        MPIR_INC_DIR="${MPIR_DIR}/include"
+    elif [ -d "${MPIR_DIR}/lib/x86_64-linux-gnu" ]; then
+       MPIR_LIB_DIR="${MPIR_DIR}/lib/x86_64-linux-gnu"
+       MPIR_INC_DIR="${MPIR_DIR}/include"
+    elif [ -d "${MPIR_DIR}/lib/aarch64-linux-gnu" ]; then
+       MPIR_LIB_DIR="${MPIR_DIR}/lib/aarch64-linux-gnu"
+       MPIR_INC_DIR="${MPIR_DIR}/include"
+    elif [ -d "${MPIR_DIR}/lib/arm-linux-gnueabihf" ]; then
+       MPIR_LIB_DIR="${MPIR_DIR}/lib/arm-linux-gnueabihf"
+       MPIR_INC_DIR="${MPIR_DIR}/include"
     elif [ -d "${MPIR_DIR}/.libs" ]; then
        MPIR_LIB_DIR="${MPIR_DIR}/.libs"
        MPIR_INC_DIR="${MPIR_DIR}"
@@ -346,6 +383,15 @@ if [ -n "${NTL_DIR}" ]; then
        NTL_INC_DIR="${NTL_DIR}/include"
     elif [ -d "${NTL_DIR}/lib64" ]; then
        NTL_LIB_DIR="${NTL_DIR}/lib64"
+       NTL_INC_DIR="${NTL_DIR}/include"
+    elif [ -d "${NTL_DIR}/lib/x86_64-linux-gnu" ]; then
+       NTL_LIB_DIR="${NTL_DIR}/lib/x86_64-linux-gnu"
+       NTL_INC_DIR="${NTL_DIR}/include"
+    elif [ -d "${NTL_DIR}/lib/aarch64-linux-gnu" ]; then
+       NTL_LIB_DIR="${NTL_DIR}/lib/aarch64-linux-gnu"
+       NTL_INC_DIR="${NTL_DIR}/include"
+    elif [ -d "${NTL_DIR}/lib/arm-linux-gnueabihf" ]; then
+       NTL_LIB_DIR="${NTL_DIR}/lib/arm-linux-gnueabihf"
        NTL_INC_DIR="${NTL_DIR}/include"
     elif [ -d "${NTL_DIR}/.libs" ]; then
        NTL_LIB_DIR="${NTL_DIR}/.libs"
