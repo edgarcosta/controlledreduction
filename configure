@@ -354,6 +354,18 @@ INCS="-I'\$(CURDIR)'"
 for INC_DIR in ${INC_DIRS}; do
    INCS="${INCS} -isystem${INC_DIR}"
 done
+if [ $OS = "Linux" ]; then
+   if [ -d "/usr/include" ]; then
+      INCS="${INCS} -isystem/usr/include"
+   fi
+   for SYS_INC in /usr/include/x86_64-linux-gnu \
+       /usr/include/aarch64-linux-gnu \
+       /usr/include/arm-linux-gnueabihf; do
+      if [ -d "${SYS_INC}" ]; then
+         INCS="${INCS} -isystem${SYS_INC}"
+      fi
+   done
+fi
 
 # library paths
 

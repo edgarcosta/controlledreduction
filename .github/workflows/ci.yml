@@ -7,14 +7,13 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-        compiler: [gcc, clang]
-    env:
-      CC: ${{ matrix.compiler }}
-    steps:
+  strategy:
+    matrix:
+      os: [ubuntu-latest, macos-latest]
+      toolchain:
+        - { cc: gcc,   cxx: g++ }
+        - { cc: clang, cxx: clang++ }
+      steps:
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -41,10 +40,3 @@ jobs:
       - name: Test
         run: |
           make check
-      - name: Select C++ compiler
-        run: |
-          if [ "${{ matrix.compiler }}" = "gcc" ]; then
-            echo "CXX=g++" >> "$GITHUB_ENV"
-          else
-            echo "CXX=clang++" >> "$GITHUB_ENV"
-          fi
