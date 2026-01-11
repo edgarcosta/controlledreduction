@@ -777,7 +777,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fm
                 _fmpz_vec_add(Gout, Gout, Gtmp, dpowern);
             }
             fmpz_mul_ui(xpower, xpower, x);
-            mul(tmp, fmpz_mat_row(poly + n + 1, 0), Gin, dpowern);
+            mul(tmp, fmpz_mat_row_ptr_compat(poly + n + 1, 0), Gin, dpowern);
             fmpz_addmul(Gout + 0, xpower, tmp);
             _fmpz_vec_scalar_mod_fmpz(Gin, Gout, dpowern, modulus);
         }
@@ -1989,5 +1989,4 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
     delete[] max_row;
     delete[] min_col;
 }
-
 

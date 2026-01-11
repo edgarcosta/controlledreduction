@@ -12,6 +12,12 @@
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpz_mat.h>
+#include <flint/nmod.h>
+#if defined(__has_include)
+#  if __has_include(<flint/nmod_types.h>)
+#    include <flint/nmod_types.h>
+#  endif
+#endif
 #include <flint/nmod_mat.h>
 #include <flint/nmod_vec.h>
 #include <gmp.h>
@@ -24,43 +30,34 @@
 
 using namespace NTL;
 
-#if defined(FLINT_VERSION_MAJOR) && ((FLINT_VERSION_MAJOR > 3) || (FLINT_VERSION_MAJOR == 3 && FLINT_VERSION_MINOR >= 1))
-typedef dot_params_t nmod_dot_params_t;
-static inline nmod_dot_params_t nmod_vec_dot_params_compat(slong len, nmod_t mod)
-{
-    return _nmod_vec_dot_params(len, mod);
-}
-static inline ulong nmod_vec_dot_compat(nn_srcptr v1, nn_srcptr v2, slong len, nmod_t mod, nmod_dot_params_t params)
-{
-    return _nmod_vec_dot(v1, v2, len, mod, params);
-}
-static inline nn_ptr nmod_mat_row_ptr(nmod_mat_t A, slong i)
-{
-    return nmod_mat_entry_ptr(A, i, 0);
-}
-static inline nn_srcptr nmod_mat_row_srcptr(const nmod_mat_t A, slong i)
-{
-    return nmod_mat_entry_ptr(A, i, 0);
-}
-#else
+#if defined(__FLINT_RELEASE) && (__FLINT_RELEASE < 30001)
+#  error "controlled-reduction requires FLINT >= 3.0.1"
+#endif
+
 typedef int nmod_dot_params_t;
 static inline nmod_dot_params_t nmod_vec_dot_params_compat(slong len, nmod_t mod)
 {
-    return _nmod_vec_dot_bound_limbs(len, mod);
+    (void)len;
+    (void)mod;
+    return 0;
 }
 static inline ulong nmod_vec_dot_compat(nn_srcptr v1, nn_srcptr v2, slong len, nmod_t mod, nmod_dot_params_t params)
 {
-    return _nmod_vec_dot(v1, v2, len, mod, params);
+    (void)params;
+    return nmod_vec_dot(v1, v2, len, mod);
 }
 static inline nn_ptr nmod_mat_row_ptr(nmod_mat_t A, slong i)
 {
-    return A->rows[i];
+    return nmod_mat_entry_ptr(A, i, 0);
 }
 static inline nn_srcptr nmod_mat_row_srcptr(const nmod_mat_t A, slong i)
 {
-    return A->rows[i];
+    return nmod_mat_entry_ptr(A, i, 0);
 }
-#endif
+static inline fmpz * fmpz_mat_row_ptr_compat(fmpz_mat_t A, slong i)
+{
+    return fmpz_mat_entry_ptr(A, i, 0);
+}
 
 
 //computes the charpoly using Newton identities of M

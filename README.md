@@ -19,7 +19,7 @@ finite fields", (under preparation) by Edgar Costa and David Harvey.
 ## Dependencies
 It majorly depends on:
  - [NTL: A Library for doing Number Theory](http://www.shoup.net/ntl/)
- - [FLINT: Fast Library for Number Theory](http://flintlib.org/)
+ - [FLINT: Fast Library for Number Theory](http://flintlib.org/) (>= 3.0.1)
  
 Which depend on:
 
@@ -97,7 +97,7 @@ build/examples/K3_dwork
 
 ### Using Homebrew on macOS
 
-1. Install dependencies:
+1. Install dependencies (FLINT >= 3.0.1):
 ```
 brew install flint ntl gmp mpfr libomp
 ```
@@ -117,7 +117,7 @@ If libomp is not available, configure will disable OpenMP automatically; you can
 
 ### Using apt on Ubuntu/Debian
 
-1. Install dependencies:
+1. Install dependencies (FLINT >= 3.0.1):
 ```
 sudo apt-get update
 sudo apt-get install -y yasm libomp-dev libntl-dev libflint-dev libgmp-dev
