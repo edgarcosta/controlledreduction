@@ -34,6 +34,11 @@ using namespace NTL;
 #  error "controlled-reduction requires FLINT >= 3.0.1"
 #endif
 
+#ifndef FLINT_NMOD_TYPES_H
+typedef ulong * nn_ptr;
+typedef const ulong * nn_srcptr;
+#endif
+
 typedef int nmod_dot_params_t;
 static inline nmod_dot_params_t nmod_vec_dot_params_compat(slong len, nmod_t mod)
 {
@@ -44,7 +49,14 @@ static inline nmod_dot_params_t nmod_vec_dot_params_compat(slong len, nmod_t mod
 static inline ulong nmod_vec_dot_compat(nn_srcptr v1, nn_srcptr v2, slong len, nmod_t mod, nmod_dot_params_t params)
 {
     (void)params;
-    return nmod_vec_dot(v1, v2, len, mod);
+    ulong acc;
+    slong i;
+
+    acc = 0;
+    for (i = 0; i < len; ++i)
+        acc = nmod_add(acc, nmod_mul(v1[i], v2[i], mod), mod);
+
+    return acc;
 }
 static inline nn_ptr nmod_mat_row_ptr(nmod_mat_t A, slong i)
 {
@@ -56,7 +68,7 @@ static inline nn_srcptr nmod_mat_row_srcptr(const nmod_mat_t A, slong i)
 }
 static inline fmpz * fmpz_mat_row_ptr_compat(fmpz_mat_t A, slong i)
 {
-    return fmpz_mat_entry_ptr(A, i, 0);
+    return fmpz_mat_entry(A, i, 0);
 }
 
 
