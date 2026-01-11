@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        compiler: [gcc, clang]
+    env:
+      CC: ${{ matrix.compiler }}
+      CXX: ${{ matrix.compiler }}++
+      PREFIX: ${{ github.workspace }}/.local
+      TRAVIS: "false"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y yasm libomp-dev
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew update
+          brew install yasm libomp wget
+
+      - name: Build dependencies
+        run: |
+          ./build_dependencies > build_output
+
+      - name: Configure
+        run: |
+          export LD_LIBRARY_PATH="$PREFIX/lib:$LD_LIBRARY_PATH"
+          export DYLD_LIBRARY_PATH="$PREFIX/lib:$DYLD_LIBRARY_PATH"
+          ./configure --with-mpir="$PREFIX" --with-mpfr="$PREFIX" --with-gmp="$PREFIX" --with-flint="$PREFIX"
+
+      - name: Build
+        run: |
+          make -j
+
+      - name: Test
+        run: |
+          export LD_LIBRARY_PATH="$PREFIX/lib:$LD_LIBRARY_PATH"
+          export DYLD_LIBRARY_PATH="$PREFIX/lib:$DYLD_LIBRARY_PATH"
+          make check
+
+      - name: Dump build log on failure
+        if: failure()
+        run: |
+          cat build_output
