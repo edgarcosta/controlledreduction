@@ -116,7 +116,10 @@ detect_dep(){
    shift 3
    for prefix in "$@"; do
       [ -z "$prefix" ] && continue
-      if [ -f "$prefix/include/$header" ]; then
+      if [ -f "$prefix/include/$header" ] || \
+         [ -f "$prefix/include/x86_64-linux-gnu/$header" ] || \
+         [ -f "$prefix/include/aarch64-linux-gnu/$header" ] || \
+         [ -f "$prefix/include/arm-linux-gnueabihf/$header" ]; then
          for libdir in "$prefix/lib" "$prefix/lib64" \
              "$prefix/lib/x86_64-linux-gnu" \
              "$prefix/lib/aarch64-linux-gnu" \
@@ -270,6 +273,15 @@ if [ -n "${FLINT_DIR}" ]; then
        echo "Invalid FLINT directory"
        exit 1
     fi
+    if [ -f "${FLINT_DIR}/include/flint/flint.h" ]; then
+       FLINT_INC_DIR="${FLINT_DIR}/include"
+    elif [ -f "${FLINT_DIR}/include/x86_64-linux-gnu/flint/flint.h" ]; then
+       FLINT_INC_DIR="${FLINT_DIR}/include/x86_64-linux-gnu"
+    elif [ -f "${FLINT_DIR}/include/aarch64-linux-gnu/flint/flint.h" ]; then
+       FLINT_INC_DIR="${FLINT_DIR}/include/aarch64-linux-gnu"
+    elif [ -f "${FLINT_DIR}/include/arm-linux-gnueabihf/flint/flint.h" ]; then
+       FLINT_INC_DIR="${FLINT_DIR}/include/arm-linux-gnueabihf"
+    fi
     LIB_DIRS="${LIB_DIRS} ${FLINT_LIB_DIR}"
     INC_DIRS="${INC_DIRS} ${FLINT_INC_DIR}"
 fi;
@@ -300,6 +312,15 @@ if [ -n "${GMP_DIR}" ]; then
     else
        echo "Invalid GMP directory"
        exit 1
+    fi
+    if [ -f "${GMP_DIR}/include/gmp.h" ]; then
+       GMP_INC_DIR="${GMP_DIR}/include"
+    elif [ -f "${GMP_DIR}/include/x86_64-linux-gnu/gmp.h" ]; then
+       GMP_INC_DIR="${GMP_DIR}/include/x86_64-linux-gnu"
+    elif [ -f "${GMP_DIR}/include/aarch64-linux-gnu/gmp.h" ]; then
+       GMP_INC_DIR="${GMP_DIR}/include/aarch64-linux-gnu"
+    elif [ -f "${GMP_DIR}/include/arm-linux-gnueabihf/gmp.h" ]; then
+       GMP_INC_DIR="${GMP_DIR}/include/arm-linux-gnueabihf"
     fi
     LIB_DIRS="${LIB_DIRS} ${GMP_LIB_DIR}"
     INC_DIRS="${INC_DIRS} ${GMP_INC_DIR}"
@@ -335,6 +356,15 @@ if [ -n "${MPFR_DIR}" ]; then
        echo "Invalid MPFR directory"
        exit 1
     fi
+    if [ -f "${MPFR_DIR}/include/mpfr.h" ]; then
+       MPFR_INC_DIR="${MPFR_DIR}/include"
+    elif [ -f "${MPFR_DIR}/include/x86_64-linux-gnu/mpfr.h" ]; then
+       MPFR_INC_DIR="${MPFR_DIR}/include/x86_64-linux-gnu"
+    elif [ -f "${MPFR_DIR}/include/aarch64-linux-gnu/mpfr.h" ]; then
+       MPFR_INC_DIR="${MPFR_DIR}/include/aarch64-linux-gnu"
+    elif [ -f "${MPFR_DIR}/include/arm-linux-gnueabihf/mpfr.h" ]; then
+       MPFR_INC_DIR="${MPFR_DIR}/include/arm-linux-gnueabihf"
+    fi
     LIB_DIRS="${LIB_DIRS} ${MPFR_LIB_DIR}"
     INC_DIRS="${INC_DIRS} ${MPFR_INC_DIR}"
 fi;
@@ -369,6 +399,15 @@ if [ -n "${MPIR_DIR}" ]; then
        echo "Invalid MPIR directory"
        exit 1
     fi
+    if [ -f "${MPIR_DIR}/include/mpir.h" ]; then
+       MPIR_INC_DIR="${MPIR_DIR}/include"
+    elif [ -f "${MPIR_DIR}/include/x86_64-linux-gnu/mpir.h" ]; then
+       MPIR_INC_DIR="${MPIR_DIR}/include/x86_64-linux-gnu"
+    elif [ -f "${MPIR_DIR}/include/aarch64-linux-gnu/mpir.h" ]; then
+       MPIR_INC_DIR="${MPIR_DIR}/include/aarch64-linux-gnu"
+    elif [ -f "${MPIR_DIR}/include/arm-linux-gnueabihf/mpir.h" ]; then
+       MPIR_INC_DIR="${MPIR_DIR}/include/arm-linux-gnueabihf"
+    fi
     LIB_DIRS="${LIB_DIRS} ${MPIR_LIB_DIR}"
     INC_DIRS="${INC_DIRS} ${MPIR_INC_DIR}"
 fi;
@@ -402,6 +441,15 @@ if [ -n "${NTL_DIR}" ]; then
     else
        echo "Invalid NTL directory"
        exit 1
+    fi
+    if [ -f "${NTL_DIR}/include/NTL/ZZ.h" ]; then
+       NTL_INC_DIR="${NTL_DIR}/include"
+    elif [ -f "${NTL_DIR}/include/x86_64-linux-gnu/NTL/ZZ.h" ]; then
+       NTL_INC_DIR="${NTL_DIR}/include/x86_64-linux-gnu"
+    elif [ -f "${NTL_DIR}/include/aarch64-linux-gnu/NTL/ZZ.h" ]; then
+       NTL_INC_DIR="${NTL_DIR}/include/aarch64-linux-gnu"
+    elif [ -f "${NTL_DIR}/include/arm-linux-gnueabihf/NTL/ZZ.h" ]; then
+       NTL_INC_DIR="${NTL_DIR}/include/arm-linux-gnueabihf"
     fi
     LIB_DIRS="${LIB_DIRS} ${NTL_LIB_DIR}"
     INC_DIRS="${INC_DIRS} ${NTL_INC_DIR}"
