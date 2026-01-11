@@ -24,7 +24,6 @@ It majorly depends on:
 Which depend on:
 
  - [GMP: GNU Multiple Precision Arithmetic Library](https://gmplib.org/) (for NTL and FLINT)
- - [MPIR: Multiple Precision Integers and Rationals](mpir.org) (for FLINT)
  - [MPFR: GNU Multiple Precision Floating-Point Reliably](http://www.mpfr.org/) (for FLINT)
 
 However, [SageMath](http://www.sagemath.org/) comes with all this libraries. 

@@ -14,7 +14,6 @@ jobs:
         compiler: [gcc, clang]
     env:
       CC: ${{ matrix.compiler }}
-      CXX: ${{ matrix.compiler }}++
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,7 +22,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y yasm libomp-dev libntl-dev libflint-dev libgmp-dev
+          sudo apt-get install -y yasm libomp-dev libntl-dev libflint-dev libgmp-dev libmpfr-dev
 
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
@@ -42,3 +41,10 @@ jobs:
       - name: Test
         run: |
           make check
+      - name: Select C++ compiler
+        run: |
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            echo "CXX=g++" >> "$GITHUB_ENV"
+          else
+            echo "CXX=clang++" >> "$GITHUB_ENV"
+          fi

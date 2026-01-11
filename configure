@@ -17,7 +17,6 @@ PREFIX="/usr/local"
 FLINT_DIR="" # "/usr/local"
 GMP_DIR="" # "/usr/local"
 MPFR_DIR="" # "/usr/local"
-MPIR_DIR="" # "/usr/local"
 NTL_DIR="" # "/usr/local"
 
 
@@ -40,7 +39,6 @@ OPENMP=1
 # disable unnecessary libs and options
 #unset PREFIX
 #GMP_DIR=""
-unset MPIR_DIR
 unset MPFR_DIR
 #unset NTL_DIR
 #CC=""
@@ -67,10 +65,6 @@ usage()
 
     if [ ! -z ${GMP_DIR+word} ]; then
         echo "     --with-gmp=<path>    Specify location of GMP (default: $GMP_DIR)"
-    fi
-
-    if [ ! -z ${MPIR_DIR+word} ]; then
-        echo "     --with-mpir=<path>   Specify location of MPIR (default: $MPIR_DIR)"
     fi
 
     if [ ! -z ${MPFR_DIR+word} ]; then
@@ -134,6 +128,58 @@ detect_dep(){
    return 1
 }
 
+find_lib_dir(){
+   prefix="$1"
+   for libdir in "$prefix/lib" "$prefix/lib64" \
+       "$prefix/lib/x86_64-linux-gnu" \
+       "$prefix/lib/aarch64-linux-gnu" \
+       "$prefix/lib/arm-linux-gnueabihf" \
+       "$prefix/.libs" "$prefix/src/.libs"; do
+      if [ -d "$libdir" ]; then
+         echo "$libdir"
+         return 0
+      fi
+   done
+   return 1
+}
+
+find_inc_dir(){
+   prefix="$1"
+   header="$2"
+   for incdir in "$prefix/include" \
+       "$prefix/include/x86_64-linux-gnu" \
+       "$prefix/include/aarch64-linux-gnu" \
+       "$prefix/include/arm-linux-gnueabihf" \
+       "$prefix/src" "$prefix"; do
+      if [ -f "$incdir/$header" ]; then
+         echo "$incdir"
+         return 0
+      fi
+   done
+   return 1
+}
+
+configure_dep(){
+   dep="$1"
+   dep_dir="$2"
+   header="$3"
+   if [ -z "$dep_dir" ]; then
+      return 0
+   fi
+   dep_lib_dir=$(find_lib_dir "$dep_dir") || {
+      echo "Invalid $dep directory"
+      exit 1
+   }
+   dep_inc_dir=$(find_inc_dir "$dep_dir" "$header") || {
+      echo "Invalid $dep directory"
+      exit 1
+   }
+   eval "${dep}_LIB_DIR=\"$dep_lib_dir\""
+   eval "${dep}_INC_DIR=\"$dep_inc_dir\""
+   LIB_DIRS="${LIB_DIRS} ${dep_lib_dir}"
+   INC_DIRS="${INC_DIRS} ${dep_inc_dir}"
+}
+
 
 while [ "$1" != "" ]; do
     PARAM=`echo $1 | sed 's/=.*//'`
@@ -151,11 +197,6 @@ while [ "$1" != "" ]; do
         --with-gmp)
             if [ ! -z ${GMP_DIR+word} ]; then
                 GMP_DIR=$(absolute_path "$VALUE")
-            fi
-            ;;
-        --with-mpir)
-            if [ ! -z ${MPIR_DIR+word} ]; then
-                MPIR_DIR=$(absolute_path "$VALUE")
             fi
             ;;
         --with-mpfr)
@@ -250,210 +291,23 @@ if [ -z "$GMP_DIR" ]; then
 fi
 
 
-if [ -n "${FLINT_DIR}" ]; then
-    if [ -d "${FLINT_DIR}/lib" ]; then
-       FLINT_LIB_DIR="${FLINT_DIR}/lib"
-       FLINT_INC_DIR="${FLINT_DIR}/include"
-    elif [ -d "${FLINT_DIR}/lib64" ]; then
-       FLINT_LIB_DIR="${FLINT_DIR}/lib64"
-       FLINT_INC_DIR="${FLINT_DIR}/include"
-    elif [ -d "${FLINT_DIR}/lib/x86_64-linux-gnu" ]; then
-       FLINT_LIB_DIR="${FLINT_DIR}/lib/x86_64-linux-gnu"
-       FLINT_INC_DIR="${FLINT_DIR}/include"
-    elif [ -d "${FLINT_DIR}/lib/aarch64-linux-gnu" ]; then
-       FLINT_LIB_DIR="${FLINT_DIR}/lib/aarch64-linux-gnu"
-       FLINT_INC_DIR="${FLINT_DIR}/include"
-    elif [ -d "${FLINT_DIR}/lib/arm-linux-gnueabihf" ]; then
-       FLINT_LIB_DIR="${FLINT_DIR}/lib/arm-linux-gnueabihf"
-       FLINT_INC_DIR="${FLINT_DIR}/include"
-    elif [ -d "${FLINT_DIR}/.libs" ]; then
-       FLINT_LIB_DIR="${FLINT_DIR}/.libs"
-       FLINT_INC_DIR="${FLINT_DIR}"
-    else
-       echo "Invalid FLINT directory"
-       exit 1
-    fi
-    if [ -f "${FLINT_DIR}/include/flint/flint.h" ]; then
-       FLINT_INC_DIR="${FLINT_DIR}/include"
-    elif [ -f "${FLINT_DIR}/include/x86_64-linux-gnu/flint/flint.h" ]; then
-       FLINT_INC_DIR="${FLINT_DIR}/include/x86_64-linux-gnu"
-    elif [ -f "${FLINT_DIR}/include/aarch64-linux-gnu/flint/flint.h" ]; then
-       FLINT_INC_DIR="${FLINT_DIR}/include/aarch64-linux-gnu"
-    elif [ -f "${FLINT_DIR}/include/arm-linux-gnueabihf/flint/flint.h" ]; then
-       FLINT_INC_DIR="${FLINT_DIR}/include/arm-linux-gnueabihf"
-    fi
-    LIB_DIRS="${LIB_DIRS} ${FLINT_LIB_DIR}"
-    INC_DIRS="${INC_DIRS} ${FLINT_INC_DIR}"
-fi;
+configure_dep FLINT "$FLINT_DIR" "flint/flint.h"
 if [ ! -z ${FLINT_DIR+word} ]; then
     LIBS="${LIBS} flint"
 fi;
 
 
-if [ -n "${GMP_DIR}" ]; then
-    if [ -d "${GMP_DIR}/lib" ]; then
-       GMP_LIB_DIR="${GMP_DIR}/lib"
-       GMP_INC_DIR="${GMP_DIR}/include"
-    elif [ -d "${GMP_DIR}/lib64" ]; then
-       GMP_LIB_DIR="${GMP_DIR}/lib64"
-       GMP_INC_DIR="${GMP_DIR}/include"
-    elif [ -d "${GMP_DIR}/lib/x86_64-linux-gnu" ]; then
-       GMP_LIB_DIR="${GMP_DIR}/lib/x86_64-linux-gnu"
-       GMP_INC_DIR="${GMP_DIR}/include"
-    elif [ -d "${GMP_DIR}/lib/aarch64-linux-gnu" ]; then
-       GMP_LIB_DIR="${GMP_DIR}/lib/aarch64-linux-gnu"
-       GMP_INC_DIR="${GMP_DIR}/include"
-    elif [ -d "${GMP_DIR}/lib/arm-linux-gnueabihf" ]; then
-       GMP_LIB_DIR="${GMP_DIR}/lib/arm-linux-gnueabihf"
-       GMP_INC_DIR="${GMP_DIR}/include"
-    elif [ -d "${GMP_DIR}/.libs" ]; then
-       GMP_LIB_DIR="${GMP_DIR}/.libs"
-       GMP_INC_DIR="${GMP_DIR}"
-    else
-       echo "Invalid GMP directory"
-       exit 1
-    fi
-    if [ -f "${GMP_DIR}/include/gmp.h" ]; then
-       GMP_INC_DIR="${GMP_DIR}/include"
-    elif [ -f "${GMP_DIR}/include/x86_64-linux-gnu/gmp.h" ]; then
-       GMP_INC_DIR="${GMP_DIR}/include/x86_64-linux-gnu"
-    elif [ -f "${GMP_DIR}/include/aarch64-linux-gnu/gmp.h" ]; then
-       GMP_INC_DIR="${GMP_DIR}/include/aarch64-linux-gnu"
-    elif [ -f "${GMP_DIR}/include/arm-linux-gnueabihf/gmp.h" ]; then
-       GMP_INC_DIR="${GMP_DIR}/include/arm-linux-gnueabihf"
-    fi
-    LIB_DIRS="${LIB_DIRS} ${GMP_LIB_DIR}"
-    INC_DIRS="${INC_DIRS} ${GMP_INC_DIR}"
-fi;
+configure_dep GMP "$GMP_DIR" "gmp.h"
 if [ ! -z ${GMP_DIR+word} ]; then
     LIBS="${LIBS} gmp gmpxx"
 fi;
 
 
-if [ -n "${MPFR_DIR}" ]; then
-    if [ -d "${MPFR_DIR}/lib" ]; then
-       MPFR_LIB_DIR="${MPFR_DIR}/lib"
-       MPFR_INC_DIR="${MPFR_DIR}/include"
-    elif [ -d "${MPFR_DIR}/lib64" ]; then
-       MPFR_LIB_DIR="${MPFR_DIR}/lib64"
-       MPFR_INC_DIR="${MPFR_DIR}/include"
-    elif [ -d "${MPFR_DIR}/lib/x86_64-linux-gnu" ]; then
-       MPFR_LIB_DIR="${MPFR_DIR}/lib/x86_64-linux-gnu"
-       MPFR_INC_DIR="${MPFR_DIR}/include"
-    elif [ -d "${MPFR_DIR}/lib/aarch64-linux-gnu" ]; then
-       MPFR_LIB_DIR="${MPFR_DIR}/lib/aarch64-linux-gnu"
-       MPFR_INC_DIR="${MPFR_DIR}/include"
-    elif [ -d "${MPFR_DIR}/lib/arm-linux-gnueabihf" ]; then
-       MPFR_LIB_DIR="${MPFR_DIR}/lib/arm-linux-gnueabihf"
-       MPFR_INC_DIR="${MPFR_DIR}/include"
-    elif [ -d "${MPFR_DIR}/.libs" ]; then
-       MPFR_LIB_DIR="${MPFR_DIR}/.libs"
-       MPFR_INC_DIR="${MPFR_DIR}"
-    elif [ -d "${MPFR_DIR}/src/.libs" ]; then
-       MPFR_LIB_DIR="${MPFR_DIR}/src/.libs"
-       MPFR_INC_DIR="${MPFR_DIR}/src"
-    else
-       echo "Invalid MPFR directory"
-       exit 1
-    fi
-    if [ -f "${MPFR_DIR}/include/mpfr.h" ]; then
-       MPFR_INC_DIR="${MPFR_DIR}/include"
-    elif [ -f "${MPFR_DIR}/include/x86_64-linux-gnu/mpfr.h" ]; then
-       MPFR_INC_DIR="${MPFR_DIR}/include/x86_64-linux-gnu"
-    elif [ -f "${MPFR_DIR}/include/aarch64-linux-gnu/mpfr.h" ]; then
-       MPFR_INC_DIR="${MPFR_DIR}/include/aarch64-linux-gnu"
-    elif [ -f "${MPFR_DIR}/include/arm-linux-gnueabihf/mpfr.h" ]; then
-       MPFR_INC_DIR="${MPFR_DIR}/include/arm-linux-gnueabihf"
-    fi
-    LIB_DIRS="${LIB_DIRS} ${MPFR_LIB_DIR}"
-    INC_DIRS="${INC_DIRS} ${MPFR_INC_DIR}"
-fi;
-if [ ! -z ${MPFR_DIR+word} ]; then
-    LIBS="${LIBS} mpfr"
-fi;
+configure_dep MPFR "$MPFR_DIR" "mpfr.h"
+LIBS="${LIBS} mpfr"
 
 
-if [ -n "${MPIR_DIR}" ]; then
-    if [ -d "${MPIR_DIR}/lib" ]; then
-       MPIR_LIB_DIR="${MPIR_DIR}/lib"
-       MPIR_INC_DIR="${MPIR_DIR}/include"
-    elif [ -d "${MPIR_DIR}/lib64" ]; then
-       MPIR_LIB_DIR="${MPIR_DIR}/lib64"
-       MPIR_INC_DIR="${MPIR_DIR}/include"
-    elif [ -d "${MPIR_DIR}/lib/x86_64-linux-gnu" ]; then
-       MPIR_LIB_DIR="${MPIR_DIR}/lib/x86_64-linux-gnu"
-       MPIR_INC_DIR="${MPIR_DIR}/include"
-    elif [ -d "${MPIR_DIR}/lib/aarch64-linux-gnu" ]; then
-       MPIR_LIB_DIR="${MPIR_DIR}/lib/aarch64-linux-gnu"
-       MPIR_INC_DIR="${MPIR_DIR}/include"
-    elif [ -d "${MPIR_DIR}/lib/arm-linux-gnueabihf" ]; then
-       MPIR_LIB_DIR="${MPIR_DIR}/lib/arm-linux-gnueabihf"
-       MPIR_INC_DIR="${MPIR_DIR}/include"
-    elif [ -d "${MPIR_DIR}/.libs" ]; then
-       MPIR_LIB_DIR="${MPIR_DIR}/.libs"
-       MPIR_INC_DIR="${MPIR_DIR}"
-    elif [ -d "${MPIR_DIR}/src/.libs" ]; then
-       MPIR_LIB_DIR="${MPIR_DIR}/src/.libs"
-       MPIR_INC_DIR="${MPIR_DIR}/src"
-    else
-       echo "Invalid MPIR directory"
-       exit 1
-    fi
-    if [ -f "${MPIR_DIR}/include/mpir.h" ]; then
-       MPIR_INC_DIR="${MPIR_DIR}/include"
-    elif [ -f "${MPIR_DIR}/include/x86_64-linux-gnu/mpir.h" ]; then
-       MPIR_INC_DIR="${MPIR_DIR}/include/x86_64-linux-gnu"
-    elif [ -f "${MPIR_DIR}/include/aarch64-linux-gnu/mpir.h" ]; then
-       MPIR_INC_DIR="${MPIR_DIR}/include/aarch64-linux-gnu"
-    elif [ -f "${MPIR_DIR}/include/arm-linux-gnueabihf/mpir.h" ]; then
-       MPIR_INC_DIR="${MPIR_DIR}/include/arm-linux-gnueabihf"
-    fi
-    LIB_DIRS="${LIB_DIRS} ${MPIR_LIB_DIR}"
-    INC_DIRS="${INC_DIRS} ${MPIR_INC_DIR}"
-fi;
-if [ ! -z ${MPIR_DIR+word} ]; then
-    LIBS="${LIBS} mpir"
-fi;
-
-
-if [ -n "${NTL_DIR}" ]; then
-    if [ -d "${NTL_DIR}/lib" ]; then
-       NTL_LIB_DIR="${NTL_DIR}/lib"
-       NTL_INC_DIR="${NTL_DIR}/include"
-    elif [ -d "${NTL_DIR}/lib64" ]; then
-       NTL_LIB_DIR="${NTL_DIR}/lib64"
-       NTL_INC_DIR="${NTL_DIR}/include"
-    elif [ -d "${NTL_DIR}/lib/x86_64-linux-gnu" ]; then
-       NTL_LIB_DIR="${NTL_DIR}/lib/x86_64-linux-gnu"
-       NTL_INC_DIR="${NTL_DIR}/include"
-    elif [ -d "${NTL_DIR}/lib/aarch64-linux-gnu" ]; then
-       NTL_LIB_DIR="${NTL_DIR}/lib/aarch64-linux-gnu"
-       NTL_INC_DIR="${NTL_DIR}/include"
-    elif [ -d "${NTL_DIR}/lib/arm-linux-gnueabihf" ]; then
-       NTL_LIB_DIR="${NTL_DIR}/lib/arm-linux-gnueabihf"
-       NTL_INC_DIR="${NTL_DIR}/include"
-    elif [ -d "${NTL_DIR}/.libs" ]; then
-       NTL_LIB_DIR="${NTL_DIR}/.libs"
-       NTL_INC_DIR="${NTL_DIR}"
-    elif [ -d "${NTL_DIR}/src/.libs" ]; then
-       NTL_LIB_DIR="${NTL_DIR}/src/.libs"
-       NTL_INC_DIR="${NTL_DIR}/src"
-    else
-       echo "Invalid NTL directory"
-       exit 1
-    fi
-    if [ -f "${NTL_DIR}/include/NTL/ZZ.h" ]; then
-       NTL_INC_DIR="${NTL_DIR}/include"
-    elif [ -f "${NTL_DIR}/include/x86_64-linux-gnu/NTL/ZZ.h" ]; then
-       NTL_INC_DIR="${NTL_DIR}/include/x86_64-linux-gnu"
-    elif [ -f "${NTL_DIR}/include/aarch64-linux-gnu/NTL/ZZ.h" ]; then
-       NTL_INC_DIR="${NTL_DIR}/include/aarch64-linux-gnu"
-    elif [ -f "${NTL_DIR}/include/arm-linux-gnueabihf/NTL/ZZ.h" ]; then
-       NTL_INC_DIR="${NTL_DIR}/include/arm-linux-gnueabihf"
-    fi
-    LIB_DIRS="${LIB_DIRS} ${NTL_LIB_DIR}"
-    INC_DIRS="${INC_DIRS} ${NTL_INC_DIR}"
-fi;
+configure_dep NTL "$NTL_DIR" "NTL/ZZ.h"
 if [ ! -z ${NTL_DIR+word} ]; then
     LIBS="${LIBS} ntl"
 fi;
