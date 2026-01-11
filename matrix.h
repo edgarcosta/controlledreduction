@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <stdint.h>
 
+#include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpz_mat.h>
 #include <flint/nmod_mat.h>
@@ -23,7 +24,7 @@
 
 using namespace NTL;
 
-#if __FLINT_VERSION >= 3
+#if defined(FLINT_VERSION_MAJOR) && ((FLINT_VERSION_MAJOR > 3) || (FLINT_VERSION_MAJOR == 3 && FLINT_VERSION_MINOR >= 1))
 typedef dot_params_t nmod_dot_params_t;
 static inline nmod_dot_params_t nmod_vec_dot_params_compat(slong len, nmod_t mod)
 {
