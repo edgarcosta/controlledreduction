@@ -23,6 +23,43 @@
 
 using namespace NTL;
 
+#if __FLINT_VERSION >= 3
+typedef dot_params_t nmod_dot_params_t;
+static inline nmod_dot_params_t nmod_vec_dot_params_compat(slong len, nmod_t mod)
+{
+    return _nmod_vec_dot_params(len, mod);
+}
+static inline ulong nmod_vec_dot_compat(nn_srcptr v1, nn_srcptr v2, slong len, nmod_t mod, nmod_dot_params_t params)
+{
+    return _nmod_vec_dot(v1, v2, len, mod, params);
+}
+static inline nn_ptr nmod_mat_row_ptr(nmod_mat_t A, slong i)
+{
+    return nmod_mat_entry_ptr(A, i, 0);
+}
+static inline nn_srcptr nmod_mat_row_srcptr(const nmod_mat_t A, slong i)
+{
+    return nmod_mat_entry_ptr(A, i, 0);
+}
+#else
+typedef int nmod_dot_params_t;
+static inline nmod_dot_params_t nmod_vec_dot_params_compat(slong len, nmod_t mod)
+{
+    return _nmod_vec_dot_bound_limbs(len, mod);
+}
+static inline ulong nmod_vec_dot_compat(nn_srcptr v1, nn_srcptr v2, slong len, nmod_t mod, nmod_dot_params_t params)
+{
+    return _nmod_vec_dot(v1, v2, len, mod, params);
+}
+static inline nn_ptr nmod_mat_row_ptr(nmod_mat_t A, slong i)
+{
+    return A->rows[i];
+}
+static inline nn_srcptr nmod_mat_row_srcptr(const nmod_mat_t A, slong i)
+{
+    return A->rows[i];
+}
+#endif
 
 
 //computes the charpoly using Newton identities of M
@@ -62,13 +99,13 @@ void mul(fmpz * result,const fmpz_mat_t A,const fmpz * v);
 void mul(fmpz_t result,const fmpz * v,const fmpz * w, const int64_t len);
 
 //result = A * v;
-void inline mul(mp_ptr result, const nmod_mat_t A, mp_srcptr v, const int nlimbs)
+void inline mul(mp_ptr result, const nmod_mat_t A, mp_srcptr v, const nmod_dot_params_t params)
 {
     int64_t ar, ac, i ;
     ar = nmod_mat_nrows(A);
     ac = nmod_mat_ncols(A);
     for( i = 0; i < ar; ++i)
-        result[i] = _nmod_vec_dot((A->rows)[i], v, ac, A->mod, nlimbs);
+        result[i] = nmod_vec_dot_compat(nmod_mat_row_srcptr(A, i), v, ac, A->mod, params);
 }
 
 
@@ -115,7 +152,14 @@ void inline nmod_mat_sub(nmod_mat_t C, const nmod_mat_t A, const nmod_mat_t B)
 
     for (i = 0; i < C->r; ++i)
     {
+#if __FLINT_VERSION >= 3
+        _nmod_vec_sub(nmod_mat_row_ptr(C, i),
+                      nmod_mat_row_srcptr(A, i),
+                      nmod_mat_row_srcptr(B, i),
+                      C->c, C->mod);
+#else
         _nmod_vec_sub(C->rows[i], A->rows[i], B->rows[i], C->c, C->mod);
+#endif
     }
 }
 

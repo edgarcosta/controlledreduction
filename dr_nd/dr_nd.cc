@@ -407,7 +407,7 @@ Mat<ZZ_p> de_Rham_non_degenerate_local::get_reduction_matrix_ND(const Vec<int64_
 
     for(itM = (it->second).begin(); itM != (it->second).end(); itM++)
     {
-        set(monomial_evaluated);
+        NTL::set(monomial_evaluated);
         for( i = 0; i <= n ; i++)
             mul(monomial_evaluated, monomial_evaluated, power_ZZ(u[i],(itM->first)[i]) );
 
@@ -443,7 +443,7 @@ Mat<ZZ> de_Rham_non_degenerate_local::get_reduction_matrix_ND_ZZ(const Vec<int64
 
     for(itM = (it->second).begin(); itM != (it->second).end(); itM++)
     {
-        set(monomial_evaluated);
+        NTL::set(monomial_evaluated);
         for( i = 0; i <= n ; i++)
             mul(monomial_evaluated, monomial_evaluated, power_ZZ(u[i],(itM->first)[i]) );
         rem(monomial_evaluated, monomial_evaluated, ZZ_p::modulus());
@@ -478,7 +478,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND(Vec<ZZ_p> &result, const Vec
 
     for(itM = (it->second).begin(); itM != (it->second).end(); itM++)
     {
-        set(monomial_evaluated);
+        NTL::set(monomial_evaluated);
         for( i = 0; i <= n ; i++)
             mul(monomial_evaluated, monomial_evaluated, power_ZZ(u[i],(itM->first)[i]) );
 
@@ -507,14 +507,14 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_ZZ(Vec<ZZ> &result, const Ve
 
     map< Vec<int64_t>, Mat<ZZ>, vi64less>::const_iterator itM;
     itM = (it->second).begin();
-    set(monomial_evaluated);
+    NTL::set(monomial_evaluated);
     for( i = 0; i <= n ; i++)
         mul(monomial_evaluated, monomial_evaluated, power_ZZ(u[i],(itM->first)[i]) );
     result = itM->second * ( monomial_evaluated * G);
     itM++;
     for(; itM != (it->second).end(); itM++)
     {
-        set(monomial_evaluated);
+        NTL::set(monomial_evaluated);
         for( i = 0; i <= n ; i++)
             mul(monomial_evaluated, monomial_evaluated, power_ZZ(u[i],(itM->first)[i]) );
         result += itM->second * ( monomial_evaluated * G );
@@ -553,7 +553,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly(Vec<ZZ_p> &result, cons
 
     for( itM = (it->second).begin(); itM != (it->second).end() ; itM++)
     {
-        set(monomial_evaluated);
+        NTL::set(monomial_evaluated);
         sum_u = (itM->first)[n+1];
         for( i = 0; i <= n ; i++)
         {
@@ -629,7 +629,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_ZZ(Vec<ZZ> &result, con
 
     for( itM = (it->second).begin(); itM != (it->second).end() ; itM++)
     {
-        set(monomial_evaluated);
+        NTL::set(monomial_evaluated);
         sum_u = (itM->first)[n+1];
         for( i = 0; i <= n ; i++)
         {
@@ -718,7 +718,7 @@ void de_Rham_non_degenerate_local::get_ND_poly_flint(fmpz_mat_struct * result, c
 
     for( itM = (it->second).begin(); itM != (it->second).end() ; itM++)
     {
-        set(monomial_evaluated);
+        NTL::set(monomial_evaluated);
         sum_u = (itM->first)[n+1];
         for( i = 0; i <= n ; i++)
         {
@@ -777,7 +777,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fm
                 _fmpz_vec_add(Gout, Gout, Gtmp, dpowern);
             }
             fmpz_mul_ui(xpower, xpower, x);
-            mul(tmp,(poly + n+1)->rows[0], Gin,dpowern);
+            mul(tmp, fmpz_mat_row(poly + n + 1, 0), Gin, dpowern);
             fmpz_addmul(Gout + 0, xpower, tmp);
             _fmpz_vec_scalar_mod_fmpz(Gin, Gout, dpowern, modulus);
         }
@@ -795,7 +795,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fm
         else
         {
             nmod_t mod;
-            int nlimbs;
+            nmod_dot_params_t dot_params;
             nmod_init(&mod, fmpz_get_ui(modulus));
             int64_t j,k;
 
@@ -815,7 +815,7 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fm
             Gout = _nmod_vec_init(dpowern);
             Gtmp =  _nmod_vec_init(dpowern);
 
-            nlimbs = _nmod_vec_dot_bound_limbs(dpowern, mod);
+            dot_params = nmod_vec_dot_params_compat(dpowern, mod);
 
             nmod_mat_struct * poly_nmod;
             poly_nmod = (nmod_mat_struct *)flint_malloc(sizeof(nmod_mat_struct) * (n+2));
@@ -830,15 +830,15 @@ void de_Rham_non_degenerate_local::reduce_vector_ND_poly_flint(fmpz * result, fm
             for(int64_t x = iterations -1 ; x >= 0; x--)
             {
                 xpower = 1;
-                mul(Gout, poly_nmod + 0, Gin, nlimbs);
+                mul(Gout, poly_nmod + 0, Gin, dot_params);
                 for(int64_t i = 1; i <= n; i++)
                 {
                     xpower = nmod_mul(xpower, x, mod); // xpower = x^i
-                    mul(Gtmp, poly_nmod + i, Gin, nlimbs);
+                    mul(Gtmp, poly_nmod + i, Gin, dot_params);
                     _nmod_vec_scalar_addmul_nmod(Gout, Gtmp, dpowern, xpower, mod);
                 }
                 xpower = nmod_mul(xpower, x, mod);
-                tmp =_nmod_vec_dot( (poly_nmod + n+1)->rows[0], Gin, dpowern, mod, nlimbs);
+                tmp = nmod_vec_dot_compat(nmod_mat_row_srcptr(poly_nmod + n + 1, 0), Gin, dpowern, mod, dot_params);
                 //NMOD_VEC_DOT(tmp, i, dpowern, (poly_nmod + n+1)->rows[0], Gin, mod, nlimbs);
                 tmp = nmod_mul(tmp, xpower, mod);
                 Gout[0] = nmod_add(Gout[0], tmp, mod);
@@ -973,7 +973,7 @@ map< Vec<int64_t>, map< Vec<int64_t>, Mat<ZZ_p>, vi64less> , vi64less>::const_it
                 H.clear();
                 Hnew_zero = &(H[zero]);
                 Hnew_zero->SetLength( tuple_list[(l + 1) * d].length() );
-                set((*Hnew_zero)[ tuple_dict[(l + 1) * d][ coKernels_ND_basis[ coordinate_of_monomial] + v ]]);
+                NTL::set((*Hnew_zero)[ tuple_dict[(l + 1) * d][ coKernels_ND_basis[ coordinate_of_monomial] + v ]]);
                 // x^v * monomial_of_Gl, deg = l * d + d
             }
 
@@ -1270,7 +1270,7 @@ void de_Rham_non_degenerate_local::compute_inclusion_matrix_ND(const Vec<int64_t
         solve = get_solve_ND(l*d);
         (*result)[l].SetDims( tuple_list[(l + 1) * d - (n + 1)].length() , (solve->first).length() );
         for( coordinate_of_monomial = 0; coordinate_of_monomial < (int64_t) (solve->first).length(); coordinate_of_monomial++ )
-            set( (*result)[l][ tuple_dict[ (l + 1) * d - (n + 1) ][ tuple_list[ l*d ][ (solve->first)[coordinate_of_monomial] ] + u_minus_ones ] ][coordinate_of_monomial] );
+            NTL::set( (*result)[l][ tuple_dict[ (l + 1) * d - (n + 1) ][ tuple_list[ l*d ][ (solve->first)[coordinate_of_monomial] ] + u_minus_ones ] ][coordinate_of_monomial] );
     }
 }
 
@@ -1461,7 +1461,7 @@ Vec<ZZ_p> de_Rham_non_degenerate_local::monomial_to_basis_ND(Vec<int64_t> u)
     m = sum/d;
 
     G.SetLength( coKernels_ND_basis.length() );
-    set(G[0]);
+    NTL::set(G[0]);
 
     v.SetLength(n+1);
     for( e = m; e > 1; e--)
@@ -1518,7 +1518,7 @@ bool de_Rham_non_degenerate_local::test_monomial_to_basis_ND(int64_t N)
     for( i = 0; i <= n; i++)
         u[i] = 0;
 
-    set( fpow[0][u] );
+    NTL::set( fpow[0][u] );
 
     for( i = 0; i < N; i++)
     {
@@ -1614,7 +1614,7 @@ bool de_Rham_non_degenerate_local::test_paths_ND(int64_t trials, int64_t paths)
             M.kill();
             M.SetDims( coKernels_ND_basis.length(), coKernels_ND_basis.length());
             for( i = 0; i < (int64_t) coKernels_ND_basis.length(); i++)
-                set( M[i][i] );
+                NTL::set( M[i][i] );
 
             sum_u = 0;
 
@@ -1745,7 +1745,10 @@ static void  nmod_mat_sub_submatrix(nmod_mat_t C, const nmod_mat_t A, const nmod
        return;
 
     for (i = 0; i < max_row; i++)
-       _nmod_vec_sub(C->rows[i] + min_col, A->rows[i] + min_col, B->rows[i] + min_col, B->c - min_col, C->mod);
+       _nmod_vec_sub(nmod_mat_row_ptr(C, i) + min_col,
+                     nmod_mat_row_srcptr(A, i) + min_col,
+                     nmod_mat_row_srcptr(B, i) + min_col,
+                     B->c - min_col, C->mod);
 /*
     slong d = C->c - min_col;
     const slong left = max_row % 8;
@@ -1861,10 +1864,10 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
 
 
     nmod_t mod;
-    int nlimbs;
+    nmod_dot_params_t dot_params;
     nmod_init(&mod, fmpz_get_ui(modulus));
     mp_ptr H, Hout;
-    nlimbs = _nmod_vec_dot_bound_limbs(d, mod);
+    dot_params = nmod_vec_dot_params_compat(d, mod);
 
 
     H =  _nmod_vec_init(d);
@@ -1937,7 +1940,7 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
     {
         //u v^{(k - 1 - l)  + 1} --> u v^{(k - 1 - l)}
         // Mfd[n + 1 -l] = M(k - 1 - l)
-        mul(Hout, Mfd + n + 1 - l, H, nlimbs);
+        mul(Hout, Mfd + n + 1 - l, H, dot_params);
         swap(H, Hout);
     }
     //
@@ -1965,7 +1968,7 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
         }
         // after
         // Mfd[0] =  M(k - 1 - (n + 1) - l - 1)
-        mul(Hout, Mfd + 0, H, nlimbs);
+        mul(Hout, Mfd + 0, H, dot_params);
         swap(H, Hout);
     }
     //check that we computed M[0] in S
@@ -1986,8 +1989,5 @@ void finitediff_flint_nmod(fmpz * result, fmpz_mat_struct * M_fmpz, const int64_
     delete[] max_row;
     delete[] min_col;
 }
-
-
-
 
 

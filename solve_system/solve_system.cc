@@ -215,7 +215,7 @@ void solve_system_zz_p_NTL(Vec<int64_t> &B, Mat<zz_p> &U, const Mat<zz_p> &T)
         for(i = 0; i < nrows; i++)
         {
             B[i] = i;
-            set(U[i][i]);
+            NTL::set(U[i][i]);
         }
         return;
     }
@@ -278,7 +278,7 @@ void solve_system_zz_p_NTL(Vec<int64_t> &B, Mat<zz_p> &U, const Mat<zz_p> &T)
     //Finishing Y
     for( i = 0; i < nrows - rank; i++)
     {
-        set(Y[ B[i] ][rank + i ]);
+        NTL::set(Y[ B[i] ][rank + i ]);
 
     }
     inv(Z, Y);
@@ -346,7 +346,7 @@ void solve_system_padic_flint(Vec<int64_t> &B, Mat<ZZ_p> &U, const Mat<ZZ_p> &T,
         for(i = 0; i < nrows; i++)
         {
             B[i] = i;
-            set(U[i][i]);
+            NTL::set(U[i][i]);
         }
         return;
     }
@@ -504,7 +504,7 @@ void solve_system_padic_NTL(Vec<int64_t> &B, Mat<ZZ_p> &U, const Mat<ZZ_p> &T, i
         for(i = 0; i < nrows; i++)
         {
             B[i] = i;
-            set(U[i][i]);
+            NTL::set(U[i][i]);
         }
         return;
     }
@@ -533,7 +533,7 @@ void solve_system_padic_NTL(Vec<int64_t> &B, Mat<ZZ_p> &U, const Mat<ZZ_p> &T, i
     }
     for(i = 0; i < Blength; i++)
     {
-        set(X[B[i]][i+ncols]);
+        NTL::set(X[B[i]][i+ncols]);
     }
     
     U.SetDims(ncols + Blength, nrows);

@@ -32,7 +32,7 @@ However, [SageMath](http://www.sagemath.org/) comes with all this libraries.
 
 ## Installation
 
-There are 3 options:
+There are 4 options:
 
 ### Using SageMath to provide the dependencies
 
@@ -96,4 +96,23 @@ build/examples/K3_dwork
 
 4. `make check` to run some tests. 
 
+### Using Homebrew on macOS
+
+1. Install dependencies:
+```
+brew install flint ntl gmp libomp
+```
+
+2. Run configure (auto-detects Homebrew prefixes by default):
+```
+./configure
+```
+
+3. Build and test:
+```
+make
+make check
+```
+
+If libomp is not available, configure will disable OpenMP automatically; you can also pass `--disable-openmp`.
 
