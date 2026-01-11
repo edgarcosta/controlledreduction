@@ -352,11 +352,11 @@ fi
 
 INCS="-I'\$(CURDIR)'"
 for INC_DIR in ${INC_DIRS}; do
-   INCS="${INCS} -isystem${INC_DIR}"
+   case "$INC_DIR" in
+      /usr/include|/usr/include/*) ;;
+      *) INCS="${INCS} -isystem${INC_DIR}" ;;
+   esac
 done
-if [ $OS = "Linux" ]; then
-   : # rely on compiler default system include paths
-fi
 
 # library paths
 
