@@ -116,3 +116,17 @@ make check
 
 If libomp is not available, configure will disable OpenMP automatically; you can also pass `--disable-openmp`.
 
+### Using apt on Ubuntu/Debian
+
+1. Install dependencies:
+```
+sudo apt-get update
+sudo apt-get install -y yasm libomp-dev libntl-dev libflint-dev libgmp-dev
+```
+
+2. Run configure and build:
+```
+./configure
+make
+make check
+```
